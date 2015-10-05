@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+		<title>Tower</title>
+		<link rel="stylesheet" type="text/css" href="css/styles.css" />
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+		<script src="js/functions.js"></script>
+		<script src="js/classes/layer/Layer.js"></script>
+		<script src="js/classes/tile/Tile.js"></script>
+		<script src="js/classes/inventory/Inventory.js"></script>
+		<script src="js/classes/grid/Grid.js"></script>
+		<script src="js/classes/map/Map.js"></script>
+		<script src="js/Palette.js"></script>
+		<script src="js/classes/terrain/Terrain.js"></script>
+		<script src="js/classes/asset/Asset.js"></script>
+		<script src="js/classes/asset/Character.js"></script>
+		<script src="js/classes/asset/Player.js"></script>
+		<script src="js/classes/asset/Item.js"></script>
+		<script src="js/main.js"></script>
+	</head>
+	<body>
+		<div id="window">
+			<canvas id="canvas1" width="700" height="500"></canvas>
+			<canvas id="canvas2" width="700" height="500"></canvas>
+		</div><!-- #window -->
+		<script>
+			WebFontConfig = {
+				google:		{ families: [ 'Source+Code+Pro:500:latin' ] },
+				active:		function() { initializeEngine(); }
+			};
+			(function() {
+				var wf = document.createElement('script');
+				wf.src = ('https:' == document.location.protocol ? 'https' : 'http') +
+				  '://ajax.googleapis.com/ajax/libs/webfont/1/webfont.js';
+				wf.type	= 'text/javascript';
+				wf.async = 'true';
+				var s = document.getElementsByTagName('script')[0];
+				s.parentNode.insertBefore(wf, s);
+			})();
+		</script>
+	</body>
+</html>
