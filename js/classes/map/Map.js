@@ -25,14 +25,15 @@ createRoom()
 GAME.Map = function() {}
 
 /*
- * Set the initial visual properties for tiles.
- * 
- * @param	{Object}	args			Object containing tile properties
- * @param	{string}	args.ascii		An ASCII character
- * @param	{string}	args.color		Color for the tile character
- * @param	{string}	args.bg			Background color for the tile
+ * Define and set the initial visual properties for tiles.
  */
 GAME.Map.prototype.setBase = function(args) {
+	var args = [{
+		ascii:			'.',
+		color:			'white',
+		background:		'black'
+	}];
+
 	this.grid.each('setProperty', args);
 }
 
@@ -44,5 +45,6 @@ GAME.Map.prototype.setBase = function(args) {
 GAME.Map.prototype.init = function() {
 	this.grid = new GAME.Grid();
 	this.grid.init();
+	this.setBase();
 	// do stuff to this.grid
 }
