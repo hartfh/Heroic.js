@@ -60,6 +60,16 @@ GAME.Tile.prototype.getNeighbor = function(direction) {
 	return this.grid.getTile(this.x + x, this.y + y);
 }
 
+/*
+ * Sets a property for this tile.
+ * 
+ * 
+ * 
+ */
+GAME.Tile.prototype.setProperty = function(prop, value) {
+	
+}
+
 // To be removed
 GAME.Tile.prototype.checkType = function(type, percent) {
 	var borders = this.getBorder();

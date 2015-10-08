@@ -10,7 +10,7 @@ GAME.Layer = function() {}
 /*
  * Draws something to the layer based on arguments.
  * 
- * @param	{Object}	args				JSON object containing tile and draw data
+ * @param	{Object}	args				Object containing tile and draw data
  * @param	{Object}	args.tile			Tile object to draw to
  * @param	{string}	args.color			Color for the character
  * @param	{string}	args.background		Color for the background

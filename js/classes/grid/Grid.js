@@ -2,12 +2,23 @@ var GAME = GAME || {};
 
 // NOTES: add option for circular pattern? Would probably need subclasses
 
-
+/*
+ * Acts as a collection of tiles with methods to access them.
+ *
+ * @class
+ */
 GAME.Grid = function() {
 	this.width	= 49;
 	this.height	= 35;
 }
 
+/*
+ * Gets a tile at the provided coordinates. Returns false if tile is invalid.
+ * 
+ * @param	{integer}	x		X-coordinate of tile
+ * @param	{integer}	y		Y-coordinate of tile
+ * @return	{Object}	tile
+ */
 GAME.Grid.prototype.getTile	= function(x, y) {
 	if( typeof(x) != 'number' || typeof(y) != 'number' ) {
 		return false;
@@ -20,6 +31,18 @@ GAME.Grid.prototype.getTile	= function(x, y) {
 	}
 
 	return this.tiles[y][x];
+}
+
+/*
+ * Chooses a random tile.
+ *
+ * @return	{Object}	tile
+ */
+GAME.Grid.prototype.getRandomTile = function() {
+	var randX = Math.floor( Math.random() * this.width );
+	var randY = Math.floor( Math.random() * this.height );
+
+	return this.getTile(randX, randY);
 }
 
 GAME.Grid.prototype.each = function(command, arg) {
