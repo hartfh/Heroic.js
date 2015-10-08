@@ -1,5 +1,7 @@
 var GAME = GAME || {};
 
+// Figure out what general functionality should go here. Then implement specific stuff in child classes.
+
 /*
  * Acts as an algorithm for generating terrain on a Grid.
  * 
