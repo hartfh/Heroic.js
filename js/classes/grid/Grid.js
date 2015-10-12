@@ -34,7 +34,7 @@ GAME.Grid.prototype.getTile	= function(x, y) {
 }
 
 /*
- * Chooses a random tile.
+ * Chooses a tile at random.
  *
  * @return	{Object}	tile
  */

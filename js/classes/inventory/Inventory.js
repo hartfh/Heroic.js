@@ -7,7 +7,7 @@ GAME.Inventory = function() {}
  */
 GAME.Inventory.prototype.load = function(asset) {
 	if( typeof(asset) == 'object' ) {
-		if( asset instanceof GAME.Asset ) {
+		if( asset instanceof GAME.Asset || asset instanceof GAME.Terrain ) {
 			this.contents.push(asset);
 		}
 	}

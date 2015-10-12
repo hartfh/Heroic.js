@@ -114,6 +114,7 @@ GAME.Tile.prototype.fromMirror = function() {
 
 // To be removed
 // Will be covered by Terrain.draw(), Asset.draw(), etc.
+/*
 GAME.Tile.prototype.draw = function() {
 	var ctx = GAME.Layers.terrain.context;
 
@@ -138,21 +139,23 @@ GAME.Tile.prototype.draw = function() {
 	var char = GAME.Entities.palette.getChar(this.type, this.subtype);
 	ctx.fillText(char, this.x * this.size + 4, this.y * this.size + this.size - 4);
 }
+*/
 
 // ***Remove functionality that will be covered by Terrain object
 GAME.Tile.prototype.init = function(x, y, parent) {
 	this.x			= x;
 	this.y			= y;
-	this.type		= '';
-	this.subtype	= '';
-	this.mirror 	= '';
-	this.submirror	= '';
+	this.type		= ''; // remove
+	this.subtype	= ''; // remove
+	this.mirror 	= ''; // remove
+	this.submirror	= ''; // remove
 	this.grid		= parent;
 
 	this.terrain	= new GAME.Terrain();
 
-	var rand = Math.random();
+	var rand = Math.random(); // remove
 
+	// remove
 	if( rand > 0.67 ) {
 		this.type = '1';
 		this.subtype = GAME.Entities.palette.getRandSubtype('1');
@@ -163,5 +166,9 @@ GAME.Tile.prototype.init = function(x, y, parent) {
 	if( this.x == 0 || this.y == 0 || (this.x == this.grid.width - 1) || (this.y == this.grid.height - 1) ) {
 		this.type = '1';
 	}
-	this.toMirror();
+	this.toMirror(); // remove
+
+	this.terrain.init(this);
+
+	GAME.Entities.terrain.load( this.terrain );
 }

@@ -30,7 +30,6 @@ GAME.Terrain.prototype.fromMirror = function() {
  * Draws the terrain to the appropriate layer.
  */
 GAME.Terrain.prototype.draw = function() {
-	/*
 	var args = {
 		tile:			this.tile,
 		color:			this.color,
@@ -39,15 +38,14 @@ GAME.Terrain.prototype.draw = function() {
 	};
 
 	GAME.Layers.terrain.draw(args);
-	*/
 }
 
-GAME.Terrain.prototype.init = function(x, y) {
+GAME.Terrain.prototype.init = function(tile) {
 	this.type		= '';
 	this.mirror		= '';
 	this.ascii		= '.';
 	this.background	= 'black';
 	this.color		= 'white';
 	//this.status
-	this.tile		= GAME.Grid.getTile(x, y);
+	this.tile		= tile;
 }

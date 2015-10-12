@@ -10,25 +10,34 @@ function initializeEngine() {
 	GAME.Entities	= {};
 	GAME.Layers		= {};
 
-	GAME.Entities.palette		= new GAME.Palette();
-	GAME.Entities.map			= new GAME.Map();
-	GAME.Entities.map.init();
-	GAME.Entities.characters	= new GAME.Inventory();
-	GAME.Entities.items			= new GAME.Inventory();
+	GAME.Entities.palette		= new GAME.Palette(); // remove Palette
 
 	GAME.Layers.terrain			= new GAME.Layer();
 	GAME.Layers.terrain.init('canvas1');
-	GAME.Layers.assets		= new GAME.Layer();
+	GAME.Layers.assets			= new GAME.Layer();
 	GAME.Layers.assets.init('canvas2');
 
+	GAME.Entities.characters	= new GAME.Inventory();
+	GAME.Entities.items			= new GAME.Inventory();
+	GAME.Entities.terrain		= new GAME.Inventory();
+	GAME.Entities.terrain.init();
+
+	GAME.Entities.map			= new GAME.Map();
+	GAME.Entities.map.init();
+	//GAME.Entities.map.draw();
+
+
+
+	/*
 	// Cave/wall generation
 	for(var i = 0; i < 5; i++) {
 		GAME.Entities.map.grid.each('checkType', ['1', 40]);
 		GAME.Entities.map.grid.each('checkType', ['0', 70]);
 		GAME.Entities.map.grid.each('fromMirror');
 	}
+	*/
 
-	GAME.Entities.map.grid.each('draw');
+	//GAME.Entities.map.grid.each('draw');
 
 	var test = new GAME.Character();
 	test.init();
