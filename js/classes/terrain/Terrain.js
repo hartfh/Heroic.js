@@ -25,9 +25,8 @@ GAME.Terrain.prototype.fromMirror = function() {
 	this.type = this.mirror;
 }
 
-// Unfinished, obviously
 /*
- * Draws the terrain to the appropriate layer.
+ * Draws terrain object to the terrain layer.
  */
 GAME.Terrain.prototype.draw = function() {
 	var args = {

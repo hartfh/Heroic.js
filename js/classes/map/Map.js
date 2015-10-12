@@ -24,26 +24,6 @@ createRoom()
  */
 GAME.Map = function() {}
 
-
-// This can be removed. Functionality already exists in Terrain.
-/*
- * Define and set the initial visual properties for tiles.
- */
-/*
-GAME.Map.prototype.setBase = function(args) {
-	var args = [{
-		ascii:			'.',
-		color:			'white',
-		background:		'black'
-	}];
-
-	this.grid.each('setProperty', args);
-}
-*/
-GAME.Map.prototype.draw = function() {
-	this.grid.each('draw');
-}
-
 /*
  * Setup the Map by creating a new Grid and modifying it according to Map type.
  *

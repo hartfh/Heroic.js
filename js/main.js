@@ -10,7 +10,7 @@ function initializeEngine() {
 	GAME.Entities	= {};
 	GAME.Layers		= {};
 
-	GAME.Entities.palette		= new GAME.Palette(); // remove Palette
+	//GAME.Entities.palette		= new GAME.Palette(); // remove Palette
 
 	GAME.Layers.terrain			= new GAME.Layer();
 	GAME.Layers.terrain.init('canvas1');
@@ -24,8 +24,9 @@ function initializeEngine() {
 
 	GAME.Entities.map			= new GAME.Map();
 	GAME.Entities.map.init();
-	//GAME.Entities.map.draw();
 
+	GAME.Entities.terrain.each('draw');
+	// draw map somehow..?
 
 
 	/*

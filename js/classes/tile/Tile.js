@@ -80,6 +80,7 @@ GAME.Tile.prototype.setProperty = function(property, value) {
 }
 
 // To be removed
+/*
 GAME.Tile.prototype.checkType = function(type, percent) {
 	var borders = this.getBorder();
 	var walls = 0;
@@ -99,18 +100,23 @@ GAME.Tile.prototype.checkType = function(type, percent) {
 		this.submirror = GAME.Entities.palette.getRandSubtype(type);
 	}
 }
+*/
 
 // To be removed
+/*
 GAME.Tile.prototype.toMirror = function() {
 	this.mirror = this.type;
 	this.submirror = this.subtype;
 }
+*/
 
 // To be removed
+/*
 GAME.Tile.prototype.fromMirror = function() {
 	this.type = this.mirror;
 	this.subtype = this.submirror;
 }
+*/
 
 // To be removed
 // Will be covered by Terrain.draw(), Asset.draw(), etc.
@@ -145,14 +151,15 @@ GAME.Tile.prototype.draw = function() {
 GAME.Tile.prototype.init = function(x, y, parent) {
 	this.x			= x;
 	this.y			= y;
-	this.type		= ''; // remove
-	this.subtype	= ''; // remove
-	this.mirror 	= ''; // remove
-	this.submirror	= ''; // remove
+	//this.type		= '';
+	//this.subtype	= '';
+	//this.mirror 	= '';
+	//this.submirror	= '';
 	this.grid		= parent;
 
 	this.terrain	= new GAME.Terrain();
 
+	/*
 	var rand = Math.random(); // remove
 
 	// remove
@@ -166,7 +173,8 @@ GAME.Tile.prototype.init = function(x, y, parent) {
 	if( this.x == 0 || this.y == 0 || (this.x == this.grid.width - 1) || (this.y == this.grid.height - 1) ) {
 		this.type = '1';
 	}
-	this.toMirror(); // remove
+	this.toMirror();
+	*/
 
 	this.terrain.init(this);
 

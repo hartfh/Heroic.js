@@ -25,7 +25,7 @@ GAME.Inventory.prototype.unload = function(ID) {
  */
 GAME.Inventory.prototype.each = function(command) {
 	this.contents.forEach(function(object, index) {
-
+		object[command].apply(object);
 	});
 }
 
