@@ -113,6 +113,7 @@ GAME.Tile.prototype.fromMirror = function() {
 }
 
 // To be removed
+// Will be covered by Terrain.draw(), Asset.draw(), etc.
 GAME.Tile.prototype.draw = function() {
 	var ctx = GAME.Layers.terrain.context;
 
@@ -138,7 +139,7 @@ GAME.Tile.prototype.draw = function() {
 	ctx.fillText(char, this.x * this.size + 4, this.y * this.size + this.size - 4);
 }
 
-// ***Remove terrain functionality
+// ***Remove functionality that will be covered by Terrain object
 GAME.Tile.prototype.init = function(x, y, parent) {
 	this.x			= x;
 	this.y			= y;
@@ -147,6 +148,8 @@ GAME.Tile.prototype.init = function(x, y, parent) {
 	this.mirror 	= '';
 	this.submirror	= '';
 	this.grid		= parent;
+
+	this.terrain	= new GAME.Terrain();
 
 	var rand = Math.random();
 

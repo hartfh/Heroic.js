@@ -1,7 +1,7 @@
 var GAME = GAME || {};
 
 /*
- * Represents terrain within a tile.
+ * Represents terrain data within a tile.
  *
  * @class
  */
@@ -23,6 +23,23 @@ GAME.Terrain.prototype.toMirror = function() {
  */
 GAME.Terrain.prototype.fromMirror = function() {
 	this.type = this.mirror;
+}
+
+// Unfinished, obviously
+/*
+ * Draws the terrain to the appropriate layer.
+ */
+GAME.Terrain.prototype.draw = function() {
+	/*
+	var args = {
+		tile:			this.tile,
+		color:			this.color,
+		background:		this.background,
+		character:		this.ascii
+	};
+
+	GAME.Layers.terrain.draw(args);
+	*/
 }
 
 GAME.Terrain.prototype.init = function(x, y) {

@@ -24,6 +24,8 @@ createRoom()
  */
 GAME.Map = function() {}
 
+
+// This can actually be removed. Functionality already exists in Terrain.
 /*
  * Define and set the initial visual properties for tiles.
  */
@@ -45,6 +47,5 @@ GAME.Map.prototype.setBase = function(args) {
 GAME.Map.prototype.init = function() {
 	this.grid = new GAME.Grid();
 	this.grid.init();
-	this.setBase();
 	// do stuff to this.grid
 }
