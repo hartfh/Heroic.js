@@ -1,13 +1,18 @@
 var GAME = GAME || {};
 
+/*
+ * Represents a single square on the map grid.
+ *
+ * @class
+ */
 GAME.Tile = function() {
 	this.size		= 14;
 }
 
 /*
- * Get all bounding tiles of this tile.
+ * Get all tiles bounding this one.
  *
- * @return	{Object[]}
+ * @return	{Object[]}	array of tiles
  */
 GAME.Tile.prototype.getBorder = function() {
 	var borders = [];
@@ -31,9 +36,7 @@ GAME.Tile.prototype.getBorder = function() {
  * @param	{integer}	direction	Which direction to check
  * @return	{Object}
  */
-
-
- // ****Should this be able to get tiles in diagonal directions??
+// ****Should this be able to get tiles in diagonal directions??
 GAME.Tile.prototype.getNeighbor = function(direction) {
 	var x = 0;
 	var y = 0;
@@ -60,6 +63,7 @@ GAME.Tile.prototype.getNeighbor = function(direction) {
 	return this.grid.getTile(this.x + x, this.y + y);
 }
 
+//Note: can this also be removed?????
 /*
  * Sets a property for this tile. If JSON is provided will set each property to those defined
  * in the object. Otherwise will set a single property to the provided value.

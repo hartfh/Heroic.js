@@ -47,7 +47,7 @@ GAME.Grid.prototype.getRandomTile = function() {
 
 GAME.Grid.prototype.each = function(command, arg) {
 	if( typeof(arg) == 'undefined' ) {
-		arg = [];
+		var arg = [];
 	}
 
 	this.tiles.forEach(function(row, index1) {

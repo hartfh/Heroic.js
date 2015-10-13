@@ -22,7 +22,7 @@ function initializeEngine() {
 	GAME.Entities.terrain		= new GAME.Inventory();
 	GAME.Entities.terrain.init();
 
-	GAME.Entities.map			= new GAME.Map();
+	GAME.Entities.map			= new GAME.TestMap();
 	GAME.Entities.map.init();
 
 	GAME.Entities.terrain.each('draw');
@@ -38,13 +38,13 @@ function initializeEngine() {
 	}
 	*/
 
-	//GAME.Entities.map.grid.each('draw');
-
+	/*
 	var test = new GAME.Character();
 	test.init();
 	test.setLocation(4,4);
 	test.move(20, 20);
 	test.move(10, 10);
+	*/
 }
 
 jQuery(window).load(function() {

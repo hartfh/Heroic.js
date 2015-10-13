@@ -27,6 +27,11 @@ GAME.Layer.prototype.draw = function(args) {
 	ctx.fillText(args.character, args.tile.x * args.tile.size + 3, args.tile.y * args.tile.size + 11);
 }
 
+/*
+ * Erases anything drawn to the layer in a specified tile.
+ * 
+ * @param	{Object}	tile	The tile to clear
+ */
 GAME.Layer.prototype.clear = function(tile) {
 	var ctx = this.context;
 

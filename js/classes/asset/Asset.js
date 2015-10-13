@@ -8,6 +8,25 @@ var GAME = GAME || {};
 GAME.Asset = function() {}
 
 /*
+ * Sets a property for this asset. If JSON is provided will set each property to those defined
+ * in the object. Otherwise will set a single property to the provided value.
+ * 
+ * @param	{Object}	property	JSON object
+ * @param	{string}	property	Property name
+ * @param	{mixed}		value		Any value to set the property to
+ * 
+ */
+GAME.Asset.prototype.setProperty = function(property, value) {
+	if( typeof(property) == 'object' ) {
+		for(var prop in property) {
+			this[prop] = property[prop];
+		}
+	} else {
+		this[property] = value;
+	}
+}
+
+/*
  * Sets a new grid location for the asset.
  *
  * @return void
@@ -38,7 +57,8 @@ GAME.Asset.prototype.draw = function() {
 		character:		this.ascii
 	};
 
-	GAME.Layers.assets.draw(args);
+	this.layer.draw(args);
+	//GAME.Layers.assets.draw(args);
 }
 
 /*
@@ -57,11 +77,13 @@ GAME.Asset.prototype.move = function(x, y) {
  *
  * @return void
  */
-GAME.Asset.prototype.init = function() {
+GAME.Asset.prototype.init = function(tile) {
 	this.tile = null;
 	this.name = '';
 	this.ascii = 'P';
 	this.color = 'white';
 	this.background = 'clear';
+	this.layer	= '';
+	//this.tile = tile;
 	// set graphical character
 }
