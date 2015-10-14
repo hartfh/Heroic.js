@@ -10,12 +10,10 @@ function initializeEngine() {
 	GAME.Entities	= {};
 	GAME.Layers		= {};
 
-	//GAME.Entities.palette		= new GAME.Palette(); // remove Palette
-
 	GAME.Layers.terrain			= new GAME.Layer();
 	GAME.Layers.terrain.init('canvas1');
-	GAME.Layers.assets			= new GAME.Layer();
-	GAME.Layers.assets.init('canvas2');
+	GAME.Layers.characters		= new GAME.Layer();
+	GAME.Layers.characters.init('canvas2');
 
 	GAME.Entities.characters	= new GAME.Inventory();
 	GAME.Entities.items			= new GAME.Inventory();
@@ -26,7 +24,6 @@ function initializeEngine() {
 	GAME.Entities.map.init();
 
 	GAME.Entities.terrain.each('draw');
-	// draw map somehow..?
 
 
 	/*

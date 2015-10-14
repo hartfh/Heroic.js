@@ -58,7 +58,6 @@ GAME.Asset.prototype.draw = function() {
 	};
 
 	this.layer.draw(args);
-	//GAME.Layers.assets.draw(args);
 }
 
 /*
