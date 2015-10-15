@@ -6,6 +6,14 @@ GAME.Colors = {
 	white:		'rgba(255, 255, 255, 1)'
 }
 
+GAME.Palette = {
+	wall:		{
+			ascii:			'X',
+			background:		'white',
+			color:			'black'
+	}
+}
+
 function initializeEngine() {
 	GAME.Entities	= {};
 	GAME.Layers		= {};
@@ -23,7 +31,7 @@ function initializeEngine() {
 	GAME.Entities.map			= new GAME.TestMap();
 	GAME.Entities.map.init();
 
-	GAME.Entities.terrain.each('draw');
+	GAME.Entities.terrain.toEach('draw');
 
 
 	/*

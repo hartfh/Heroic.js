@@ -14,17 +14,20 @@ GAME.TestMap.extend(GAME.Map);
 GAME.TestMap.prototype.generateNoise = function() {
 	// randomly set wall tiles
 
-	var args = [{
-		ascii:			'X',
-		background: 	'white',
-		color:			'black'
-	}];
+	var args = [GAME.Palette.wall];
 
-	GAME.Entities.terrain.each('setProperty', args);
+	GAME.Entities.terrain.toSome('setProperty', args, 0.5);
+}
+
+GAME.TestMap.prototype.wallEdges = function() {
+	var args = [GAME.Palette.wall];
+
+	GAME.Entities.terrain.checkEach('setProperty', args, 'isEdge');
 }
 
 GAME.TestMap.prototype.init = function() {
 	this.grid = new GAME.Grid();
 	this.grid.init();
-	//this.generateNoise();
+	this.generateNoise();
+	this.wallEdges();
 }

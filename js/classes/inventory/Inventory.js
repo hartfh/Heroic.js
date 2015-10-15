@@ -8,7 +8,7 @@ var GAME = GAME || {};
 GAME.Inventory = function() {}
 
 /*
- *  Add an object to this inventory.
+ * Add an object to this inventory.
  */
 GAME.Inventory.prototype.load = function(asset) {
 	if( typeof(asset) == 'object' ) {
@@ -19,16 +19,19 @@ GAME.Inventory.prototype.load = function(asset) {
 }
 
 /*
- *  Remove an object from this inventory.
+ * Remove an object from this inventory.
  */
 GAME.Inventory.prototype.unload = function(ID) {
 	// How do we reference the object?
 }
 
 /*
- *  Loop through this inventory and apply command to each object
+ * Loop through this inventory and apply command to each asset.
+ * 
+ * @param	{string}	command		Method to invoke
+ * @param	{array}		args		Array of arguments
  */
-GAME.Inventory.prototype.each = function(command, args) {
+GAME.Inventory.prototype.toEach = function(command, args) {
 	if( typeof(args) == 'undefined' ) {
 		var args = [];
 	}
@@ -39,7 +42,46 @@ GAME.Inventory.prototype.each = function(command, args) {
 }
 
 /*
- *  Returns an object from the inventory based on its ID
+ * Loop through this inventory and apply command to each asset if it meets a condition.
+ *
+ * @param	{string}	command		Method to invoke
+ * @param	{array}		args		Array of arguments
+ * @param	{string}	condition	Method to test condition
+ */
+GAME.Inventory.prototype.checkEach = function(command, args, condition) {
+	this.contents.forEach(function(object, index) {
+		if( object[condition].apply(object) ) {
+			console.log('passed');
+			object[command].apply(object, args);
+		}
+	});
+}
+
+/*
+ * Loop through this inventory and apply command to random assets.
+ * 
+ * @param	{string}	command		Method to invoke
+ * @param	{array}		args		Array of arguments
+ * @param	{float}		percent		Chance to have each tile be affected
+ */
+GAME.Inventory.prototype.toSome = function(command, args, percent) {
+	var rand;
+
+	if( typeof(args) == 'undefined' ) {
+		var args = [];
+	}
+
+	this.contents.forEach(function(object, index) {
+		rand = Math.random();
+
+		if( rand < percent ) {
+			object[command].apply(object, args);
+		}
+	});
+}
+
+/*
+ * Returns an object from the inventory based on its ID
  */
 GAME.Inventory.prototype.get = function(ID) {
 	// Figure out how to reference the object in the array (assign them some ID?)
