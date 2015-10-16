@@ -1,5 +1,9 @@
 var GAME = GAME || {};
 
+// Note: Is there a way to create multiple other inventories (sub-inventories) that have assets added
+// and removed from them often in order to facilitate accessing certain subsets of assets (rather than
+// having to loop through and test them).
+
 /*
  * Serves as a collection of assets and provides means for accessing them.
  * 
@@ -50,8 +54,7 @@ GAME.Inventory.prototype.toEach = function(command, args) {
  */
 GAME.Inventory.prototype.checkEach = function(command, args, condition) {
 	this.contents.forEach(function(object, index) {
-		if( object[condition].apply(object) ) {
-			console.log('passed');
+		if( condition(object) ) {
 			object[command].apply(object, args);
 		}
 	});

@@ -31,6 +31,28 @@ GAME.Tile.prototype.getBorder = function() {
 }
 
 /*
+GAME.Tile.prototype.checkType = function(type, percent) {
+	var borders = this.getBorder();
+	var walls = 0;
+	var empty = 8 - borders.length;
+
+	borders.forEach(function(elem, index) {
+		if( elem.type == type ) {
+			walls++;
+		}
+	});
+	
+	walls += empty;
+	tilePercent = walls / 8;
+
+	if( tilePercent > (percent / 100) ) {
+		this.mirror = type;
+		this.submirror = GAME.Entities.palette.getRandSubtype(type);
+	}
+}
+*/
+
+/*
  * Check if this tile is on one of the edges of its grid.
  *
  * @return	{boolean}

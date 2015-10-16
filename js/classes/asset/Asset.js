@@ -2,7 +2,6 @@ var GAME = GAME || {};
 
 /*
  * 
- *
  * @class
  */
 GAME.Asset = function() {}
@@ -36,6 +35,35 @@ GAME.Asset.prototype.setLocation = function(x, y) {
 }
 
 /*
+ * Saves all of an assets property values into the "mirror" property.
+ */
+GAME.Asset.prototype.toMirror = function() {
+	var properties	= Object.getOwnPropertyNames(this);
+	var mirror		= {};
+
+	for(var index in properties) {
+		var prop = properties[index];
+
+		if( prop != 'mirror' ) {
+			mirror[prop] = this[prop];
+		}
+	}
+
+	this.mirror = mirror;
+}
+
+/*
+ * Copies all values stored in "mirror" property back to the asset.
+ */
+GAME.Asset.prototype.fromMirror = function() {
+	for(var index in this.mirror) {
+		this[index] = this.mirror[index];
+	}
+
+	this.mirror = null;
+}
+
+/*
  * Erases the asset from the asset layer.
  *
  * @return void
@@ -47,7 +75,7 @@ GAME.Asset.prototype.clear = function() {
 /* 
  * Draws the asset to the asset layer.
  * 
- * @returns void
+ * @return void
  */
 GAME.Asset.prototype.draw = function() {
 	var args = {
@@ -83,6 +111,7 @@ GAME.Asset.prototype.init = function(tile) {
 	this.color = 'white';
 	this.background = 'clear';
 	this.layer	= '';
+	this.mirror = '111';
 	//this.tile = tile;
 	// set graphical character
 }
