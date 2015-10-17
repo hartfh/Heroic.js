@@ -1,19 +1,20 @@
-var GAME = GAME || {};
+var Heroic = Heroic || {};
 
-GAME.Terrain = function() {}
+Heroic.Terrain = function() {}
 
-GAME.Terrain.extend(GAME.Asset);
+Heroic.Terrain.extend(Heroic.Asset);
 
 /*
  * Sets up terrain properties.
  *
  * @return void
  */
-GAME.Terrain.prototype.init = function(tile) {
+Heroic.Terrain.prototype.init = function(tile) {
 	this.tile		= null;
 	this.ascii		= '.';
 	this.color		= 'white';
 	this.background	= 'black';
-	this.layer		= GAME.Layers.terrain;
+	this.layer		= Heroic.Layers.terrain;
+	this.type		= 'open';
 	this.tile		= tile;
 }

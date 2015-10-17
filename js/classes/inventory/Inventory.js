@@ -1,4 +1,4 @@
-var GAME = GAME || {};
+var Heroic = Heroic || {};
 
 // Note: Is there a way to create multiple other inventories (sub-inventories) that have assets added
 // and removed from them often in order to facilitate accessing certain subsets of assets (rather than
@@ -9,14 +9,14 @@ var GAME = GAME || {};
  * 
  * @class
  */
-GAME.Inventory = function() {}
+Heroic.Inventory = function() {}
 
 /*
  * Add an object to this inventory.
  */
-GAME.Inventory.prototype.load = function(asset) {
+Heroic.Inventory.prototype.load = function(asset) {
 	if( typeof(asset) == 'object' ) {
-		if( asset instanceof GAME.Asset ) {
+		if( asset instanceof Heroic.Asset ) {
 			this.contents.push(asset);
 		}
 	}
@@ -25,7 +25,7 @@ GAME.Inventory.prototype.load = function(asset) {
 /*
  * Remove an object from this inventory.
  */
-GAME.Inventory.prototype.unload = function(ID) {
+Heroic.Inventory.prototype.unload = function(ID) {
 	// How do we reference the object?
 }
 
@@ -35,7 +35,7 @@ GAME.Inventory.prototype.unload = function(ID) {
  * @param	{string}	command		Method to invoke
  * @param	{array}		args		Array of arguments
  */
-GAME.Inventory.prototype.toEach = function(command, args) {
+Heroic.Inventory.prototype.toEach = function(command, args) {
 	if( typeof(args) == 'undefined' ) {
 		var args = [];
 	}
@@ -52,7 +52,7 @@ GAME.Inventory.prototype.toEach = function(command, args) {
  * @param	{array}		args		Array of arguments
  * @param	{string}	condition	Method to test condition
  */
-GAME.Inventory.prototype.checkEach = function(command, args, condition) {
+Heroic.Inventory.prototype.checkEach = function(command, args, condition) {
 	this.contents.forEach(function(object, index) {
 		if( condition(object) ) {
 			object[command].apply(object, args);
@@ -67,7 +67,7 @@ GAME.Inventory.prototype.checkEach = function(command, args, condition) {
  * @param	{array}		args		Array of arguments
  * @param	{float}		percent		Chance to have each tile be affected
  */
-GAME.Inventory.prototype.toSome = function(command, args, percent) {
+Heroic.Inventory.prototype.toSome = function(command, args, percent) {
 	var rand;
 
 	if( typeof(args) == 'undefined' ) {
@@ -86,10 +86,10 @@ GAME.Inventory.prototype.toSome = function(command, args, percent) {
 /*
  * Returns an object from the inventory based on its ID
  */
-GAME.Inventory.prototype.get = function(ID) {
+Heroic.Inventory.prototype.get = function(ID) {
 	// Figure out how to reference the object in the array (assign them some ID?)
 }
 
-GAME.Inventory.prototype.init = function() {
+Heroic.Inventory.prototype.init = function() {
 	 this.contents = [];
 }

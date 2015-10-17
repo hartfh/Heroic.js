@@ -1,4 +1,4 @@
-var GAME = GAME || {};
+var Heroic = Heroic || {};
 
 
 // Need some way to pass instructions through "each()" in order to keep behavior 
@@ -7,51 +7,95 @@ var GAME = GAME || {};
 /*
  * An extension of the Map class for testing purposes.
  */
-GAME.TestMap = function() {}
+Heroic.TestMap = function() {}
 
-GAME.TestMap.extend(GAME.Map);
+Heroic.TestMap.extend(Heroic.Map);
 
 // randomly set wall tiles
-GAME.TestMap.prototype.generateNoise = function() {
-	var args = [GAME.Palette.wall];
+Heroic.TestMap.prototype.generateNoise = function() {
+	var args = [Heroic.Palette.wall];
 
-	GAME.Entities.terrain.toSome('setProperty', args, 0.5);
+	Heroic.Entities.terrain.toSome('setProperty', args, 0.31);
 }
 
 // Need a collection of test functions that can be passed through checkEach(). This
 // keeps the checking methods housed within this Map subclass and not polluting Terrain.
 // Can possibly move this up to Map class and just keep application of tests in subclass.
-GAME.TestMap.prototype.tests = {
+Heroic.TestMap.prototype.tests = {
 	isEdge:			function(terrain) {
 		return terrain.tile.isEdge();
 	},
 	fill:			function(terrain) {
+		var walls		= 0;
+		var borderTiles	= terrain.tile.getBorder();
+		var empty		= 8 - borderTiles.length;
 
+		borderTiles.forEach(function(elem, index) {
+			if( elem.terrain.type == 'wall' ) {
+				walls++;
+			}
+		});
+
+		walls += empty;
+
+		if( (walls / 8) > 0.4 ) {
+			return true;
+		}
+
+		return false;
+	},
+	smooth:			function(terrain) {
+		var walls		= 0;
+		var borderTiles	= terrain.tile.getBorder();
+		var empty		= 8 - borderTiles.length;
+
+		borderTiles.forEach(function(elem, index) {
+			if( elem.terrain.type == 'open' ) {
+				walls++;
+			}
+		});
+
+		walls += empty;
+
+		if( (walls / 8) > 0.7 ) {
+			return true;
+		}
+
+		return false;
 	}
 }
 
-GAME.TestMap.prototype.fillGaps = function() {
+Heroic.TestMap.prototype.fillGaps = function() {
 	var args = [{
-		
+		mirror:		Heroic.Palette.wall
 	}];
 
-	//GAME.Entities.terrain.checkEach('setProperty', args, this.tests.fill);
+	Heroic.Entities.terrain.checkEach('setProperty', args, this.tests.fill);
+	Heroic.Entities.terrain.toEach('fromMirror');
 
-	//each 'fromMirror'
+	var args = [{
+		mirror:		Heroic.Palette.open
+	}];
+
+	Heroic.Entities.terrain.checkEach('setProperty', args, this.tests.smooth);
+	Heroic.Entities.terrain.toEach('fromMirror');
 }
 
 // rename this
-GAME.TestMap.prototype.wallEdges = function() {
-	var args = [GAME.Palette.wall];
+Heroic.TestMap.prototype.wallEdges = function() {
+	var args = [Heroic.Palette.wall];
 
-	GAME.Entities.terrain.checkEach('setProperty', args, this.tests.isEdge);
+	Heroic.Entities.terrain.checkEach('setProperty', args, this.tests.isEdge);
 }
 
-GAME.TestMap.prototype.init = function() {
-	this.grid = new GAME.Grid();
+Heroic.TestMap.prototype.init = function() {
+	this.grid = new Heroic.Grid();
 	this.grid.init();
 
 	this.generateNoise();
 	this.wallEdges();
+	this.fillGaps();
+	this.fillGaps();
+	this.fillGaps();
 	this.fillGaps();
 }

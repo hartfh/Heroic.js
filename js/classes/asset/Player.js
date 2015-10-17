@@ -1,5 +1,5 @@
-var GAME = GAME || {};
+var Heroic = Heroic || {};
 
-GAME.Player = function() {}
+Heroic.Player = function() {}
 
-GAME.Player.extend(GAME.Character);
+Heroic.Player.extend(Heroic.Character);

@@ -1,4 +1,4 @@
-var GAME = GAME || {};
+var Heroic = Heroic || {};
 
 // Figure out what general functionality should go here. Then implement specific stuff in child classes.
 
@@ -22,15 +22,15 @@ createRoom()
  * 
  * @class
  */
-GAME.Map = function() {}
+Heroic.Map = function() {}
 
 /*
  * Setup the Map by creating a new Grid and modifying it according to Map type.
  *
  * @return	void
  */
-GAME.Map.prototype.init = function() {
-	this.grid = new GAME.Grid();
+Heroic.Map.prototype.init = function() {
+	this.grid = new Heroic.Grid();
 	this.grid.init();
 	
 	// do stuff to this.grid

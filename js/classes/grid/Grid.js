@@ -1,4 +1,4 @@
-var GAME = GAME || {};
+var Heroic = Heroic || {};
 
 // NOTES: add option for circular pattern? Would probably need subclasses
 
@@ -7,7 +7,7 @@ var GAME = GAME || {};
  *
  * @class
  */
-GAME.Grid = function() {
+Heroic.Grid = function() {
 	this.width	= 49;
 	this.height	= 35;
 }
@@ -19,7 +19,7 @@ GAME.Grid = function() {
  * @param	{integer}	y		Y-coordinate of tile
  * @return	{Object}	tile
  */
-GAME.Grid.prototype.getTile	= function(x, y) {
+Heroic.Grid.prototype.getTile	= function(x, y) {
 	if( typeof(x) != 'number' || typeof(y) != 'number' ) {
 		return false;
 	}
@@ -38,14 +38,14 @@ GAME.Grid.prototype.getTile	= function(x, y) {
  *
  * @return	{Object}	tile
  */
-GAME.Grid.prototype.getRandomTile = function() {
+Heroic.Grid.prototype.getRandomTile = function() {
 	var randX = Math.floor( Math.random() * this.width );
 	var randY = Math.floor( Math.random() * this.height );
 
 	return this.getTile(randX, randY);
 }
 
-GAME.Grid.prototype.each = function(command, arg) {
+Heroic.Grid.prototype.each = function(command, arg) {
 	if( typeof(arg) == 'undefined' ) {
 		var arg = [];
 	}
@@ -57,14 +57,14 @@ GAME.Grid.prototype.each = function(command, arg) {
 	});
 }
 
-GAME.Grid.prototype.init = function() {
+Heroic.Grid.prototype.init = function() {
 	this.tiles	= [];
 
 	for(var y = 0; y < this.height; y++) {
 		var row = [];
 
 		for(var x = 0; x < this.width; x++) {
-			var tile = new GAME.Tile();
+			var tile = new Heroic.Tile();
 			tile.init(x, y, this);
 			row.push(tile);
 		}

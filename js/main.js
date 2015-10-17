@@ -1,50 +1,57 @@
-var GAME = GAME || {};
+var Heroic = Heroic || {};
 
-GAME.Colors = {
+Heroic.Colors = {
 	black:		'rgba(0, 0, 0, 1)',
 	clear:		'rgba(0, 0, 0, 0)',
 	white:		'rgba(255, 255, 255, 1)'
 }
 
-GAME.Palette = {
+Heroic.Palette = {
+	open:		{
+			ascii:			',',
+			background:		'black',
+			color:			'white',
+			type:			'open'
+	},
 	wall:		{
 			ascii:			'X',
 			background:		'white',
-			color:			'black'
+			color:			'black',
+			type:			'wall'
 	}
 }
 
 function initializeEngine() {
-	GAME.Entities	= {};
-	GAME.Layers		= {};
+	Heroic.Entities	= {};
+	Heroic.Layers		= {};
 
-	GAME.Layers.terrain			= new GAME.Layer();
-	GAME.Layers.terrain.init('canvas1');
-	GAME.Layers.characters		= new GAME.Layer();
-	GAME.Layers.characters.init('canvas2');
+	Heroic.Layers.terrain			= new Heroic.Layer();
+	Heroic.Layers.terrain.init('canvas1');
+	Heroic.Layers.characters		= new Heroic.Layer();
+	Heroic.Layers.characters.init('canvas2');
 
-	GAME.Entities.characters	= new GAME.Inventory();
-	GAME.Entities.items			= new GAME.Inventory();
-	GAME.Entities.terrain		= new GAME.Inventory();
-	GAME.Entities.terrain.init();
+	Heroic.Entities.characters	= new Heroic.Inventory();
+	Heroic.Entities.items			= new Heroic.Inventory();
+	Heroic.Entities.terrain		= new Heroic.Inventory();
+	Heroic.Entities.terrain.init();
 
-	GAME.Entities.map			= new GAME.TestMap();
-	GAME.Entities.map.init();
+	Heroic.Entities.map			= new Heroic.TestMap();
+	Heroic.Entities.map.init();
 
-	GAME.Entities.terrain.toEach('draw');
+	Heroic.Entities.terrain.toEach('draw');
 
 
 	/*
 	// Cave/wall generation
 	for(var i = 0; i < 5; i++) {
-		GAME.Entities.map.grid.each('checkType', ['1', 40]);
-		GAME.Entities.map.grid.each('checkType', ['0', 70]);
-		GAME.Entities.map.grid.each('fromMirror');
+		Heroic.Entities.map.grid.each('checkType', ['1', 40]);
+		Heroic.Entities.map.grid.each('checkType', ['0', 70]);
+		Heroic.Entities.map.grid.each('fromMirror');
 	}
 	*/
 
 	/*
-	var test = new GAME.Character();
+	var test = new Heroic.Character();
 	test.init();
 	test.setLocation(4,4);
 	test.move(20, 20);

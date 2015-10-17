@@ -1,5 +1,5 @@
-var GAME = GAME || {};
+var Heroic = Heroic || {};
 
-GAME.Item = function() {}
+Heroic.Item = function() {}
 
-GAME.Item.extend(GAME.Asset);
+Heroic.Item.extend(Heroic.Asset);

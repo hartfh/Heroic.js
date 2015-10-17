@@ -1,11 +1,11 @@
-var GAME = GAME || {};
+var Heroic = Heroic || {};
 
 /*
  * Represents a layer to draw to.
  * 
  * @constructor
  */
-GAME.Layer = function() {}
+Heroic.Layer = function() {}
 
 /*
  * Draws something to the layer based on arguments.
@@ -17,13 +17,13 @@ GAME.Layer = function() {}
  * @param	{string}	args.character		ASCII character
  * @return	void
  */
-GAME.Layer.prototype.draw = function(args) {
+Heroic.Layer.prototype.draw = function(args) {
 	var ctx = this.context;
 
-	ctx.fillStyle = GAME.Colors[args.background];
+	ctx.fillStyle = Heroic.Colors[args.background];
 	ctx.fillRect(args.tile.x * args.tile.size, args.tile.y * args.tile.size, args.tile.size, args.tile.size);
 
-	ctx.fillStyle = GAME.Colors[args.color];
+	ctx.fillStyle = Heroic.Colors[args.color];
 	ctx.fillText(args.character, args.tile.x * args.tile.size + 3, args.tile.y * args.tile.size + 11);
 }
 
@@ -32,7 +32,7 @@ GAME.Layer.prototype.draw = function(args) {
  * 
  * @param	{Object}	tile	The tile to clear
  */
-GAME.Layer.prototype.clear = function(tile) {
+Heroic.Layer.prototype.clear = function(tile) {
 	var ctx = this.context;
 
 	ctx.clearRect(tile.x * tile.size, tile.y * tile.size, tile.size, tile.size);
@@ -44,7 +44,7 @@ GAME.Layer.prototype.clear = function(tile) {
  * @param	{string}	ID		HTML element ID
  * @return	void
  */
-GAME.Layer.prototype.init = function(ID) {
+Heroic.Layer.prototype.init = function(ID) {
 	this.elem = document.getElementById(ID);
 	this.context = this.elem.getContext('2d');
 	this.context.font = "12px Source Code Pro";

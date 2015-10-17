@@ -1,18 +1,18 @@
-var GAME = GAME || {};
+var Heroic = Heroic || {};
 
-GAME.Character = function() {}
+Heroic.Character = function() {}
 
-GAME.Character.extend(GAME.Asset);
+Heroic.Character.extend(Heroic.Asset);
 
 /*
-GAME.Character.prototype.move = function(dir) {
+Heroic.Character.prototype.move = function(dir) {
 	//var currTile = this.tile;
 	//var nextTile = '';
 }
 */
 
 /*
-GAME.Character.prototype.init = function() {
+Heroic.Character.prototype.init = function() {
 	this.status = '';
 	this.name = '';
 }

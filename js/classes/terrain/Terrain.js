@@ -1,4 +1,4 @@
-var GAME = GAME || {};
+var Heroic = Heroic || {};
 
 // ***Obsolete. Eventually remove.
 
@@ -7,7 +7,7 @@ var GAME = GAME || {};
  *
  * @class
  */
-GAME.Terrain = function() {}
+Heroic.Terrain = function() {}
 
 /*
  * Sets a property for this terrain. If JSON is provided will set each property to those defined
@@ -18,7 +18,7 @@ GAME.Terrain = function() {}
  * @param	{mixed}		value		Any value to set the property to
  * 
  */
-GAME.Terrain.prototype.setProperty = function(property, value) {
+Heroic.Terrain.prototype.setProperty = function(property, value) {
 	if( typeof(property) == 'object' ) {
 		for(var prop in property) {
 			this[prop] = property[prop];
@@ -33,7 +33,7 @@ GAME.Terrain.prototype.setProperty = function(property, value) {
  *
  * @return void
  */
-GAME.Terrain.prototype.toMirror = function() {
+Heroic.Terrain.prototype.toMirror = function() {
 	this.mirror = this.type;
 }
 
@@ -42,14 +42,14 @@ GAME.Terrain.prototype.toMirror = function() {
  *
  * @return void
  */
-GAME.Terrain.prototype.fromMirror = function() {
+Heroic.Terrain.prototype.fromMirror = function() {
 	this.type = this.mirror;
 }
 
 /*
  * Draws this object to the terrain layer.
  */
-GAME.Terrain.prototype.draw = function() {
+Heroic.Terrain.prototype.draw = function() {
 	var args = {
 		tile:			this.tile,
 		color:			this.color,
@@ -57,10 +57,10 @@ GAME.Terrain.prototype.draw = function() {
 		character:		this.ascii
 	};
 
-	GAME.Layers.terrain.draw(args);
+	Heroic.Layers.terrain.draw(args);
 }
 
-GAME.Terrain.prototype.init = function(tile) {
+Heroic.Terrain.prototype.init = function(tile) {
 	this.type		= '';
 	this.mirror		= '';
 	this.ascii		= '.';

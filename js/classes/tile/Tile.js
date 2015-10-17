@@ -1,11 +1,11 @@
-var GAME = GAME || {};
+var Heroic = Heroic || {};
 
 /*
  * Represents a single square on the map grid.
  *
  * @class
  */
-GAME.Tile = function() {
+Heroic.Tile = function() {
 	this.size		= 14;
 }
 
@@ -14,7 +14,7 @@ GAME.Tile = function() {
  *
  * @return	{Object[]}	array of tiles
  */
-GAME.Tile.prototype.getBorder = function() {
+Heroic.Tile.prototype.getBorder = function() {
 	var borders = [];
 
 	for(var y = -1; y < 2; y++) {
@@ -31,7 +31,7 @@ GAME.Tile.prototype.getBorder = function() {
 }
 
 /*
-GAME.Tile.prototype.checkType = function(type, percent) {
+Heroic.Tile.prototype.checkType = function(type, percent) {
 	var borders = this.getBorder();
 	var walls = 0;
 	var empty = 8 - borders.length;
@@ -47,7 +47,7 @@ GAME.Tile.prototype.checkType = function(type, percent) {
 
 	if( tilePercent > (percent / 100) ) {
 		this.mirror = type;
-		this.submirror = GAME.Entities.palette.getRandSubtype(type);
+		this.submirror = Heroic.Entities.palette.getRandSubtype(type);
 	}
 }
 */
@@ -57,7 +57,7 @@ GAME.Tile.prototype.checkType = function(type, percent) {
  *
  * @return	{boolean}
  */
-GAME.Tile.prototype.isEdge = function() {
+Heroic.Tile.prototype.isEdge = function() {
 	if( this.x == 0 || this.y == 0 ) {
 		return true;
 	}
@@ -75,7 +75,7 @@ GAME.Tile.prototype.isEdge = function() {
  * @return	{Object}
  */
 // ****Should this be able to get tiles in diagonal directions??
-GAME.Tile.prototype.getNeighbor = function(direction) {
+Heroic.Tile.prototype.getNeighbor = function(direction) {
 	var x = 0;
 	var y = 0;
 
@@ -111,7 +111,7 @@ GAME.Tile.prototype.getNeighbor = function(direction) {
  * @param	{mixed}		value		Any value to set the property to
  * 
  */
-GAME.Tile.prototype.setProperty = function(property, value) {
+Heroic.Tile.prototype.setProperty = function(property, value) {
 	if( typeof(property) == 'object' ) {
 		for(var prop in property) {
 			this[prop] = property[prop];
@@ -122,7 +122,7 @@ GAME.Tile.prototype.setProperty = function(property, value) {
 }
 
 // ***Remove functionality that will be covered by Terrain object
-GAME.Tile.prototype.init = function(x, y, parent) {
+Heroic.Tile.prototype.init = function(x, y, parent) {
 	this.x			= x;
 	this.y			= y;
 	//this.type		= '';
@@ -131,7 +131,7 @@ GAME.Tile.prototype.init = function(x, y, parent) {
 	//this.submirror	= '';
 	this.grid		= parent;
 
-	this.terrain	= new GAME.Terrain();
+	this.terrain	= new Heroic.Terrain();
 
 	/*
 	var rand = Math.random(); // remove
@@ -139,10 +139,10 @@ GAME.Tile.prototype.init = function(x, y, parent) {
 	// remove
 	if( rand > 0.67 ) {
 		this.type = '1';
-		this.subtype = GAME.Entities.palette.getRandSubtype('1');
+		this.subtype = Heroic.Entities.palette.getRandSubtype('1');
 	} else {
 		this.type = '0';
-		this.subtype = GAME.Entities.palette.getRandSubtype('0');
+		this.subtype = Heroic.Entities.palette.getRandSubtype('0');
 	}
 	if( this.x == 0 || this.y == 0 || (this.x == this.grid.width - 1) || (this.y == this.grid.height - 1) ) {
 		this.type = '1';
@@ -152,5 +152,5 @@ GAME.Tile.prototype.init = function(x, y, parent) {
 
 	this.terrain.init(this);
 
-	GAME.Entities.terrain.load( this.terrain );
+	Heroic.Entities.terrain.load( this.terrain );
 }

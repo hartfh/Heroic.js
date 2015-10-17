@@ -1,10 +1,10 @@
-var GAME = GAME || {};
+var Heroic = Heroic || {};
 
 /*
  * 
  * @class
  */
-GAME.Asset = function() {}
+Heroic.Asset = function() {}
 
 /*
  * Sets a property for this asset. If JSON is provided will set each property to those defined
@@ -15,7 +15,7 @@ GAME.Asset = function() {}
  * @param	{mixed}		value		Any value to set the property to
  * 
  */
-GAME.Asset.prototype.setProperty = function(property, value) {
+Heroic.Asset.prototype.setProperty = function(property, value) {
 	if( typeof(property) == 'object' ) {
 		for(var prop in property) {
 			this[prop] = property[prop];
@@ -30,14 +30,14 @@ GAME.Asset.prototype.setProperty = function(property, value) {
  *
  * @return void
  */
-GAME.Asset.prototype.setLocation = function(x, y) {
-	this.tile = GAME.Entities.map.grid.getTile(x, y);
+Heroic.Asset.prototype.setLocation = function(x, y) {
+	this.tile = Heroic.Entities.map.grid.getTile(x, y);
 }
 
 /*
  * Saves all of an assets property values into the "mirror" property.
  */
-GAME.Asset.prototype.toMirror = function() {
+Heroic.Asset.prototype.toMirror = function() {
 	var properties	= Object.getOwnPropertyNames(this);
 	var mirror		= {};
 
@@ -55,7 +55,7 @@ GAME.Asset.prototype.toMirror = function() {
 /*
  * Copies all values stored in "mirror" property back to the asset.
  */
-GAME.Asset.prototype.fromMirror = function() {
+Heroic.Asset.prototype.fromMirror = function() {
 	for(var index in this.mirror) {
 		this[index] = this.mirror[index];
 	}
@@ -68,8 +68,8 @@ GAME.Asset.prototype.fromMirror = function() {
  *
  * @return void
  */
-GAME.Asset.prototype.clear = function() {
-	GAME.Layers.assets.clear(this.tile)
+Heroic.Asset.prototype.clear = function() {
+	Heroic.Layers.assets.clear(this.tile)
 }
 
 /* 
@@ -77,7 +77,7 @@ GAME.Asset.prototype.clear = function() {
  * 
  * @return void
  */
-GAME.Asset.prototype.draw = function() {
+Heroic.Asset.prototype.draw = function() {
 	var args = {
 		tile:			this.tile,
 		color:			this.color,
@@ -93,7 +93,7 @@ GAME.Asset.prototype.draw = function() {
  *
  * @return void
  */
-GAME.Asset.prototype.move = function(x, y) {
+Heroic.Asset.prototype.move = function(x, y) {
 	this.clear();
 	this.setLocation(x, y);
 	this.draw();
@@ -104,14 +104,14 @@ GAME.Asset.prototype.move = function(x, y) {
  *
  * @return void
  */
-GAME.Asset.prototype.init = function(tile) {
+Heroic.Asset.prototype.init = function(tile) {
 	this.tile = null;
 	this.name = '';
-	this.ascii = 'P';
+	this.ascii = '';
 	this.color = 'white';
 	this.background = 'clear';
 	this.layer	= '';
-	this.mirror = '111';
+	this.mirror = null;
 	//this.tile = tile;
 	// set graphical character
 }
