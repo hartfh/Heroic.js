@@ -57,7 +57,7 @@ Heroic.Map.prototype.tests = {
 
 		var	neighbors	= 0;
 		var borderTiles	= terrain.tile.getBorder();
-		var emptyTiles	= 8 - borderTiles.length;
+		//var emptyTiles	= 8 - borderTiles.length;
 
 		borderTiles.forEach(function(tile, index) {
 			if( tile.terrain.type == args.type ) {
@@ -65,9 +65,9 @@ Heroic.Map.prototype.tests = {
 			}
 		});
 
-		neighbors += emptyTiles;
+		//neighbors += emptyTiles;
 
-		if( (neighbors * 0.125) >= args.percent ) {
+		if( (neighbors / borderTiles.length) >= args.percent ) {
 			return true;
 		}
 
