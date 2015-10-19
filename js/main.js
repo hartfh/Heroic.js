@@ -40,16 +40,6 @@ function initializeEngine() {
 
 	Heroic.Entities.terrain.toEach('draw');
 
-
-	/*
-	// Cave/wall generation
-	for(var i = 0; i < 5; i++) {
-		Heroic.Entities.map.grid.each('checkType', ['1', 40]);
-		Heroic.Entities.map.grid.each('checkType', ['0', 70]);
-		Heroic.Entities.map.grid.each('fromMirror');
-	}
-	*/
-
 	/*
 	var test = new Heroic.Character();
 	test.init();

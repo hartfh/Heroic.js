@@ -49,12 +49,17 @@ Heroic.Inventory.prototype.toEach = function(command, args) {
  * Loop through this inventory and apply command to each asset if it meets a condition.
  *
  * @param	{string}	command		Method to invoke
- * @param	{array}		args		Array of arguments
+ * @param	{array}		args		Array of arguments for "command" parameter
  * @param	{string}	condition	Method to test condition
+ * @param	{mixed}		args2		Optional arguments for "condition" parameter
  */
-Heroic.Inventory.prototype.checkEach = function(command, args, condition) {
+Heroic.Inventory.prototype.checkEach = function(command, args, condition, args2) {
+	if( typeof(args2) == 'undefined' ) {
+		var args2 = null;
+	}
+
 	this.contents.forEach(function(object, index) {
-		if( condition(object) ) {
+		if( condition(object, args2) ) {
 			object[command].apply(object, args);
 		}
 	});

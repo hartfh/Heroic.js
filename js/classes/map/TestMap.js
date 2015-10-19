@@ -1,11 +1,7 @@
 var Heroic = Heroic || {};
 
-
-// Need some way to pass instructions through "each()" in order to keep behavior 
-// within the Map classes and not in Terrain. Though not sure if this is really the way to go.
-
 /*
- * An extension of the Map class for testing purposes.
+ * An extension of the Map class for testing/development purposes.
  */
 Heroic.TestMap = function() {}
 
@@ -18,66 +14,27 @@ Heroic.TestMap.prototype.generateNoise = function() {
 	Heroic.Entities.terrain.toSome('setProperty', args, 0.31);
 }
 
-// Need a collection of test functions that can be passed through checkEach(). This
-// keeps the checking methods housed within this Map subclass and not polluting Terrain.
-// Can possibly move this up to Map class and just keep application of tests in subclass.
-Heroic.TestMap.prototype.tests = {
-	isEdge:			function(terrain) {
-		return terrain.tile.isEdge();
-	},
-	fill:			function(terrain) {
-		var walls		= 0;
-		var borderTiles	= terrain.tile.getBorder();
-		var empty		= 8 - borderTiles.length;
-
-		borderTiles.forEach(function(elem, index) {
-			if( elem.terrain.type == 'wall' ) {
-				walls++;
-			}
-		});
-
-		walls += empty;
-
-		if( (walls / 8) > 0.4 ) {
-			return true;
-		}
-
-		return false;
-	},
-	smooth:			function(terrain) {
-		var walls		= 0;
-		var borderTiles	= terrain.tile.getBorder();
-		var empty		= 8 - borderTiles.length;
-
-		borderTiles.forEach(function(elem, index) {
-			if( elem.terrain.type == 'open' ) {
-				walls++;
-			}
-		});
-
-		walls += empty;
-
-		if( (walls / 8) > 0.7 ) {
-			return true;
-		}
-
-		return false;
-	}
-}
-
 Heroic.TestMap.prototype.fillGaps = function() {
 	var args = [{
 		mirror:		Heroic.Palette.wall
 	}];
+	var args2 = {
+		percent:	0.4,
+		type:		'wall'
+	};
 
-	Heroic.Entities.terrain.checkEach('setProperty', args, this.tests.fill);
+	Heroic.Entities.terrain.checkEach('setProperty', args, this.tests.neighboredBy, args2);
 	Heroic.Entities.terrain.toEach('fromMirror');
 
-	var args = [{
+	args = [{
 		mirror:		Heroic.Palette.open
 	}];
+	args2 = {
+		percent:	0.7,
+		type:		'open'
+	};
 
-	Heroic.Entities.terrain.checkEach('setProperty', args, this.tests.smooth);
+	Heroic.Entities.terrain.checkEach('setProperty', args, this.tests.neighboredBy, args2);
 	Heroic.Entities.terrain.toEach('fromMirror');
 }
 

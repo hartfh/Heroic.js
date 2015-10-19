@@ -25,6 +25,57 @@ createRoom()
 Heroic.Map = function() {}
 
 /*
+ * Holds a collection of methods used to evaluate the characteristics of a terrain's tile. Each
+ * methods returns true or false and is used in conjunction with the Inventory method checkEach()
+ * to conditionally modify the map. Actual application of the "test" methods occurs in child
+ * classes of this one.
+ */
+Heroic.Map.prototype.tests = {
+	/*
+	 * Determine if a terrain's tile is on the edge of the map.
+	 *
+	 * @param	{Object}	terrain		Terrain object to test
+	 */
+	isEdge:			function(terrain) {
+		return terrain.tile.isEdge();
+	},
+	/*
+	 * Determine if the number of neighboring tiles exceed a percentage of a certain type.
+	 * 
+	 * @param	{Object}	terrain			Terrain object to test
+	 * @param	{Object}	args			Objects of arguments
+	 * @param	{string}	args.type		Pallete type
+	 * @param	{float}		args.percent	Percent threshold to exceed to return true
+	 */
+	neighboredBy:			function(terrain, args) {
+		if( typeof(args) != 'object' ) {
+			var args = {
+				percent:		1,
+				type:			'unknown'
+			}
+		}
+
+		var	neighbors	= 0;
+		var borderTiles	= terrain.tile.getBorder();
+		var emptyTiles	= 8 - borderTiles.length;
+
+		borderTiles.forEach(function(tile, index) {
+			if( tile.terrain.type == args.type ) {
+				neighbors++;
+			}
+		});
+
+		neighbors += emptyTiles;
+
+		if( (neighbors * 0.125) >= args.percent ) {
+			return true;
+		}
+
+		return false;
+	}
+}
+
+/*
  * Setup the Map by creating a new Grid and modifying it according to Map type.
  *
  * @return	void
@@ -32,6 +83,4 @@ Heroic.Map = function() {}
 Heroic.Map.prototype.init = function() {
 	this.grid = new Heroic.Grid();
 	this.grid.init();
-	
-	// do stuff to this.grid
 }
