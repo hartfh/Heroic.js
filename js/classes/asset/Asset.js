@@ -15,7 +15,7 @@ Heroic.Asset = function() {}
  * @param	{mixed}		value		Any value to set the property to
  * 
  */
-Heroic.Asset.prototype.setProperty = function(property, value) {
+Heroic.Asset.prototype.set = function(property, value) {
 	if( typeof(property) == 'object' ) {
 		for(var prop in property) {
 			this[prop] = property[prop];

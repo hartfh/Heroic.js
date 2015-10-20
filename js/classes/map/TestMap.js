@@ -11,7 +11,7 @@ Heroic.TestMap.extend(Heroic.Map);
 Heroic.TestMap.prototype.generateNoise = function() {
 	var args = [Heroic.Palette.wall];
 
-	Heroic.Entities.terrain.toSome('setProperty', args, 0.34);
+	Heroic.Entities.terrain.toSome('set', args, 0.34);
 }
 
 Heroic.TestMap.prototype.fillGaps = function() {
@@ -23,7 +23,7 @@ Heroic.TestMap.prototype.fillGaps = function() {
 		type:		'wall'
 	};
 
-	Heroic.Entities.terrain.checkEach('setProperty', args, this.tests.neighboredBy, args2);
+	Heroic.Entities.terrain.checkEach('set', args, this.tests.neighboredBy, args2);
 	Heroic.Entities.terrain.toEach('fromMirror');
 }
 
@@ -36,14 +36,14 @@ Heroic.TestMap.prototype.smoothEdges = function() {
 		type:		'open'
 	};
 
-	Heroic.Entities.terrain.checkEach('setProperty', args, this.tests.neighboredBy, args2);
+	Heroic.Entities.terrain.checkEach('set', args, this.tests.neighboredBy, args2);
 	Heroic.Entities.terrain.toEach('fromMirror');
 }
 
 Heroic.TestMap.prototype.wallEdges = function() {
 	var args = [Heroic.Palette.wall];
 
-	Heroic.Entities.terrain.checkEach('setProperty', args, this.tests.isEdge);
+	Heroic.Entities.terrain.checkEach('set', args, this.tests.isEdge);
 }
 
 Heroic.TestMap.prototype.init = function() {

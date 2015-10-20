@@ -56,7 +56,7 @@ Heroic.Map.prototype.tests = {
 		}
 
 		var	neighbors	= 0;
-		var borderTiles	= terrain.tile.getBorder();
+		var borderTiles	= terrain.tile.getBorders();
 		//var emptyTiles	= 8 - borderTiles.length;
 
 		borderTiles.forEach(function(tile, index) {

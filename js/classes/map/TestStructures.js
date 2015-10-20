@@ -7,7 +7,7 @@ Heroic.TestStructures.extend(Heroic.Map);
 Heroic.TestStructures.prototype.generateNoise = function() {
 	var args = [Heroic.Palette.wall];
 
-	Heroic.Entities.terrain.toSome('setProperty', args, 0.013);
+	Heroic.Entities.terrain.toSome('set', args, 0.013);
 }
 
 Heroic.TestStructures.prototype.expandWalls = function() {
