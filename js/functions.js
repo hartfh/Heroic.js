@@ -6,12 +6,46 @@ Function.prototype.extend = function(parent) {
 }
 
 // get points within a rectangular region
-function getRectangularArea(origin, width, height) {
+function getRectangularArea(origin, width, height, fill) {
 	var points = [];
+	var offsetPoints = [];
 
+	if( typeof(fill) == 'undefined' ) {
+		var fill = false;
+	}
 
+	for(var y = 0; y < height; y++) {
+		for(var x = 0; x < width; x++) {
+			var point	= {};
+			var edge	= false;
 
-	return points;
+			point.x = x;
+			point.y = y;
+
+			if( x == 0 || x == (width - 1) ) {
+				edge = true;
+			}
+			if( y == 0 || y == (height - 1) ) {
+				edge = true;
+			}
+			if( fill || ( edge && !fill ) ) {
+				points.push(point);
+			}
+		}
+	}
+
+	// offset points based on origin
+	for(var index in points) {
+		var point = points[index];
+		var offsetPoint = {};
+
+		offsetPoint.x = point.x + origin.x;
+		offsetPoint.y = point.y + origin.y;
+
+		offsetPoints.push(offsetPoint);
+	}
+
+	return offsetPoints;
 }
 
 /*
@@ -21,29 +55,32 @@ function getRectangularArea(origin, width, height) {
  * @param	{integer}	origin.x	X-coordinate
  * @param	{integer}	origin.y	Y-coordinate
  * @param	{integer}	radius		Radius of the circle (including origin point)
+ * @param	{boolean}	fill		Whether or not to fill the circular area
  * 
  * @return	{array}
  */
-function getCircularArea(origin, radius) {
+function getCircularArea(origin, radius, fill) {
 	var points = [];
 	var offsetPoints = [];
 
 	if( isNaN(radius) ) {
 		return points;
 	}
+	if( typeof(fill) == 'undefined' ) {
+		var fill = false;
+	}
 	
 	radius--;
-	var halfRadius = Math.ceil( 0.5 * radius );
 
 	// get edge points on one 45 deg arc
-	for(var x = 0; x < halfRadius + 2; x++) {
-		var edgePoint = [];
+	for(var x = 0; x < radius; x++) {
+		var edgePoint = {};
 		var y = Math.sqrt( (radius * radius) - (x * x) );
 		y = Math.round(y);
 
 		if( !isNaN(y) ) {
-			edgePoint['x'] = x;
-			edgePoint['y'] = y;
+			edgePoint.x = x;
+			edgePoint.y = y;
 
 			points.push(edgePoint);
 		}
@@ -52,36 +89,38 @@ function getCircularArea(origin, radius) {
 	// mirror the points into a 90 degree arc
 	for(var index in points) {
 		var point = points[index];
-		var mirrorPoint = [];
+		var mirrorPoint = {};
 
-		mirrorPoint['x'] = point['y'];
-		mirrorPoint['y'] = point['x'];
+		mirrorPoint.x = point.y;
+		mirrorPoint.y = point.x;
 
 		points.push(mirrorPoint);
 	}
 
 	// add all points inside the arc
-	for(var index in points) {
-		var point = points[index];
+	if( fill ) {
+		for(var index in points) {
+			var point = points[index];
 
-		for(var insideY = point['y'] - 1; insideY > -1; insideY--) {
-			var insidePoint = [];
+			for(var insideY = point.y - 1; insideY > -1; insideY--) {
+				var insidePoint = [];
 
-			insidePoint['x'] = point['x'];
-			insidePoint['y'] = insideY;
+				insidePoint.x = point.x;
+				insidePoint.y = insideY;
 
-			points.push(insidePoint);
+				points.push(insidePoint);
+			}
 		}
 	}
 
 	// mirror points about Y-axis
 	for(var index in points) {
 		var point = points[index];
-		var mirrorPoint = [];
+		var mirrorPoint = {};
 
-		if( point['x'] != 0 ) {
-			mirrorPoint['x'] = -1 * point['x'];
-			mirrorPoint['y'] = point['y'];
+		if( point.x != 0 ) {
+			mirrorPoint.x = -1 * point.x;
+			mirrorPoint.y = point.y;
 			
 			points.push(mirrorPoint);
 		}
@@ -90,11 +129,11 @@ function getCircularArea(origin, radius) {
 	// mirror points about X-axis
 	for(var index in points) {
 		var point = points[index];
-		var mirrorPoint = [];
+		var mirrorPoint = {};
 
-		if( point['y'] != 0 ) {
-			mirrorPoint['x'] = point['x'];
-			mirrorPoint['y'] = -1 * point['y'];
+		if( point.y != 0 ) {
+			mirrorPoint.x = point.x;
+			mirrorPoint.y = -1 * point.y;
 			
 			points.push(mirrorPoint);
 		}
@@ -104,10 +143,10 @@ function getCircularArea(origin, radius) {
 	for(var index in points) {
 		var point = points[index];
 
-		var offsetPoint = [];
+		var offsetPoint = {};
 
-		offsetPoint['x'] = point['x'] + origin.x;
-		offsetPoint['y'] = point['y'] + origin.y;
+		offsetPoint.x = point.x + origin.x;
+		offsetPoint.y = point.y + origin.y;
 
 		offsetPoints.push(offsetPoint);
 	}

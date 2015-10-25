@@ -25,6 +25,28 @@ createRoom()
 Heroic.Map = function() {}
 
 /*
+ * Create an Inventory of Terrain objects based on an area generation method.
+ * 
+ * @param	{string}	pattern		
+ * @return	{Object}
+ */
+Heroic.Map.prototype.createRegion = function(pattern, args) {
+	var points = window[pattern].apply(null, args);
+	
+	var inventory = new Heroic.Inventory();
+	inventory.init();
+
+	for(var index in points) {
+		var point = points[index];
+		var tile = Heroic.Entities.map.grid.getTile(point.x, point.y);
+
+		inventory.load(tile.terrain);
+	}
+
+	return inventory;
+}
+
+/*
  * Holds a collection of methods used to evaluate the characteristics of a terrain's tile. Each
  * methods returns true or false and is used in conjunction with the Inventory method checkEach()
  * to conditionally modify the map. Actual application of the "test" methods occurs in child
