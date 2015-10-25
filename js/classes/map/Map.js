@@ -25,20 +25,19 @@ createRoom()
 Heroic.Map = function() {}
 
 /*
- * Create an Inventory of Terrain objects based on an area generation method.
  * 
- * @param	{string}	pattern		
+ * 
+ * @param	{array}	tiles
  * @return	{Object}
  */
 Heroic.Map.prototype.createRegion = function(pattern, args) {
-	var points = window[pattern].apply(null, args);
-	
 	var inventory = new Heroic.Inventory();
 	inventory.init();
 
-	for(var index in points) {
-		var point = points[index];
-		var tile = Heroic.Entities.map.grid.getTile(point.x, point.y);
+	var tiles = Heroic.Entities.map.grid[pattern].apply(Heroic.Entities.map.grid, args);
+
+	for(var index in tiles) {
+		var tile = tiles[index];
 
 		inventory.load(tile.terrain);
 	}

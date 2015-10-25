@@ -23,7 +23,7 @@ Heroic.Palette = {
 
 function initializeEngine() {
 	Heroic.Entities	= {};
-	Heroic.Layers		= {};
+	Heroic.Layers	= {};
 
 	Heroic.Layers.terrain			= new Heroic.Layer();
 	Heroic.Layers.terrain.init('canvas1');

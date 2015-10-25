@@ -31,36 +31,6 @@ Heroic.Tile.prototype.getBorders = function() {
 }
 
 /*
- * Get all tiles within a rectangular area relative to this one.
- *
- * @param	{intger}	width	Width of area
- * @param	{intger}	height	Height of area
- * @return	{array}				Array of tiles
- */
-Heroic.Tile.prototype.getRectangle = function(width, height) {
-	// this tile is top-left of rectangle?
-
-
-
-
-	// return tiles;
-}
-
-/*
- * Get all tiles within a circular area centered on this one.
- * 
- * @param	{integer}	radius	Radius of the area
- * @return	{array}				Array of tiles
- */
-Heroic.Tile.prototype.getCircle = function(radius) {
-	// circle centered on this tile
-
-
-
-	// return tiles;
-}
-
-/*
  * Get a neighboring tile based on one direction.
  * 
  * @param	{integer}	direction	Which direction to check
