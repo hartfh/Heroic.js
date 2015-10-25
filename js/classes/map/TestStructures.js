@@ -21,7 +21,7 @@ Heroic.TestStructures.prototype.expandWalls = function() {
 	var tempInventory = new Heroic.Inventory();
 	tempInventory.init();
 
-	var circlePoints = getCircularArea({x: 16, y: 12}, 5);
+	var circlePoints = getCircularArea({x: 16, y: 12}, 10);
 	
 	for(var index in circlePoints) {
 		var point = circlePoints[index];

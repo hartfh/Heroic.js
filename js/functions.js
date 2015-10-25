@@ -28,22 +28,46 @@ function getCircularArea(origin, radius) {
 	var points = [];
 	var offsetPoints = [];
 
-	// get edge points on one 90 deg arc
-	for(var x = 0; x <= radius; x++) {
+	if( isNaN(radius) ) {
+		return points;
+	}
+	
+	radius--;
+	var halfRadius = Math.ceil( 0.5 * radius );
+
+	// get edge points on one 45 deg arc
+	for(var x = 0; x < halfRadius + 2; x++) {
 		var edgePoint = [];
 		var y = Math.sqrt( (radius * radius) - (x * x) );
 		y = Math.round(y);
 
-		edgePoint['x'] = x;
-		edgePoint['y'] = y;
+		if( !isNaN(y) ) {
+			edgePoint['x'] = x;
+			edgePoint['y'] = y;
 
-		points.push(edgePoint);
+			points.push(edgePoint);
+		}
+	}
 
-		// get points inside the arc
-		for(var insideY = y - 1; insideY > -1; insideY--) {
+	// mirror the points into a 90 degree arc
+	for(var index in points) {
+		var point = points[index];
+		var mirrorPoint = [];
+
+		mirrorPoint['x'] = point['y'];
+		mirrorPoint['y'] = point['x'];
+
+		points.push(mirrorPoint);
+	}
+
+	// add all points inside the arc
+	for(var index in points) {
+		var point = points[index];
+
+		for(var insideY = point['y'] - 1; insideY > -1; insideY--) {
 			var insidePoint = [];
 
-			insidePoint['x'] = x;
+			insidePoint['x'] = point['x'];
 			insidePoint['y'] = insideY;
 
 			points.push(insidePoint);
