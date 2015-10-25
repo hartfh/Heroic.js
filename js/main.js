@@ -31,12 +31,12 @@ function initializeEngine() {
 	Heroic.Layers.characters.init('canvas2');
 
 	Heroic.Entities.characters	= new Heroic.Inventory();
-	Heroic.Entities.items			= new Heroic.Inventory();
+	Heroic.Entities.items		= new Heroic.Inventory();
 	Heroic.Entities.terrain		= new Heroic.Inventory();
 	Heroic.Entities.terrain.init();
 
-	Heroic.Entities.map			= new Heroic.TestMap();
-	//Heroic.Entities.map			= new Heroic.TestStructures();
+	//Heroic.Entities.map			= new Heroic.TestMap();
+	Heroic.Entities.map			= new Heroic.TestStructures();
 	Heroic.Entities.map.init();
 
 	Heroic.Entities.terrain.toEach('draw');

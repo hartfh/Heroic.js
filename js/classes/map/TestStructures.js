@@ -13,6 +13,27 @@ Heroic.TestStructures.prototype.generateNoise = function() {
 Heroic.TestStructures.prototype.expandWalls = function() {
 	// determine structure size and position relative to center point
 	// set tiles around the center point
+
+
+
+
+	// perhaps modify Inventory.load to allow for array of objects
+	var tempInventory = new Heroic.Inventory();
+	tempInventory.init();
+
+	var circlePoints = getCircularArea({x: 16, y: 12}, 5);
+	
+	for(var index in circlePoints) {
+		var point = circlePoints[index];
+
+		var tile = Heroic.Entities.map.grid.getTile(point['x'], point['y']);
+
+		tempInventory.load( tile.terrain );
+	}
+	
+	var args = [Heroic.Palette.wall];
+
+	tempInventory.toEach('set', args);
 }
 
 Heroic.TestStructures.prototype.init = function() {

@@ -5,6 +5,92 @@ Function.prototype.extend = function(parent) {
 	return this;
 }
 
+// get points within a rectangular region
+function getRectangularArea(origin, width, height) {
+	var points = [];
+
+
+
+	return points;
+}
+
+/*
+ * Get an array of tile coordinates in a circular area.
+ * 
+ * @param	{Object}	origin		Coordinates of point on grid
+ * @param	{integer}	origin.x	X-coordinate
+ * @param	{integer}	origin.y	Y-coordinate
+ * @param	{integer}	radius		Radius of the circle (including origin point)
+ * 
+ * @return	{array}
+ */
+function getCircularArea(origin, radius) {
+	var points = [];
+	var offsetPoints = [];
+
+	// get edge points on one 90 deg arc
+	for(var x = 0; x <= radius; x++) {
+		var edgePoint = [];
+		var y = Math.sqrt( (radius * radius) - (x * x) );
+		y = Math.round(y);
+
+		edgePoint['x'] = x;
+		edgePoint['y'] = y;
+
+		points.push(edgePoint);
+
+		// get points inside the arc
+		for(var insideY = y - 1; insideY > -1; insideY--) {
+			var insidePoint = [];
+
+			insidePoint['x'] = x;
+			insidePoint['y'] = insideY;
+
+			points.push(insidePoint);
+		}
+	}
+
+	// mirror points about Y-axis
+	for(var index in points) {
+		var point = points[index];
+		var mirrorPoint = [];
+
+		if( point['x'] != 0 ) {
+			mirrorPoint['x'] = -1 * point['x'];
+			mirrorPoint['y'] = point['y'];
+			
+			points.push(mirrorPoint);
+		}
+	}
+
+	// mirror points about X-axis
+	for(var index in points) {
+		var point = points[index];
+		var mirrorPoint = [];
+
+		if( point['y'] != 0 ) {
+			mirrorPoint['x'] = point['x'];
+			mirrorPoint['y'] = -1 * point['y'];
+			
+			points.push(mirrorPoint);
+		}
+	}
+
+	// apply offset to points based on origin
+	for(var index in points) {
+		var point = points[index];
+
+		var offsetPoint = [];
+
+		offsetPoint['x'] = point['x'] + origin.x;
+		offsetPoint['y'] = point['y'] + origin.y;
+
+		offsetPoints.push(offsetPoint);
+	}
+
+	return offsetPoints;
+}
+
 function randomDir(directions, exclude) {
 	if(directions != 4 && directions != 8) {
 		return false;
