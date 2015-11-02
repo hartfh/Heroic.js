@@ -99,7 +99,6 @@ Heroic.Tile.prototype.set = function(property, value) {
 	}
 }
 
-// ***Remove functionality that will be covered by Terrain object
 Heroic.Tile.prototype.init = function(x, y, parent) {
 	this.x			= x;
 	this.y			= y;

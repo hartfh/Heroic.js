@@ -26,7 +26,7 @@ Heroic.Inventory.prototype.load = function(asset) {
  * Remove an object from this inventory.
  */
 Heroic.Inventory.prototype.unload = function(ID) {
-	// How do we reference the object?
+	// How do we reference each object?
 }
 
 /*

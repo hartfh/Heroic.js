@@ -1,25 +1,33 @@
 var Heroic = Heroic || {};
 
-Heroic.Colors = {
-	black:		'rgba(0, 0, 0, 1)',
-	clear:		'rgba(0, 0, 0, 0)',
-	white:		'rgba(255, 255, 255, 1)'
+/*
+
+Heroic.Heartbeat = function() {}
+
+Heartbeat.prototype.doSomething = function() {
+
 }
 
-Heroic.Palette = {
-	open:		{
-			ascii:			'.',
-			background:		'black',
-			color:			'white',
-			type:			'open'
-	},
-	wall:		{
-			ascii:			'X',
-			background:		'white',
-			color:			'black',
-			type:			'wall'
-	}
+Heartbeat.prototype.init = function() {
+	this.time = 250;
+	this.intervals = [];
+
+	setInterval(this.doSomething, this.time * 1);
+	setInterval(this.doSomething, this.time * 2);
+	setInterval(this.doSomething, this.time * 3);
+	setInterval(this.doSomething, this.time * 4);
 }
+
+1.) Heartbeat class
+-Hook triggers onto cycle?
+-Might need a few controllers that manage groups of things. Interact with Inventories somehow
+
+2.) Action Queue
+
+3.) Character movement
+
+4.) SFX Layer
+*/
 
 function initializeEngine() {
 	Heroic.Entities	= {};

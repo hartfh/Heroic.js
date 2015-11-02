@@ -27,7 +27,7 @@ Heroic.Map = function() {}
 /*
  * 
  * 
- * @param	{array}	tiles
+ * @param	{array}		tiles
  * @return	{Object}
  */
 Heroic.Map.prototype.createRegion = function(pattern, args) {

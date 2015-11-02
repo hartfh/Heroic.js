@@ -2,6 +2,8 @@ var Heroic = Heroic || {};
 
 // NOTES: add option for circular pattern? Would probably need subclasses
 
+// consider putting a check at the end of all the get region methods to see if should continue with another
+
 /*
  * Acts as a collection of tiles with methods to access them.
  *
@@ -34,7 +36,7 @@ Heroic.Grid.prototype.getTile	= function(x, y) {
 }
 
 /*
- * Chooses a tile at random.
+ * Gets a tile at random.
  *
  * @return	{Object}	tile
  */
@@ -45,8 +47,85 @@ Heroic.Grid.prototype.getRandomTile = function() {
 	return this.getTile(randX, randY);
 }
 
-Heroic.Grid.prototype.getRandomTiles = function() {
+Heroic.Grid.prototype.getRandomTiles = function(percent) {
+	var rand;
+	var tiles = [];
 
+	this.tiles.forEach(function(row, index1) {
+		row.forEach(function(tile, index2) {
+			rand = Math.random();
+
+			if( percent > rand ) {
+				tiles.push(tile);
+			}
+		});
+	});
+
+	return tiles;
+}
+
+/*
+ * Get all tiles that form a line between two end points.
+ * 
+ * @param	{Object}	start	Tile that represents the start point
+ * @param	{Object}	end		Tile that represents the end point
+ * @return	{array}
+ */
+Heroic.Grid.prototype.getLine = function(pointOne, pointTwo) {
+	if(pointOne == pointTwo) {
+		return [];
+	}
+
+	var tiles = [];
+	var slope = (pointTwo.y - pointOne.y) / (pointTwo.x - pointOne.x);
+	
+	if( Math.abs(slope) > 1 ) {
+		slope = (pointTwo.x - pointOne.x) / (pointTwo.y - pointOne.y);
+
+		if( pointOne.y < pointTwo.y ) {
+			var start	= pointOne;
+			var end		= pointTwo;
+		} else {
+			var start	= pointTwo;
+			var end		= pointOne;
+		}
+
+		var offset = start.x - slope * start.y;
+
+		for(var y = start.y; y <= end.y; y++) {
+			var x = slope * y + offset;
+			x = Math.round(x);
+
+			var tile = this.getTile(x, y);
+
+			if(tile) {
+				tiles.push(tile);
+			}
+		}
+	} else {
+		if( pointOne.x < pointTwo.x ) {
+			var start	= pointOne;
+			var end		= pointTwo;
+		} else {
+			var start	= pointTwo;
+			var end		= pointOne;
+		}
+
+		var offset = start.y - slope * start.x;
+
+		for(var x = start.x; x <= end.x; x++) {
+			var y = slope * x + offset;
+			y = Math.round(y);
+
+			var tile = this.getTile(x, y);
+
+			if(tile) {
+				tiles.push(tile);
+			}
+		}
+	}
+
+	return tiles;
 }
 
 /*
