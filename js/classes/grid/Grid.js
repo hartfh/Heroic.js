@@ -290,6 +290,46 @@ Heroic.Grid.prototype.getCircle = function(origin, radius, fill) {
 	return tiles;
 }
 
+/*
+ * Get an array of tiles in an irregular area.
+ * 
+ * @param	{Object}	origin		Coordinates of point on grid
+ * @param	{integer}	origin.x	X-coordinate
+ * @param	{integer}	origin.y	Y-coordinate
+ * @param	{integer}	radius		Radius of the circle (including origin point)
+ * @param	{boolean}	fill		Whether or not to fill the circular area
+ * @return {array}
+ */
+Heroic.Grid.prototype.getBlob = function(origin, radius, fill) {
+	if( typeof(fill) == 'undefined' ) {
+		var fill = false;
+	}
+
+	var tiles = this.getCircle(origin, radius, fill);
+
+	var addons = Math.random() * (6 - 3) + 3;
+	addons = Math.round(addons);
+
+	// Do getCircle() a random number of times, with a random origin offset and radius
+	for(var i = 0; i < addons; i++) {
+		var randRadius = Math.random() * (radius - 3) + 3;
+
+		var xOffset = Math.random() * (radius + radius) - radius;
+		var yOffset = Math.random() * (radius + radius) - radius;
+
+		xOffset = Math.round(xOffset);
+		yOffset = Math.round(yOffset);
+
+		var randOrigin = {x: origin.x - xOffset, y: origin.y - yOffset};
+
+		var moreTiles = this.getCircle(randOrigin, randRadius, fill);
+
+		tiles = tiles.concat(moreTiles);
+	}
+
+	return tiles;
+}
+
 Heroic.Grid.prototype.each = function(command, arg) {
 	if( typeof(arg) == 'undefined' ) {
 		var arg = [];

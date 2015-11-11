@@ -1,32 +1,19 @@
 var Heroic = Heroic || {};
 
 /*
+1.) Action Queue
 
-Heroic.Heartbeat = function() {}
+2.) Character movement
 
-Heartbeat.prototype.doSomething = function() {
+3.) SFX Layer
 
-}
 
-Heartbeat.prototype.init = function() {
-	this.time = 250;
-	this.intervals = [];
 
-	setInterval(this.doSomething, this.time * 1);
-	setInterval(this.doSomething, this.time * 2);
-	setInterval(this.doSomething, this.time * 3);
-	setInterval(this.doSomething, this.time * 4);
-}
+Packed cells pattern:
+-Seed some random tiles
+-Check that they're not too close together. Remove ones within a certain radius of others
+-Expand each point somehow. Maybe expand it by a certain number tiles
 
-1.) Heartbeat class
--Hook triggers onto cycle?
--Might need a few controllers that manage groups of things. Interact with Inventories somehow
-
-2.) Action Queue
-
-3.) Character movement
-
-4.) SFX Layer
 */
 
 function initializeEngine() {
