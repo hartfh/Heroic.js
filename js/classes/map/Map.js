@@ -24,6 +24,16 @@ createRoom()
  */
 Heroic.Map = function() {}
 
+Heroic.Map.prototype.createRegionNew = function(pattern, args) {
+	var region = new Heroic.Region();
+	region.init();
+
+	var tiles = Heroic.Entities.map.grid[pattern].apply(Heroic.Entities.map.grid, args);
+	region.load(tiles);
+
+	return region;
+}
+
 /*
  * 
  * 
@@ -104,4 +114,7 @@ Heroic.Map.prototype.tests = {
 Heroic.Map.prototype.init = function() {
 	this.grid = new Heroic.Grid();
 	this.grid.init();
+
+	this.regions = new Heroic.Inventory();
+	this.regions.init();
 }

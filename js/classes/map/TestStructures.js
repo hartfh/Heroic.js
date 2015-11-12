@@ -13,10 +13,23 @@ Heroic.TestStructures.prototype.testShapes = function() {
 	
 	var args1, args2, region;
 
-	args1 = [{x: 20, y: 20}, 6, true];
+	/*
+	args1 = [{x: 20, y: 20}, 6, false];
 	args2 = [Heroic.Palette.wall];
 	region = this.createRegion('getBlob', args1);
 	region.toEach('set', args2);
+	*/
+
+
+	args1 = [{x: 25, y: 15}, 6, false];
+	args2 = [Heroic.Palette.wall];
+	region = this.createRegionNew('getBlob', args1);
+
+	Heroic.Entities.map.regions.load(region);
+	console.log(region);
+	// Need some way to get a specific asset from each tile within a region
+	//region.interior.toEach('set', args2);
+
 	/*
 
 	args1 = [{x: 20, y: 20}, 10, 10];
@@ -40,21 +53,25 @@ Heroic.TestStructures.prototype.testShapes = function() {
 	//region.toEach('set', args2);
 
 	/*
-	var tiles = this.grid.getRandomTiles(0.005);
+	var tiles = this.grid.getRandomTiles(0.003);
 	for(var index in tiles) {
 		var tile = tiles[index];
 
-		var args1 = [{x: tile.x, y: tile.y}, 4];
+		var args1 = [{x: tile.x, y: tile.y}, 4, false];
 		var args2 = [Heroic.Palette.wall];
-		var region = this.createRegion('getCircle', args1);
+		var region = this.createRegion('getBlob', args1);
 		region.toEach('set', args2);
 	}
 	*/
+
 }
 
 Heroic.TestStructures.prototype.init = function() {
 	this.grid = new Heroic.Grid();
 	this.grid.init();
+
+	this.regions = new Heroic.Inventory();
+	this.regions.init();
 
 	this.generateNoise();
 

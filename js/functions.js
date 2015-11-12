@@ -5,6 +5,12 @@ Function.prototype.extend = function(parent) {
 	return this;
 }
 
+/*
+Function.prototype.init = function() {
+
+}
+*/
+
 function randomDir(directions, exclude) {
 	if(directions != 4 && directions != 8) {
 		return false;

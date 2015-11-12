@@ -16,7 +16,7 @@ Heroic.Inventory = function() {}
  */
 Heroic.Inventory.prototype.load = function(asset) {
 	if( typeof(asset) == 'object' ) {
-		if( asset instanceof Heroic.Asset ) {
+		if( this.contents.indexOf(asset) == -1 ) {
 			this.contents.push(asset);
 		}
 	}

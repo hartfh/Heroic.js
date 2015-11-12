@@ -64,6 +64,11 @@ Heroic.Grid.prototype.getRandomTiles = function(percent) {
 	return tiles;
 }
 
+Heroic.Grid.prototype.getPattern = function() {
+	// grid
+	// random grid
+}
+
 /*
  * Get all tiles that form a line between two end points.
  * 
@@ -300,17 +305,14 @@ Heroic.Grid.prototype.getCircle = function(origin, radius, fill) {
  * @param	{boolean}	fill		Whether or not to fill the circular area
  * @return {array}
  */
-Heroic.Grid.prototype.getBlob = function(origin, radius, fill) {
-	if( typeof(fill) == 'undefined' ) {
-		var fill = false;
-	}
+Heroic.Grid.prototype.getBlob = function(origin, radius) {
+	var tiles = this.getCircle(origin, radius, true);
 
-	var tiles = this.getCircle(origin, radius, fill);
-
+	// Between 3 and 6 extra circles
 	var addons = Math.random() * (6 - 3) + 3;
 	addons = Math.round(addons);
 
-	// Do getCircle() a random number of times, with a random origin offset and radius
+	// Do getCircle a random number of times, with a random origin offset and radius for each
 	for(var i = 0; i < addons; i++) {
 		var randRadius = Math.random() * (radius - 3) + 3;
 
@@ -322,12 +324,62 @@ Heroic.Grid.prototype.getBlob = function(origin, radius, fill) {
 
 		var randOrigin = {x: origin.x - xOffset, y: origin.y - yOffset};
 
-		var moreTiles = this.getCircle(randOrigin, randRadius, fill);
+		var moreTiles = this.getCircle(randOrigin, randRadius, true);
 
-		tiles = tiles.concat(moreTiles);
+		// Add non-duplicate tiles to area
+		for(var index in moreTiles) {
+			var tile = moreTiles[index];
+
+			if( tiles.indexOf(tile) == -1 ) {
+				tiles.push(tile);
+			}
+		}
+	}
+	
+	return tiles;
+}
+
+Heroic.Grid.prototype.growEdges = function(tiles) {
+	var edgeTiles = [];
+
+
+
+	return edgeTiles;
+}
+
+// find the tiles that make up an area's boundaries
+Heroic.Grid.prototype.findEdges = function(tiles) {
+	var edgeTiles = [];
+
+	for(var index in tiles) {
+		var tile = tiles[index];
+
+		// check tiles left and right of this one
+		var prevTile = this.getTile(tile.x - 1, tile.y);
+		var nextTile = this.getTile(tile.x + 1, tile.y);
+
+		var prev = tiles.indexOf(prevTile);
+		var next = tiles.indexOf(nextTile);
+
+		if(prev == -1 || next == -1) {
+			edgeTiles.push(tile);
+		}
+
+		// check tiles up and down from this one
+		var upTile		= this.getTile(tile.x, tile.y - 1);
+		var downTile	= this.getTile(tile.x, tile.y + 1);
+
+		var up			= tiles.indexOf(upTile);
+		var down		= tiles.indexOf(downTile);
+
+		if(up == -1 || down == -1) {
+			if( edgeTiles.indexOf(tile) == -1 ) {
+				edgeTiles.push(tile);
+			}
+		}
 	}
 
-	return tiles;
+	return edgeTiles;
 }
 
 Heroic.Grid.prototype.each = function(command, arg) {
