@@ -35,12 +35,16 @@ Heroic.Inventory.prototype.unload = function(ID) {
  * @param	{string}	command		Method to invoke
  * @param	{array}		args		Array of arguments
  */
-Heroic.Inventory.prototype.toEach = function(command, args) {
+Heroic.Inventory.prototype.toEach = function(command, args, asset) {
 	if( typeof(args) == 'undefined' ) {
 		var args = [];
 	}
 
 	this.contents.forEach(function(object, index) {
+		if( typeof(asset) != 'undefined' ) {
+			object = object[asset];
+		}
+
 		object[command].apply(object, args);
 	});
 }

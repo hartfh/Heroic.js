@@ -11,7 +11,7 @@ Heroic.TestStructures.prototype.generateNoise = function() {
 
 Heroic.TestStructures.prototype.testShapes = function() {
 	
-	var args1, args2, region;
+	var args1, args2, args3, region;
 
 	/*
 	args1 = [{x: 20, y: 20}, 6, false];
@@ -23,12 +23,14 @@ Heroic.TestStructures.prototype.testShapes = function() {
 
 	args1 = [{x: 25, y: 15}, 6, false];
 	args2 = [Heroic.Palette.wall];
+	args3 = [Heroic.Palette.test1];
 	region = this.createRegionNew('getBlob', args1);
 
 	Heroic.Entities.map.regions.load(region);
 	console.log(region);
 	// Need some way to get a specific asset from each tile within a region
-	//region.interior.toEach('set', args2);
+	region.edge.toEach('set', args2, 'terrain');
+	region.interior.toEach('set', args3, 'terrain');
 
 	/*
 
