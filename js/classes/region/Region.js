@@ -3,8 +3,6 @@ var Heroic = Heroic || {};
 Heroic.Region = function() {}
 
 Heroic.Region.prototype.load = function(tiles) {
-	// tiles in array of tiles. separate out tiles into Edges and Interiors
-
 	for(var index in tiles) {
 		var tile = tiles[index];
 		var grid = tile.grid;
@@ -17,6 +15,14 @@ Heroic.Region.prototype.load = function(tiles) {
 		var prev = tiles.indexOf(prevTile);
 		var next = tiles.indexOf(nextTile);
 
+		// Grid edge tiles should not count as Region edge tiles
+		if(!prevTile) {
+			prev = 0;
+		}
+		if(!nextTile) {
+			next = 0;
+		}
+
 		if(prev == -1 || next == -1) {
 			this.edge.load(tile);
 			edge = true;
@@ -28,6 +34,14 @@ Heroic.Region.prototype.load = function(tiles) {
 
 		var up			= tiles.indexOf(upTile);
 		var down		= tiles.indexOf(downTile);
+
+		// Grid edge tiles should not count as Region edge tiles
+		if(!upTile) {
+			up = 0;
+		}
+		if(!downTile) {
+			down = 0;
+		}
 
 		if(up == -1 || down == -1) {
 			this.edge.load(tile);

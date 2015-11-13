@@ -47,6 +47,7 @@ Heroic.Grid.prototype.getRandomTile = function() {
 	return this.getTile(randX, randY);
 }
 
+// ******should randomize the tile order prior to returning
 Heroic.Grid.prototype.getRandomTiles = function(percent) {
 	var rand;
 	var tiles = [];
@@ -289,7 +290,9 @@ Heroic.Grid.prototype.getCircle = function(origin, radius, fill) {
 
 		var tile = this.getTile(offsetPoint.x, offsetPoint.y);
 
-		tiles.push(tile);
+		if(tile) {
+			tiles.push(tile);
+		}
 	}
 
 	return tiles;
@@ -335,7 +338,7 @@ Heroic.Grid.prototype.getBlob = function(origin, radius) {
 			}
 		}
 	}
-	
+
 	return tiles;
 }
 
