@@ -17,10 +17,10 @@ Heroic.Region.prototype.load = function(tiles) {
 
 		// Grid edge tiles should not count as Region edge tiles
 		if(!prevTile) {
-			prev = 0;
+			prev = 'out';
 		}
 		if(!nextTile) {
-			next = 0;
+			next = 'out';
 		}
 
 		if(prev == -1 || next == -1) {
@@ -37,10 +37,10 @@ Heroic.Region.prototype.load = function(tiles) {
 
 		// Grid edge tiles should not count as Region edge tiles
 		if(!upTile) {
-			up = 0;
+			up = 'out';
 		}
 		if(!downTile) {
-			down = 0;
+			down = 'out';
 		}
 
 		if(up == -1 || down == -1) {

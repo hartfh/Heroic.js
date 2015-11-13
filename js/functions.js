@@ -5,6 +5,23 @@ Function.prototype.extend = function(parent) {
 	return this;
 }
 
+Array.prototype.shuffle = function() {
+	var currentIndex = this.length, temporaryValue, randomIndex;
+
+	while (0 !== currentIndex) {
+		randomIndex = Math.floor(Math.random() * currentIndex);
+		currentIndex -= 1;
+
+		temporaryValue = this[currentIndex];
+		this[currentIndex] = this[randomIndex];
+		this[randomIndex] = temporaryValue;
+	}
+}
+
+Object.defineProperty(
+	Array.prototype, 'shuffle', {enumerable: false}
+);
+
 /*
 Function.prototype.init = function() {
 

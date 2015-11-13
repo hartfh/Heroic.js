@@ -62,6 +62,8 @@ Heroic.Grid.prototype.getRandomTiles = function(percent) {
 		});
 	});
 
+	tiles.shuffle();
+
 	return tiles;
 }
 
