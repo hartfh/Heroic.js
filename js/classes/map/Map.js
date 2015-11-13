@@ -24,7 +24,7 @@ createRoom()
  */
 Heroic.Map = function() {}
 
-Heroic.Map.prototype.createRegionNew = function(pattern, args) {
+Heroic.Map.prototype.createRegion = function(pattern, args) {
 	var region = new Heroic.Region();
 	region.init();
 
@@ -40,6 +40,8 @@ Heroic.Map.prototype.createRegionNew = function(pattern, args) {
  * @param	{array}		tiles
  * @return	{Object}
  */
+/*
+***OBSOLETE
 Heroic.Map.prototype.createRegion = function(pattern, args) {
 	var inventory = new Heroic.Inventory();
 	inventory.init();
@@ -54,6 +56,7 @@ Heroic.Map.prototype.createRegion = function(pattern, args) {
 
 	return inventory;
 }
+*/
 
 /*
  * Holds a collection of methods used to evaluate the characteristics of a terrain's tile. Each

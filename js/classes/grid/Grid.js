@@ -67,9 +67,22 @@ Heroic.Grid.prototype.getRandomTiles = function(percent) {
 	return tiles;
 }
 
-Heroic.Grid.prototype.getPattern = function() {
-	// grid
-	// random grid
+Heroic.Grid.prototype.getGrid = function(origin, width, height, density, rotate) {
+	var tiles	= [];
+
+	for(var y = 0; y <= height; y = y + density) {
+		for(var x = 0; x <= width; x = x + density) {
+			var offsetX = x + origin.x;
+			var offsetY = y + origin.y;
+			var tile = this.getTile(offsetX, offsetY);
+
+			if(tile) {
+				tiles.push(tile);
+			}
+		}
+	}
+
+	return tiles;
 }
 
 /*
@@ -344,6 +357,7 @@ Heroic.Grid.prototype.getBlob = function(origin, radius) {
 	return tiles;
 }
 
+/*
 Heroic.Grid.prototype.growEdges = function(tiles) {
 	var edgeTiles = [];
 
@@ -351,6 +365,7 @@ Heroic.Grid.prototype.growEdges = function(tiles) {
 
 	return edgeTiles;
 }
+*/
 
 // find the tiles that make up an area's boundaries
 Heroic.Grid.prototype.findEdges = function(tiles) {
