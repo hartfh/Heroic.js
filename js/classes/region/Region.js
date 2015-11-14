@@ -53,6 +53,21 @@ Heroic.Region.prototype.load = function(tiles) {
 	}
 }
 
+// shift all tiles in the region
+Heroic.Region.prototype.translate = function() {
+
+}
+
+Heroic.Region.prototype.grow = function() {
+
+}
+
+Heroic.Region.prototype.scale = function() {
+
+}
+
+//Heroic.Region.prototype.mergeWith = function() {}
+
 Heroic.Region.prototype.init = function() {
 	this.edge		= new Heroic.Inventory();
 	this.edge.init();

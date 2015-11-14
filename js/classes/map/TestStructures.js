@@ -24,15 +24,35 @@ Heroic.TestStructures.prototype.testShapes = function() {
 	region.interior.toEach('set', args3, 'terrain');
 	*/
 
-	// Grid testing
-	var tiles = this.grid.getGrid({x: 5, y: 5}, 45, 35, 14);
+	/*
+	// Line Testing
+	var tiles = this.grid.getLine({x: 7, y: 7}, {x: 40, y: 24});
 	for(var index in tiles) {
 		var tile = tiles[index];
 
-		args1 = [{x: tile.x, y: tile.y}, 4];
+		//args1 = [{x: tile.x, y: tile.y}, 7];
+		//args2 = [Heroic.Palette.wall];
+		//region = this.createRegion('getCircle', args1);
+
+		args1 = [{x: tile.x, y: tile.y}, 6, 6];
+		args2 = [Heroic.Palette.wall];
+		region = this.createRegion('getRectangle', args1);
+
+		Heroic.Entities.map.regions.load(region);
+		region.edge.toEach('set', args2, 'terrain');
+	}
+	*/
+
+	// Grid testing
+	var tiles = this.grid.getGrid({x: 5, y: 5}, 45, 35, 7, 25);
+	for(var index in tiles) {
+		var tile = tiles[index];
+
+		args1 = [{x: tile.x, y: tile.y}, 3];
 		args2 = [Heroic.Palette.wall];
 		args3 = [Heroic.Palette.test1];
-		region = this.createRegion('getBlob', args1);
+		//region = this.createRegion('getBlob', args1);
+		region = this.createRegion('getCircle', args1);
 
 		Heroic.Entities.map.regions.load(region);
 		region.edge.toEach('set', args2, 'terrain');
@@ -41,7 +61,7 @@ Heroic.TestStructures.prototype.testShapes = function() {
 
 	/*
 	// Grid dots
-	args1 = [{x: 3, y: 3}, 42, 30, 7];
+	args1 = [{x: 13, y: 3}, 42, 30, 5, 15];
 	args3 = [Heroic.Palette.test1];
 	region = this.createRegion('getGrid', args1);
 	region.edge.toEach('set', args3, 'terrain');
