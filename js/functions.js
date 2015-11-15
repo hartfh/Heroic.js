@@ -28,6 +28,71 @@ Function.prototype.init = function() {
 }
 */
 
+function getDirections() {
+	var directions = [];
+
+	directions[0] = {
+		name:			'n',
+		coordinates:	{x: 0, y: -1}
+	};
+	directions[1] = {
+		name:			'ne',
+		coordinates:	{x: 1, y: -1}
+	};
+	directions[2] = {
+		name:			'e',
+		coordinates:	{x: 1, y: 0}
+	};
+	directions[3] = {
+		name:			'se',
+		coordinates:	{x: 1, y: 1}
+	};
+	directions[4] = {
+		name:			's',
+		coordinates:	{x: 0, y: 1}
+	};
+	directions[5] = {
+		name:			'sw',
+		coordinates:	{x: -1, y: 1}
+	};
+	directions[6] = {
+		name:			'w',
+		coordinates:	{x: -1, y: 0}
+	};
+	directions[7] = {
+		name:			'nw',
+		coordinates:	{x: -1, y: -1}
+	};
+
+	return directions;
+}
+
+function getDirectionKey() {
+	var key = [];
+
+	key['n']	= 0;
+	key['ne']	= 1;
+	key['e']	= 2;
+	key['se']	= 3;
+	key['s']	= 4;
+	key['sw']	= 5;
+	key['w']	= 6;
+	key['nw']	= 7;
+
+	return key;
+}
+
+function rotateDirection(dir, degrees) {
+	var increment	= Math.floor(degrees / 45);
+	var rotated		= dir + increment;
+
+	if( rotated >= 8 ) {
+		rotated -= 8;
+	}
+
+	return rotated;
+}
+
 function randomDir(directions, exclude) {
 	if(directions != 4 && directions != 8) {
 		return false;

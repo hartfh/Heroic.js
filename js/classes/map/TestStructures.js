@@ -43,21 +43,24 @@ Heroic.TestStructures.prototype.testShapes = function() {
 	}
 	*/
 
+	/*
 	// Grid testing
-	var tiles = this.grid.getGrid({x: 5, y: 5}, 45, 35, 7, 25);
+	var tiles = this.grid.getGrid({x: 5, y: 5}, 45, 35, 10, 25);
 	for(var index in tiles) {
 		var tile = tiles[index];
 
-		args1 = [{x: tile.x, y: tile.y}, 3];
+		args1 = [{x: tile.x, y: tile.y}, 5];
 		args2 = [Heroic.Palette.wall];
 		args3 = [Heroic.Palette.test1];
 		//region = this.createRegion('getBlob', args1);
 		region = this.createRegion('getCircle', args1);
 
 		Heroic.Entities.map.regions.load(region);
+		region.translate(-3, -3);
 		region.edge.toEach('set', args2, 'terrain');
 		region.interior.toEach('set', args3, 'terrain');
 	}
+	*/
 
 	/*
 	// Grid dots
@@ -83,6 +86,16 @@ Heroic.TestStructures.prototype.testShapes = function() {
 		region.interior.toEach('set', args3, 'terrain');
 	}
 	*/
+
+	args1 = [{x: 20, y: 15}, 6];
+	args2 = [Heroic.Palette.wall];
+	args3 = [Heroic.Palette.test1];
+
+	region = this.createRegion('getBlob', args1);
+	Heroic.Entities.map.regions.load(region);
+	region.grow();
+	region.edge.toEach('set', args2, 'terrain');
+	region.interior.toEach('set', args3, 'terrain');
 }
 
 Heroic.TestStructures.prototype.init = function() {

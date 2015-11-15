@@ -30,6 +30,21 @@ Heroic.Tile.prototype.getBorders = function() {
 	return borders;
 }
 
+
+Heroic.Tile.prototype.getBounding = function() {
+	var bounding	= [];
+	var directions	= getDirections();
+
+	for(var index in directions) {
+		var coords	= directions[index].coordinates;
+		var tile	= this.grid.getTile(this.x + coords.x, this.y + coords.y);
+
+		bounding[index] = tile;
+	}
+
+	return bounding;
+}
+
 /*
  * Get a neighboring tile based on one direction.
  * 
@@ -37,6 +52,7 @@ Heroic.Tile.prototype.getBorders = function() {
  * @return	{Object}
  */
 // ****Should this be able to get tiles in diagonal directions??
+/*
 Heroic.Tile.prototype.getNeighbor = function(direction) {
 	var x = 0;
 	var y = 0;
@@ -61,6 +77,19 @@ Heroic.Tile.prototype.getNeighbor = function(direction) {
 	// convert direction
 
 	return this.grid.getTile(this.x + x, this.y + y);
+}
+*/
+
+Heroic.Tile.prototype.getNeighbor = function(direction) {
+	if( typeof(direction) == 'string' ) {
+		// convert string to integer direction
+	}
+
+	var directions = getDirections();
+	var coordinates = directions[direction].coordinates;
+	var tile = this.grid.getTile(this.x + coordinates.x, this.y + coordinates.y);
+
+	return tile;
 }
 
 /*

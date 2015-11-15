@@ -76,21 +76,20 @@ Heroic.Grid.prototype.getRandomTiles = function(percent) {
  * @param	{integer}	origin.y	Y-coordinate
  * @param	{integer}	width		Width of the grid
  * @param	{integer}	height		Height of the grid
- * @param	{integer}	density		Distance between tiles within the grid
- * @param	{integer}	rotate		Rotate the grid by this many degrees
+ * @param	{integer}	spacing		Distance between tiles within the grid
+ * @param	{integer}	degrees		Rotate the grid by this many degrees
  * @return	{array}
  */
-Heroic.Grid.prototype.getGrid = function(origin, width, height, density, rotate) {
-	if( typeof(rotate) != 'number' ) {
-		rotate = 0;
+Heroic.Grid.prototype.getGrid = function(origin, width, height, spacing, degrees) {
+	if( typeof(degrees) != 'number' ) {
+		degrees = 0;
 	}
 
 	var tiles	= [];
+	var radians	= degrees * Math.PI / 180;
 
-	var radians	= rotate * Math.PI / 180;
-
-	for(var y = 0; y <= height; y = y + density) {
-		for(var x = 0; x <= width; x = x + density) {
+	for(var y = 0; y <= height; y = y + spacing) {
+		for(var x = 0; x <= width; x = x + spacing) {
 			var rotatedX = Math.cos(radians) * x - ( y * Math.sin(radians) );
 			var rotatedY = y + Math.sin(radians) * x;
 
@@ -255,18 +254,16 @@ Heroic.Grid.prototype.getCircle = function(origin, radius) {
 	}
 
 	// add all points inside the arc
-	if( fill ) {
-		for(var index in points) {
-			var point = points[index];
+	for(var index in points) {
+		var point = points[index];
 
-			for(var insideY = point.y - 1; insideY > -1; insideY--) {
-				var insidePoint = [];
+		for(var insideY = point.y - 1; insideY > -1; insideY--) {
+			var insidePoint = [];
 
-				insidePoint.x = point.x;
-				insidePoint.y = insideY;
+			insidePoint.x = point.x;
+			insidePoint.y = insideY;
 
-				points.push(insidePoint);
-			}
+			points.push(insidePoint);
 		}
 	}
 
