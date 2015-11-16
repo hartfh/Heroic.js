@@ -60,6 +60,7 @@ Heroic.Map.prototype.createRegion = function(pattern, args, recursive) {
 			for(var i = 0; i < recursive.branches; i++) {
 				// -need to modify Tile in args. Args needs to be changed to be a JSON object
 				subTile = region.edge.getRandom();
+				console.log( region.getDirection(subTile) );
 				args[0] = subTile;
 
 				// -need to add directionality to "recursive" parameter

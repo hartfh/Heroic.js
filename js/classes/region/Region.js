@@ -29,6 +29,7 @@ Heroic.Region.prototype.load = function(tiles) {
 		}
 
 		if(prev == -1 || next == -1) {
+			this.recalcDimensions(tile);
 			this.edge.load(tile);
 			edge = true;
 		}
@@ -49,10 +50,12 @@ Heroic.Region.prototype.load = function(tiles) {
 		}
 
 		if(up == -1 || down == -1) {
+			this.recalcDimensions(tile);
 			this.edge.load(tile);
 			edge = true;
 		}
 		if( !edge ) {
+			this.recalcDimensions(tile);
 			this.interior.load(tile);
 		}
 	}
@@ -90,10 +93,14 @@ Heroic.Region.prototype.translate = function(x, y) {
 
 		this[area] = tempInv;
 	}
+
+	this.origin.x = this.origin.x + x;
+	this.origin.y = this.origin.y + y;
 }
 
 Heroic.Region.prototype.rotate = function(origin, degrees) {
 	// remove rotation from getGrid but incorporate same approach of rotating about an origin
+	// don't forget to recalculate origin/terminus
 }
 
 /*
@@ -180,14 +187,112 @@ Heroic.Region.prototype.merge = function(region) {
 	this.load(tiles);
 }
 
-// chance to repeat
-Heroic.Region.prototype.recurse = function() {
+/*
+ * Check this region's origin and terminus against a provided tile and update them if need be. If
+ * either is unset then the tile argument becomes the initial origin/terminus.
+ * 
+ * @param	{Object}	tile	A Tile object.
+ */
+Heroic.Region.prototype.recalcDimensions = function(tile) {
+	if( this.origin == null ) {
+		this.origin = {x: tile.x, y: tile.y};
+	} else {
+		if( tile.x < this.origin.x ) {
+			this.origin.x = tile.x;
+		}
+		if( tile.x > this.terminus.x ) {
+			this.terminus.x = tile.x;
+		}
+	}
+
+	if( this.terminus == null ) {
+		this.terminus = {x: tile.x, y: tile.y};
+	} else {
+		if( tile.y < this.origin.y ) {
+			this.origin.y = tile.y;
+		}
+		if( tile.y > this.terminus.y ) {
+			this.terminus.y = tile.y;
+		}
+	}
+}
+
+// get the directionality of a tile within this region
+Heroic.Region.prototype.getDirection = function(tile) {
+	if( this.origin == null || this.terminus == null ) {
+		return false;
+	}
 	
+	var slope;
+	var vert = '';
+	var horz = '';
+
+	// find approximate center
+	var width = this.terminus.x - this.origin.x;
+	var height = this.terminus.y - this.origin.y;
+
+	var centerX = this.origin.x + width * 0.5;
+	var centerY = this.origin.y + height * 0.5;
+
+	var rise	= tile.y - centerY;
+	var run		= tile.x - centerX;
+
+	// avoid Divide by Zero error
+	if( run != 0) {
+		slope = rise / run;
+		slope = Math.abs(slope);
+	} else {
+		slope = 999;
+	}
+
+	// cases where tile is aligned with center point
+	if( tile.x == centerX ) {
+		if( tile.x < centerY ) {
+			return 'n'
+		} else {
+			return 's';
+		}
+	}
+	if( tile.y == centerY ) {
+		if( tile.x < centerX ) {
+			return 'w';
+		} else {
+			return 'e';
+		}
+	}
+
+	if( tile.y < centerY ) {
+		// North
+		vert = 'n';
+	}
+	if( tile.y > centerY ) {
+		// South
+		vert = 's';
+	}
+	if( tile.x < centerX ) {
+		// West
+		horz = 'w';
+	}
+	if( tile.x > centerX ) {
+		// East
+		horz = 'e';
+	}
+
+	if( slope > 2.41 ) {
+		return vert;
+	} else if( slope < 0.41 ) {
+		return horz;
+	} else {
+		return vert + horz;
+	}
 }
 
 Heroic.Region.prototype.init = function() {
 	this.edge		= new Heroic.Inventory();
 	this.interior	= new Heroic.Inventory();
+	this.origin		= null;
+	this.terminus	= null;
+	//this.center		= null;
 
 	this.edge.init();
 	this.interior.init();
