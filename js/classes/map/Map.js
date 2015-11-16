@@ -24,39 +24,54 @@ createRoom()
  */
 Heroic.Map = function() {}
 
-Heroic.Map.prototype.createRegion = function(pattern, args) {
-	var region = new Heroic.Region();
+/*
+ * 
+ */
+Heroic.Map.prototype.createRegion = function(pattern, args, recursive) {
+	if( typeof(recursive) == 'undefined' ) {
+		var recursive = false;
+	}
+
+	var region, tiles;
+
+	region = new Heroic.Region();
 	region.init();
 
-	var tiles = Heroic.Entities.map.grid[pattern].apply(Heroic.Entities.map.grid, args);
+	tiles = Heroic.Entities.map.grid[pattern].apply(Heroic.Entities.map.grid, args);
 	region.load(tiles);
+
+	if( recursive ) {
+		if( Math.random() < recursive.percent ) {
+			console.log('recursed');
+			var subTile, subRegion, subRecursive
+
+			subRecursive = recursive;
+
+			/*
+			// some way to increase the number of branches each time
+			if( Math.random() < ( 0.1 / subRecursive.branches ) ) {
+				console.log('incrementing branches');
+				if( subRecursive.branches < 5 ) {
+					//subRecursive.branches++;
+				}
+			}
+			*/
+
+			for(var i = 0; i < recursive.branches; i++) {
+				// -need to modify Tile in args. Args needs to be changed to be a JSON object
+				subTile = region.edge.getRandom();
+				args[0] = subTile;
+
+				// -need to add directionality to "recursive" parameter
+
+				subRegion = this.createRegion(pattern, args, subRecursive);
+				region.merge(subRegion);
+			}
+		}
+	}
 
 	return region;
 }
-
-/*
- * 
- * 
- * @param	{array}		tiles
- * @return	{Object}
- */
-/*
-***OBSOLETE
-Heroic.Map.prototype.createRegion = function(pattern, args) {
-	var inventory = new Heroic.Inventory();
-	inventory.init();
-
-	var tiles = Heroic.Entities.map.grid[pattern].apply(Heroic.Entities.map.grid, args);
-
-	for(var index in tiles) {
-		var tile = tiles[index];
-
-		inventory.load(tile.terrain);
-	}
-
-	return inventory;
-}
-*/
 
 /*
  * Holds a collection of methods used to evaluate the characteristics of a terrain's tile. Each

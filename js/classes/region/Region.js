@@ -2,6 +2,11 @@ var Heroic = Heroic || {};
 
 Heroic.Region = function() {}
 
+/*
+ * Adds tiles to the region, then determines which are edge and interior tiles.
+ * 
+ * @param	{array}		tiles	Tile objects to add to the region.
+ */
 Heroic.Region.prototype.load = function(tiles) {
 	for(var index in tiles) {
 		var tile = tiles[index];
@@ -93,56 +98,91 @@ Heroic.Region.prototype.rotate = function(origin, degrees) {
 
 /*
  * Grow the region by one tile.
- * 
  */
 Heroic.Region.prototype.grow = function() {
 	var oldEdge = this.edge.contents;
 	var newEdge = [];
 
 	for(var index in oldEdge) {
-		var tile = oldEdge[index];
-
-		// look at bounding tiles
-
-		var bounding = tile.getBounding();
+		var tile		= oldEdge[index];
+		var bounding	= tile.getBounding();
 
 		for(var index2 in bounding) {
 			var boundTile = bounding[index2];
 
-			if( this.edge.contents.indexOf(boundTile) != -1 ) {
-				// is an edge tile. ignore
-			} else if( this.interior.contents.indexOf(boundTile) != -1 ) {
-				// is an interior tile. ignore
-			} else {
-				// is an outside tile
-				var direction = parseInt(index2);
-				var rotatedDir = rotateDirection(direction, 180);
-				var oppositeTile = tile.getNeighbor(rotatedDir);
+			if(boundTile) {
+				if( this.edge.contents.indexOf(boundTile) != -1 ) {
+					// is an edge tile. ignore
+				} else if( this.interior.contents.indexOf(boundTile) != -1 ) {
+					// is an interior tile. ignore
+				} else {
+					// is an outside tile
+					var direction		= parseInt(index2);
+					var rotatedDir		= rotateDirection(direction, 180);
+					var oppositeTile	= tile.getNeighbor(rotatedDir);
 
-				if( oppositeTile ) {
-					if( this.interior.contents.indexOf(oppositeTile) != -1 ) {
-						newEdge.push(boundTile);
+					if( oppositeTile ) {
+						if( this.interior.contents.indexOf(oppositeTile) != -1 ) {
+							newEdge.push(boundTile);
+						} else if( this.edge.contents.indexOf(oppositeTile) != -1 ) {
+							newEdge.push(boundTile);
+						}
 					}
 				}
-				// if exterior: look at opposite for interior? if not, check adjacent for multiple instances of edge tiles
 			}
 		}		
 	}
 
-	// if edge tile has inner tile down from it, tile up from it becomes new edge, etc.
-	// empty tiles bounded by 2 or more edge tiles becomes new edge
-
-	// expand edge
-	this.edge.contents = newEdge;
-
-	
-	// add old edge tiles to interior
-	//this.interior.contents.concat( oldEdge );
+	this.edge.contents		= newEdge;
+	this.interior.contents	= this.interior.contents.concat( oldEdge );
 }
 
-// accepts array of Regions to merge with?
-Heroic.Region.prototype.merge = function(regions) {
+Heroic.Region.prototype.shrink = function() {
 
+}
+
+/*
+ * Determine if this region shares any overlap with another.
+ * 
+ * @param	{Object}	region		Another region to test against.
+ * @return	{boolean}
+ */
+Heroic.Region.prototype.overlaps = function(region) {
+	var testEdges = region.edge.contents
+
+	for(var index in testEdges) {
+		var testTile = testEdges[index];
+
+		if( this.edge.contents.indexOf(testTile) != -1 ) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
+/*
+ * Merge this region with another one.
+ * 
+ * @param	{Object}	region		Region to merge with.
+ */
+Heroic.Region.prototype.merge = function(region) {
+	var tiles = [];
+
+	tiles = tiles.concat( this.edge.contents );
+	tiles = tiles.concat( this.interior.contents );
+	tiles = tiles.concat( region.edge.contents );
+	tiles = tiles.concat( region.interior.contents );
+
+	this.edge.contents		= [];
+	this.interior.contents	= [];
+
+	this.load(tiles);
+}
+
+// chance to repeat
+Heroic.Region.prototype.recurse = function() {
+	
 }
 
 Heroic.Region.prototype.init = function() {

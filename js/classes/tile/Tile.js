@@ -6,7 +6,8 @@ var Heroic = Heroic || {};
  * @class
  */
 Heroic.Tile = function() {
-	this.size		= 14;
+	//this.size		= 14;
+	this.size		= 5;
 }
 
 /*
@@ -44,41 +45,6 @@ Heroic.Tile.prototype.getBounding = function() {
 
 	return bounding;
 }
-
-/*
- * Get a neighboring tile based on one direction.
- * 
- * @param	{integer}	direction	Which direction to check
- * @return	{Object}
- */
-// ****Should this be able to get tiles in diagonal directions??
-/*
-Heroic.Tile.prototype.getNeighbor = function(direction) {
-	var x = 0;
-	var y = 0;
-
-	switch(direction) {
-		case 'left':
-			x--;
-			break;
-		case 'up':
-			y--;
-			break;
-		case 'right':
-			x++;
-			break;
-		case 'down':
-			y++;
-			break;
-		default:
-			break;
-	}
-
-	// convert direction
-
-	return this.grid.getTile(this.x + x, this.y + y);
-}
-*/
 
 Heroic.Tile.prototype.getNeighbor = function(direction) {
 	if( typeof(direction) == 'string' ) {

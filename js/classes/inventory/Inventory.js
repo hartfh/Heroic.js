@@ -99,6 +99,13 @@ Heroic.Inventory.prototype.get = function(ID) {
 	// Figure out how to reference the object in the array (assign them some ID?)
 }
 
+Heroic.Inventory.prototype.getRandom = function() {
+	var length	= this.contents.length;
+	var index	= Math.floor( Math.random() * length );
+
+	return this.contents[index];
+}
+
 Heroic.Inventory.prototype.init = function() {
 	 this.contents = [];
 }

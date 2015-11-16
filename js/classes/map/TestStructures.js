@@ -87,15 +87,88 @@ Heroic.TestStructures.prototype.testShapes = function() {
 	}
 	*/
 
-	args1 = [{x: 20, y: 15}, 6];
+	// Merge and Grow testing
+	/*
+	args1 = [{x: 5, y: 5}, 17, 7];
 	args2 = [Heroic.Palette.wall];
 	args3 = [Heroic.Palette.test1];
 
+	region3 = this.createRegion('getRectangle', args1);
+	Heroic.Entities.map.regions.load(region);
+	region3.edge.toEach('set', args2, 'terrain');
+	region3.interior.toEach('set', args3, 'terrain');
+
+	args1 = [{x: 20, y: 15}, 8];
+
 	region = this.createRegion('getBlob', args1);
 	Heroic.Entities.map.regions.load(region);
-	region.grow();
+	//region.grow();
+	region.merge(region3);
+
+	args1 = [{x: 30, y: 25}, 7];
+	region2 = this.createRegion('getBlob', args1);
+	Heroic.Entities.map.regions.load(region);
+
+	region.merge(region2);
 	region.edge.toEach('set', args2, 'terrain');
 	region.interior.toEach('set', args3, 'terrain');
+	*/
+
+	// Grid of circles, merged
+	/*
+	args2 = [Heroic.Palette.wall];
+	args3 = [Heroic.Palette.test1];
+
+	//var tiles = this.grid.getGrid({x: 7, y: 5}, 30, 11, 10, 15);
+	var tiles = this.grid.getRandomTiles(0.01);
+	var circles = new Heroic.Region();
+	circles.init();
+	for(var index in tiles) {
+		var tile = tiles[index];
+
+		region = this.createRegion('getBlob', [{x: tile.x, y: tile.y}, 4]);
+
+		if( circles.overlaps(region) || (index == 0) ) {
+			circles.merge(region);
+		}
+	}
+	circles.edge.toEach('set', args2, 'terrain');
+	Heroic.Entities.map.regions.load(circles);
+	circles.interior.toEach('set', args3, 'terrain');
+	*/
+
+	// Recursion
+	/*
+	args2 = [Heroic.Palette.wall];
+	args3 = [Heroic.Palette.test1];
+
+	var tile = this.grid.getRandomTile();
+	var blobs = new Heroic.Region();
+	blobs.init();
+
+	// find a way to branch them a little better. also a way to give it directionality
+	for(var i = 0; i < 15; i++) {
+		blob = this.createRegion('getBlob', [{x: tile.x, y: tile.y}, 5]);
+		blobs.merge(blob);
+		tile = blobs.edge.getRandom();
+	}
+
+	blobs.edge.toEach('set', args2, 'terrain');
+	Heroic.Entities.map.regions.load(blobs);
+	blobs.interior.toEach('set', args3, 'terrain');
+	*/
+
+	// Recursion 2
+	args2 = [Heroic.Palette.wall];
+	args3 = [Heroic.Palette.test1];
+
+	var tile = this.grid.getRandomTile();
+	var blobs = this.createRegion('getBlob', [{x: 45, y: 45}, 5], {percent: 0.5, branches: 1});
+
+	blobs.edge.toEach('set', args2, 'terrain');
+	Heroic.Entities.map.regions.load(blobs);
+	blobs.interior.toEach('set', args3, 'terrain');
+
 }
 
 Heroic.TestStructures.prototype.init = function() {

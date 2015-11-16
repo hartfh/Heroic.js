@@ -6,8 +6,10 @@ var Heroic = Heroic || {};
  * @class
  */
 Heroic.Grid = function() {
-	this.width	= 49;
-	this.height	= 35;
+	//this.width	= 49;
+	//this.height	= 35;
+	this.width	= 90;
+	this.height	= 90;
 }
 
 /*
