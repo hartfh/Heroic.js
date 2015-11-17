@@ -101,7 +101,14 @@ Heroic.Inventory.prototype.get = function(ID) {
 
 Heroic.Inventory.prototype.getRandom = function() {
 	var length	= this.contents.length;
-	var index	= Math.floor( Math.random() * length );
+
+	if( length == 0 ) {
+		return false;
+	} else {
+		var index	= Math.floor( Math.random() * length );
+	}
+
+	
 
 	return this.contents[index];
 }

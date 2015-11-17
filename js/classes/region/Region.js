@@ -3,7 +3,8 @@ var Heroic = Heroic || {};
 Heroic.Region = function() {}
 
 /*
- * Adds tiles to the region, then determines which are edge and interior tiles.
+ * Adds tiles to the region, then determines which are edge and interior tiles. If more tiles
+ * are added after this then merge() will need to be used to recalculate edge and interior tiles.
  * 
  * @param	{array}		tiles	Tile objects to add to the region.
  */
@@ -58,6 +59,16 @@ Heroic.Region.prototype.load = function(tiles) {
 			this.recalcDimensions(tile);
 			this.interior.load(tile);
 		}
+	}
+
+	// determine direction of each edge tile once they've been loaded
+	var edgeTiles = this.edge.contents;
+	
+	for(var index in edgeTiles) {
+		var tile = edgeTiles[index];
+		var direction = this.getDirection(tile);
+
+		this.quadrants[direction].load(tile);
 	}
 }
 
@@ -142,6 +153,11 @@ Heroic.Region.prototype.grow = function() {
 
 	this.edge.contents		= newEdge;
 	this.interior.contents	= this.interior.contents.concat( oldEdge );
+
+	this.origin.x--;
+	this.origin.y--;
+	this.terminus.x++;
+	this.terminus.y++;
 }
 
 Heroic.Region.prototype.shrink = function() {
@@ -185,6 +201,20 @@ Heroic.Region.prototype.merge = function(region) {
 	this.interior.contents	= [];
 
 	this.load(tiles);
+
+	// purge quadrants of tiles
+	for(var index in this.quadrants) {
+		var inv = this.quadrants[index];
+		inv.contents = [];
+	}
+
+	// recalculate tile directions
+	for(var index in tiles) {
+		var tile = tiles[index];
+		var direction = this.getDirection(tile);
+
+		this.quadrants[direction].load(tile);
+	}
 }
 
 /*
@@ -292,7 +322,14 @@ Heroic.Region.prototype.init = function() {
 	this.interior	= new Heroic.Inventory();
 	this.origin		= null;
 	this.terminus	= null;
-	//this.center		= null;
+	this.quadrants	= getDirectionKey();
+
+	for(var index in this.quadrants) {
+		var inv = new Heroic.Inventory();
+		inv.init();
+
+		this.quadrants[index] = inv;
+	}
 
 	this.edge.init();
 	this.interior.init();

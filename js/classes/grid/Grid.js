@@ -110,33 +110,30 @@ Heroic.Grid.prototype.getGrid = function(origin, width, height, spacing, degrees
 }
 
 /*
- * Get all tiles that form a line between two end points.
+ * Get all tiles that form a line between two points.
  * 
- * @param	{Object}	pointOne		Starting point of the line
- * @param	{integer}	pointOne.x		X-coordinate
- * @param	{integer}	pointOne.y		Y-coordinate
- * @param	{Object}	pointTwo		Ending point of the line
- * @param	{integer}	pointTwo.x		X-coordinate
- * @param	{integer}	pointTwo.y		Y-coordinate
+ * @param	{Object}	args
+ * @param	{Object}	args.origin		Tile object, line's start point
+ * @param	{Object}	args.terminus	Tile object, line's finish point
  * @return	{array}
  */
-Heroic.Grid.prototype.getLine = function(pointOne, pointTwo) {
-	if(pointOne == pointTwo) {
+Heroic.Grid.prototype.getLine = function(args) {
+	if(args.origin == args.terminus) {
 		return [];
 	}
 
 	var tiles = [];
-	var slope = (pointTwo.y - pointOne.y) / (pointTwo.x - pointOne.x);
+	var slope = (args.terminus.y - args.origin.y) / (args.terminus.x - args.origin.x);
 	
 	if( Math.abs(slope) > 1 ) {
-		slope = (pointTwo.x - pointOne.x) / (pointTwo.y - pointOne.y);
+		slope = (args.terminus.x - args.origin.x) / (args.terminus.y - args.origin.y);
 
-		if( pointOne.y < pointTwo.y ) {
-			var start	= pointOne;
-			var end		= pointTwo;
+		if( args.origin.y < args.terminus.y ) {
+			var start	= args.origin;
+			var end		= args.terminus;
 		} else {
-			var start	= pointTwo;
-			var end		= pointOne;
+			var start	= args.terminus;
+			var end		= args.origin;
 		}
 
 		var offset = start.x - slope * start.y;
@@ -152,12 +149,12 @@ Heroic.Grid.prototype.getLine = function(pointOne, pointTwo) {
 			}
 		}
 	} else {
-		if( pointOne.x < pointTwo.x ) {
-			var start	= pointOne;
-			var end		= pointTwo;
+		if( args.origin.x < args.terminus.x ) {
+			var start	= args.origin;
+			var end		= args.terminus;
 		} else {
-			var start	= pointTwo;
-			var end		= pointOne;
+			var start	= args.terminus;
+			var end		= args.origin;
 		}
 
 		var offset = start.y - slope * start.x;
@@ -180,22 +177,49 @@ Heroic.Grid.prototype.getLine = function(pointOne, pointTwo) {
 /*
  * Get all tiles in a rectangular area.
  * 
- * @param	{object}	origin		Object containing x and y coordinate values
- * @param	{integer}	origin.x	X-coordinate
- * @param	{integer}	origin.y	Y-coordinate
- * @param	{integer}	width		Width of area
- * @param	{integer}	height		Height of area
+ * @param	{Object}	args.origin		Tile object and the rectangle's start point
+ * @param	{Object}	args.terminus	Tile object and the rectangle's finish point
+ * @param	{integer}	args.width		Width of area
+ * @param	{integer}	args.height		Height of area
  * @return	{array}
  */
-Heroic.Grid.prototype.getRectangle = function(origin, width, height) {
-	var tiles	= [];
+Heroic.Grid.prototype.getRectangle = function(args) {
+	var tiles		= [];
+	//var origin		= args.origin;
+	//var terminus	= args.terminus;
+	var width		= args.terminus.x - args.origin.x;
+	var height		= args.terminus.y - args.origin.y;
+
+	var start	= {x: false, y: false};
+	var finish	= {x: false, y: false};
+
+	if( height < 0 ) {
+		// reverse
+		start.y = args.terminus.y;
+		finish.y = args.origin.y;
+		height = Math.abs(height);
+	} else {
+		start.y = args.origin.y;
+		finish.y = args.terminus.y;
+	}
+
+
+	if( width < 0 ) {
+		// reverse
+		start.x = args.terminus.x;
+		finish.x = args.origin.x;
+		width = Math.abs(width);
+	} else {
+		start.x = args.origin.x;
+		finish.x = args.terminus.x;
+	}
 
 	for(var y = 0; y < height; y++) {
 		for(var x = 0; x < width; x++) {
 			var offsetPoint = {};
 
-			offsetPoint.x = x + origin.x;
-			offsetPoint.y = y + origin.y;
+			offsetPoint.x = x + start.x;
+			offsetPoint.y = y + start.y;
 
 			var tile = this.getTile(offsetPoint.x, offsetPoint.y);
 
@@ -211,24 +235,23 @@ Heroic.Grid.prototype.getRectangle = function(origin, width, height) {
 /*
  * Get all tiles in a circular area.
  * 
- * @param	{Object}	origin		Coordinates of point on grid
- * @param	{integer}	origin.x	X-coordinate
- * @param	{integer}	origin.y	Y-coordinate
- * @param	{integer}	radius		Radius of the circle (including origin point)
+ * @param	{Object}	args
+ * @param	{Object}	args.origin		Tile object, circle's center point
+ * @param	{integer}	args.radius		Radius of the circle (including origin point)
  * @return	{array}
  */
-Heroic.Grid.prototype.getCircle = function(origin, radius) {
+Heroic.Grid.prototype.getCircle = function(args) {
 	var points	= [];
 	var tiles	= [];
 
-	if( isNaN(radius) ) {
+	if( isNaN(args.radius) ) {
 		return points;
 	}
 	if( typeof(fill) == 'undefined' ) {
 		var fill = false;
 	}
 	
-	radius--;
+	var radius = args.radius - 1;
 
 	// get edge points on one 45 deg arc
 	for(var x = 0; x < radius; x++) {
@@ -301,8 +324,8 @@ Heroic.Grid.prototype.getCircle = function(origin, radius) {
 
 		var offsetPoint = {};
 
-		offsetPoint.x = point.x + origin.x;
-		offsetPoint.y = point.y + origin.y;
+		offsetPoint.x = point.x + args.origin.x;
+		offsetPoint.y = point.y + args.origin.y;
 
 		var tile = this.getTile(offsetPoint.x, offsetPoint.y);
 
@@ -317,14 +340,15 @@ Heroic.Grid.prototype.getCircle = function(origin, radius) {
 /*
  * Get all tiles in an irregularly shaped area.
  * 
- * @param	{Object}	origin		Center point of the shape
- * @param	{integer}	origin.x	X-coordinate
- * @param	{integer}	origin.y	Y-coordinate
- * @param	{integer}	radius		Radius of the primary circle (including origin point)
+ * @param	{Object}	args
+ * @param	{Object}	args.origin		Tile object, circle's center point
+ * @param	{integer}	args.radius		Radius of the primary circle (including origin point)
  * @return {array}
  */
-Heroic.Grid.prototype.getBlob = function(origin, radius) {
-	var tiles = this.getCircle(origin, radius, true);
+Heroic.Grid.prototype.getBlob = function(args) {
+	var tiles	= this.getCircle(args);
+	var radius	= args.radius;
+	var origin	= args.origin;
 
 	// Between 3 and 6 extra circles
 	var addons = Math.random() * (6 - 3) + 3;
@@ -340,9 +364,10 @@ Heroic.Grid.prototype.getBlob = function(origin, radius) {
 		xOffset = Math.round(xOffset);
 		yOffset = Math.round(yOffset);
 
-		var randOrigin = {x: origin.x - xOffset, y: origin.y - yOffset};
+		var randOrigin	= {x: origin.x - xOffset, y: origin.y - yOffset};
+		var randArgs	= {origin: randOrigin, radius: randRadius};
 
-		var moreTiles = this.getCircle(randOrigin, randRadius, true);
+		var moreTiles = this.getCircle(randArgs);
 
 		// Add non-duplicate tiles to area
 		for(var index in moreTiles) {
@@ -365,14 +390,14 @@ Heroic.Grid.prototype.growEdges = function(tiles) {
 }
 */
 
-Heroic.Grid.prototype.each = function(command, arg) {
-	if( typeof(arg) == 'undefined' ) {
-		var arg = [];
+Heroic.Grid.prototype.each = function(command, args) {
+	if( typeof(args) == 'undefined' ) {
+		var args = [];
 	}
 
 	this.tiles.forEach(function(row, index1) {
 		row.forEach(function(cell, index2) {
-			cell[command].apply(cell, arg);
+			cell[command].apply(cell, args);
 		});
 	});
 }

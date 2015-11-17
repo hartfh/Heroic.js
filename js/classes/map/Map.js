@@ -26,6 +26,12 @@ Heroic.Map = function() {}
 
 /*
  * 
+ * 
+ * 
+ * @param	{Object}	recursive				JSON Object of recursion properties
+ * @param	{integer}	recursive.branches		Number of times to recurse
+ * @param	{float}		recursive.percent		Percent chance to recurse
+ * @param	{string}	recursive.direction		Direction of previous recursion branch
  */
 Heroic.Map.prototype.createRegion = function(pattern, args, recursive) {
 	if( typeof(recursive) == 'undefined' ) {
@@ -37,15 +43,12 @@ Heroic.Map.prototype.createRegion = function(pattern, args, recursive) {
 	region = new Heroic.Region();
 	region.init();
 
-	tiles = Heroic.Entities.map.grid[pattern].apply(Heroic.Entities.map.grid, args);
+	tiles = Heroic.Entities.map.grid[pattern].apply(Heroic.Entities.map.grid, [args]);
 	region.load(tiles);
 
 	if( recursive ) {
 		if( Math.random() < recursive.percent ) {
-			console.log('recursed');
-			var subTile, subRegion, subRecursive
-
-			subRecursive = recursive;
+			var subTile, subRegion, subRecursive, quadrant, oldDirection, oldNumDirection, rand, rotation, newDirection, newNumDirection;
 
 			/*
 			// some way to increase the number of branches each time
@@ -58,15 +61,35 @@ Heroic.Map.prototype.createRegion = function(pattern, args, recursive) {
 			*/
 
 			for(var i = 0; i < recursive.branches; i++) {
-				// -need to modify Tile in args. Args needs to be changed to be a JSON object
-				subTile = region.edge.getRandom();
-				console.log( region.getDirection(subTile) );
-				args[0] = subTile;
+				subRecursive	= recursive;
+				oldDirection	= recursive.direction;
+				oldNumDirection	= directionToNumber(oldDirection);
+				rand			= Math.random();
 
-				// -need to add directionality to "recursive" parameter
+				if( rand > 0.5 ) {
+					rotation = 0;
+				} else if( rand > 0.25 ) {
+					rotation = -45;
+				} else {
+					rotation = 45;
+				}
+				console.log(rotation);
 
-				subRegion = this.createRegion(pattern, args, subRecursive);
-				region.merge(subRegion);
+				newNumDirection	= rotateDirection(oldNumDirection, rotation);
+				newDirection	= directionToLetter(newNumDirection);
+
+				subRecursive.direction = newDirection;
+				
+				quadrant	= region.quadrants[newDirection];
+				subTile		= quadrant.getRandom();
+
+				if( subTile ) {
+					// -need to modify Tile in args. Args needs to be changed to be a JSON object (?)
+					//args[0]		= subTile;
+					args.origin	= subTile;
+					subRegion	= this.createRegion(pattern, args, subRecursive);
+					region.merge(subRegion);
+				}
 			}
 		}
 	}

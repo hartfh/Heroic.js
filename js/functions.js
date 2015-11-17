@@ -67,6 +67,19 @@ function getDirections() {
 	return directions;
 }
 
+function directionToNumber(letter) {
+	var key = getDirectionKey();
+
+	return key[letter];
+}
+
+function directionToLetter(number) {
+	var directions = getDirections();
+	var direction = directions[number];
+
+	return direction.name;
+}
+
 function getDirectionKey() {
 	var key = [];
 
@@ -88,6 +101,8 @@ function rotateDirection(dir, degrees) {
 
 	if( rotated >= 8 ) {
 		rotated -= 8;
+	} else if( rotated < 0) {
+		rotated += 8;
 	}
 
 	return rotated;
