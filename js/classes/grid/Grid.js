@@ -112,7 +112,6 @@ Heroic.Grid.prototype.getGrid = function(origin, width, height, spacing, degrees
 /*
  * Get all tiles that form a line between two points.
  * 
- * @param	{Object}	args
  * @param	{Object}	args.origin		Tile object, line's start point
  * @param	{Object}	args.terminus	Tile object, line's finish point
  * @return	{array}
@@ -178,40 +177,34 @@ Heroic.Grid.prototype.getLine = function(args) {
  * Get all tiles in a rectangular area.
  * 
  * @param	{Object}	args.origin		Tile object and the rectangle's start point
- * @param	{Object}	args.terminus	Tile object and the rectangle's finish point
- * @param	{integer}	args.width		Width of area
- * @param	{integer}	args.height		Height of area
+ * @param	{Object}	args.terminus	Tile object and the rectangle's end point
  * @return	{array}
  */
 Heroic.Grid.prototype.getRectangle = function(args) {
 	var tiles		= [];
-	//var origin		= args.origin;
-	//var terminus	= args.terminus;
 	var width		= args.terminus.x - args.origin.x;
 	var height		= args.terminus.y - args.origin.y;
 
 	var start	= {x: false, y: false};
-	var finish	= {x: false, y: false};
+	var end	= {x: false, y: false};
 
 	if( height < 0 ) {
-		// reverse
-		start.y = args.terminus.y;
-		finish.y = args.origin.y;
-		height = Math.abs(height);
+		start.y		= args.terminus.y;
+		end.y	= args.origin.y;
+		height		= Math.abs(height);
 	} else {
-		start.y = args.origin.y;
-		finish.y = args.terminus.y;
+		start.y		= args.origin.y;
+		end.y	= args.terminus.y;
 	}
 
 
 	if( width < 0 ) {
-		// reverse
-		start.x = args.terminus.x;
-		finish.x = args.origin.x;
-		width = Math.abs(width);
+		start.x		= args.terminus.x;
+		end.x	= args.origin.x;
+		width		= Math.abs(width);
 	} else {
-		start.x = args.origin.x;
-		finish.x = args.terminus.x;
+		start.x		= args.origin.x;
+		end.x	= args.terminus.x;
 	}
 
 	for(var y = 0; y < height; y++) {
@@ -235,7 +228,6 @@ Heroic.Grid.prototype.getRectangle = function(args) {
 /*
  * Get all tiles in a circular area.
  * 
- * @param	{Object}	args
  * @param	{Object}	args.origin		Tile object, circle's center point
  * @param	{integer}	args.radius		Radius of the circle (including origin point)
  * @return	{array}
@@ -340,7 +332,6 @@ Heroic.Grid.prototype.getCircle = function(args) {
 /*
  * Get all tiles in an irregularly shaped area.
  * 
- * @param	{Object}	args
  * @param	{Object}	args.origin		Tile object, circle's center point
  * @param	{integer}	args.radius		Radius of the primary circle (including origin point)
  * @return {array}

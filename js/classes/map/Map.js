@@ -73,7 +73,6 @@ Heroic.Map.prototype.createRegion = function(pattern, args, recursive) {
 				} else {
 					rotation = 45;
 				}
-				console.log(rotation);
 
 				newNumDirection	= rotateDirection(oldNumDirection, rotation);
 				newDirection	= directionToLetter(newNumDirection);
@@ -84,8 +83,6 @@ Heroic.Map.prototype.createRegion = function(pattern, args, recursive) {
 				subTile		= quadrant.getRandom();
 
 				if( subTile ) {
-					// -need to modify Tile in args. Args needs to be changed to be a JSON object (?)
-					//args[0]		= subTile;
 					args.origin	= subTile;
 					subRegion	= this.createRegion(pattern, args, subRecursive);
 					region.merge(subRegion);

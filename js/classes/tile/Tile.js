@@ -99,6 +99,8 @@ Heroic.Tile.prototype.init = function(x, y, parent) {
 	this.y			= y;
 	this.grid		= parent;
 
+	// Tile version 2: can remove X, Y and grid. Would contain only an inventory of things in it???
+
 	this.terrain	= new Heroic.Terrain();
 
 	this.terrain.init(this);

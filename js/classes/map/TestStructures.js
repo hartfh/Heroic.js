@@ -164,12 +164,12 @@ Heroic.TestStructures.prototype.testShapes = function() {
 
 	var tile = this.grid.getRandomTile();
 	//var blobs = this.createRegion('getCircle', {origin: {x: 45, y: 45}, radius: 5}, {percent: 0.8, branches: 1, direction: 'n'});
-	var blobs = this.createRegion('getRectangle', {origin: {x: 45, y: 45}, terminus: {x: 54, y: 49}}, {percent: 0.8, branches: 1, direction: 'e'});
-	//var blobs = this.createRegion('getBlob', {origin: {x: 45, y: 45}, radius: 5}, {percent: 0.8, branches: 1, direction: 'ne'});
-	//var blobs2 = this.createRegion('getBlob', [{x: 45, y: 45}, 5], {percent: 0.8, branches: 1, direction: 'w'});
-	//var blobs3 = this.createRegion('getBlob', [{x: 45, y: 45}, 5], {percent: 0.8, branches: 1, direction: 's'});
-	//blobs.merge(blobs2);
-	//blobs.merge(blobs3);
+	//var blobs = this.createRegion('getRectangle', {origin: {x: 45, y: 45}, terminus: {x: 54, y: 49}}, {percent: 0.8, branches: 1, direction: 'e'});
+	var blobs = this.createRegion('getBlob', {origin: {x: 45, y: 45}, radius: 5}, {percent: 0.8, branches: 1, direction: 'ne'});
+	var blobs2 = this.createRegion('getBlob', {origin: {x: 45, y: 45}, radius: 5}, {percent: 0.8, branches: 1, direction: 'w'});
+	var blobs3 = this.createRegion('getBlob', {origin: {x: 45, y: 45}, radius: 5}, {percent: 0.8, branches: 1, direction: 's'});
+	blobs.merge(blobs2);
+	blobs.merge(blobs3);
 
 	blobs.edge.toEach('set', args2, 'terrain');
 	Heroic.Entities.map.regions.load(blobs);

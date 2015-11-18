@@ -8,13 +8,82 @@ var Heroic = Heroic || {};
 3.) SFX Layer
 
 
-
-Packed cells pattern:
--Seed some random tiles
--Check that they're not too close together. Remove ones within a certain radius of others
--Expand each point somehow. Maybe expand it by a certain number tiles
+-Regions are similar to Inventory but have their own implementation of its behavior
+-Initial setup involves creating all the tiles and adding them to the master region
+-Methods
+	toEach
+	getEach
+	subRegion
+	createShape. parameters: shape, origin, size
 
 */
+
+Heroic.RegionX = function() {}
+
+Heroic.RegionX.prototype.each = function() {
+	// enumerable
+}
+
+Heroic.RegionX.prototype.getShape = function() {
+	// 
+}
+
+Heroic.RegionX.prototype.overlaps = function() {
+	// check sub regions or no?
+}
+Heroic.RegionX.prototype.merge = function(region) {
+	// need to merge sub regions? maybe not
+}
+
+Heroic.RegionX.prototype.hasTile = function(tile) {
+	// return true/false
+}
+
+Heroic.RegionX.prototype.getTile = function(x, y) {
+	// return this.tiles[y][x];
+
+	return false;
+}
+
+Heroic.RegionX.prototype.addTile = function(tile) {
+
+	// only accepts Tile objects
+	// adds one tile
+	// recalculate edge and interior?
+
+	if( !this.hasOwnProperty(tile.y) ) {
+		//set the sub array
+	}
+	this.tiles[tile.y][tile.x] = tile;
+}
+
+Heroic.RegionX.prototype.removeTile = function(tile) {
+
+	// remove a tile from this.tiles
+	// recalculate edge and interior?
+	this.tiles[tile.y][tile.x] = undefined;
+}
+
+//Heroic.RegionX.prototype.findEdges = function() {}
+//Heroic.RegionX.prototype.findInteriors = function() {}
+
+Heroic.RegionX.prototype.init = function() {
+	this.width; this.height; this.origin; // ????? should all tile references be relative or absolute?. if relative then do Tiles even need to contain X and Y coordinates? not really
+	// virtual tiles for tiles that are not set (outside the master Region)
+	this.tiles		= []; // need to somehow set the sub arrays
+	// sub regions cannot exceed master region. Or can they? use virtual tiles outside parent region
+	this.regions	= []; // sub-regions
+
+	// sub regions
+	/*
+	this.subs; // array of sub regions?
+	this.subs['edge'];
+	this.subs['interior'];
+	this.subs['quadrant-nw'];
+	this.subs['quadrant-n'];
+	this.subs['quadrant-ne'];
+	*/
+}
 
 function initializeEngine() {
 	Heroic.Entities	= {};

@@ -34,5 +34,5 @@ Heroic.Heartbeat.prototype.init = function() {
 	setInterval(this.pulse, this.cycle * 4, 4);
 }
 
-var test = new Heroic.Heartbeat();
+//var test = new Heroic.Heartbeat();
 //test.init();
