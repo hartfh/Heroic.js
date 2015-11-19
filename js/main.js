@@ -18,14 +18,55 @@ var Heroic = Heroic || {};
 
 */
 
-Heroic.RegionX = function() {}
+Heroic.RegionX = function(shape, size, origin, parent) {
+	//this[action].apply(this);
+	//this.init(shape, origin, size);
+
+	if( typeof(origin) == 'undefined' ) {
+		var origin = false;
+	}
+	if( typeof(parent) == 'undefined' ) {
+		var parent = false;
+	}
+
+	this.origin		= origin;	// keep reference to one of parent's points
+	this.parent		= parent;	// if no parent, run master()
+	this.points		= [];		// array of arrays. value is set to true
+	this.edge		= [];
+	this.interior	= [];
+	this.children	= [];		// child regions
+
+	//this.setShape();
+
+	if( this.parent == undefined ) {
+		this.master();
+	}
+}
+
+Heroic.RegionX.prototype.addPoints = function(pointOne, pointTwo) {
+	return {x: pointOne.x + pointTwo.x, y: pointOne.y + pointTwo.y};
+}
+
+Heroic.RegionX.prototype.getOffset = function() {
+	// recursive function that gets parents' offsets
+	if( this.parent ) {
+		return this.addPoints( this.origin, this.parent.getOffset() );
+	}
+
+	return this.origin;
+}
 
 Heroic.RegionX.prototype.each = function() {
-	// enumerable
+	// enumerable?
+	// this.last = 0;
 }
 
 Heroic.RegionX.prototype.getShape = function() {
-	// 
+	// line, rectangle, circle, grid/array
+	// cross: tiles n,s,e,w of point
+	// ring: tiles surrounding point
+
+	// shapes are just collections of points. no references to tiles exist outside of the master region
 }
 
 Heroic.RegionX.prototype.overlaps = function() {
@@ -35,55 +76,47 @@ Heroic.RegionX.prototype.merge = function(region) {
 	// need to merge sub regions? maybe not
 }
 
-Heroic.RegionX.prototype.hasTile = function(tile) {
-	// return true/false
+Heroic.RegionX.prototype.hasPoint = function(x, y) {
+	if( this.points[y][x] ) {
+		return true;
+	} else {
+		return false;
+	}
 }
 
 Heroic.RegionX.prototype.getTile = function(x, y) {
-	// return this.tiles[y][x];
-
-	return false;
+	// figure out offset of parent based on this.origin (??)
+	// how do we work our way back up the chain of regions in an efficient manner?
+	// get Tile from master Region
 }
 
-Heroic.RegionX.prototype.addTile = function(tile) {
-
-	// only accepts Tile objects
-	// adds one tile
+Heroic.RegionX.prototype.addPoint = function(x, y) {
+	// check if [y] array is set first
+	//this.points[y][x] = true;
 	// recalculate edge and interior?
-
-	if( !this.hasOwnProperty(tile.y) ) {
-		//set the sub array
-	}
-	this.tiles[tile.y][tile.x] = tile;
 }
 
-Heroic.RegionX.prototype.removeTile = function(tile) {
-
-	// remove a tile from this.tiles
+Heroic.RegionX.prototype.removePoint = function(tile) {
+	this.points[y][x] = false;
 	// recalculate edge and interior?
-	this.tiles[tile.y][tile.x] = undefined;
 }
 
-//Heroic.RegionX.prototype.findEdges = function() {}
+Heroic.RegionX.prototype.addChild = function(shape, size, origin) {
+	// new Region(shape, origin, size, this);
+}
+
+//Heroic.RegionX.prototype.findEdges = function() { // can look at [y] arrays for lowest/highest set index }
 //Heroic.RegionX.prototype.findInteriors = function() {}
 
-Heroic.RegionX.prototype.init = function() {
-	this.width; this.height; this.origin; // ????? should all tile references be relative or absolute?. if relative then do Tiles even need to contain X and Y coordinates? not really
-	// virtual tiles for tiles that are not set (outside the master Region)
-	this.tiles		= []; // need to somehow set the sub arrays
-	// sub regions cannot exceed master region. Or can they? use virtual tiles outside parent region
-	this.regions	= []; // sub-regions
+Heroic.RegionX.prototype.master = function() {
+	// create tiles and store references to them
+	// intended for use only once in the master Region
+	this.key = []; // link between points and tiles
 
-	// sub regions
-	/*
-	this.subs; // array of sub regions?
-	this.subs['edge'];
-	this.subs['interior'];
-	this.subs['quadrant-nw'];
-	this.subs['quadrant-n'];
-	this.subs['quadrant-ne'];
-	*/
+	// foreach this.points: set link between this.key and new Tile()
 }
+
+//Heroic.RegionX.prototype.init = function(shape, size, origin, parent) {}
 
 function initializeEngine() {
 	Heroic.Entities	= {};
@@ -114,6 +147,7 @@ function initializeEngine() {
 	*/
 }
 
+/*
 jQuery(window).load(function() {
 	jQuery(window).on('keyup', function(e) {
 		switch(e.keyCode) {
@@ -134,3 +168,4 @@ jQuery(window).load(function() {
 		}
 	});
 });
+*/
