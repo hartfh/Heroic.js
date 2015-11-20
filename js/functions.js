@@ -22,11 +22,6 @@ Object.defineProperty(
 	Array.prototype, 'shuffle', {enumerable: false}
 );
 
-/*
-Function.prototype.init = function() {
-
-}
-*/
 
 function getDirections() {
 	var directions = [];
