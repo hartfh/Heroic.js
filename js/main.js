@@ -16,8 +16,8 @@ Heroic.TileX = function(x, y) {
 
 /*
  * 
- * @param	{Object}	args	Can contain origin, terminus, radius, et. al.
  * 
+ * @param	{Object}	args	Contains parameters for defining a shape (origin, terminus, radius)
  */
 Heroic.RegionX = function(args, parent) {
 	if( typeof(args) != 'object' ) {
@@ -29,28 +29,27 @@ Heroic.RegionX = function(args, parent) {
 
 	this.origin		= args.origin;	// keep reference to one of parent's points
 	this.terminus	= {};
-	this.parent		= parent;
-	this.points		= [];		// array of arrays. used values are set to True
+	this.points		= [];
 	this.edge		= [];
 	this.interior	= [];
 	this.children	= [];		// child regions
 	this.offset		= {x: 0, y: 0};	// keeps track of offset from parent. gets updated whenever region moves or changes size
+	this.parent		= parent;
 
 	this.calcShape(args);
 }
 
+/*
+ * 
+ */
 Heroic.RegionX.prototype.master = function() {
 	// create tiles and store references to them
 	// intended for use only once in the master Region
 	this.key = []; // link between points and tiles
-	this.tiles = [];
 
-	for(var y in this.points) {
-		var row = this.points[y];
-		for(var x in row) {
-			//var tile = new Heroic.TileX(x, y);
-		}
-	}
+	this.each(function() {
+		//var tile = new Heroic.TileX(x, y);
+	});
 
 	// foreach this.points: set link between this.key and new Tile()
 }
@@ -72,7 +71,6 @@ Heroic.RegionX.prototype.calcShape = function(args) {
 		// this.minimize();   // winnow out empty rows and columns
 		this.calcTerminus();
 		this.calcEdge();
-		this.calcInterior();
 
 		if( !this.parent ) {
 			this.master(); // create/store tiles
@@ -114,6 +112,8 @@ Heroic.RegionX.prototype.rectangle = function(args) {
 		}
 	}
 }
+
+// clean this up
 Heroic.RegionX.prototype.line = function(args) {
 	var slope = (args.terminus.y - args.origin.y) / (args.terminus.x - args.origin.x);
 	
@@ -156,12 +156,12 @@ Heroic.RegionX.prototype.line = function(args) {
 	}
 }
 
+// any cleanup needed?
 Heroic.RegionX.prototype.circle = function(args) {
 	if( isNaN(args.radius) ) {
 		return;
 	}
 	
-	//var radius = args.radius - 1;
 	var radius = args.radius;
 	var origin = {x: radius, y: radius};
 	var points = [];
@@ -236,22 +236,36 @@ Heroic.RegionX.prototype.blob = function(args) { /* might need to expand region 
 Heroic.RegionX.prototype.grid = function(args) {}
 
 Heroic.RegionX.prototype.calcTerminus = function() {
-	// find highest Y and X values and terminus becomes {x: X, y: Y};
+	var height = this.points.length;
+	var maxWidth = 0;
+
+	for(var index in this.points) {
+		var row = this.points[index];
+		
+		if( row.length > maxWidth ) {
+			maxWidth = row.length
+		}
+	}
+
+	this.terminus = {x: maxWidth - 1, y: height - 1};
 }
 
 Heroic.RegionX.prototype.calcOffset = function() {
 	// sum all offsets up through to master region
 }
 
+/*
+ * Determine which tiles lie on the edge of the region's shape and which lie on the interior.
+ */
 Heroic.RegionX.prototype.calcEdge = function() {
 	var self = this;
 
 	this.each(function(x, y) {
-		if(x == 0 || y == 0) {
+		if(x == 0 || y == 0 || x == self.terminus.x || y == self.terminus.y) {
 			self.edge.push({x: x, y: y});
 			return;
 		} else {
-			// eight surrounding points
+			// check the eight surrounding points for empties
 			for(var j = -1; j < 2; j++) {
 				for(var i = -1; i < 2; i++) {
 					if( j != 0 && i != 0 ) {
@@ -269,15 +283,8 @@ Heroic.RegionX.prototype.calcEdge = function() {
 			}
 		}
 
+		// everything which is not an edge point makes up the interior
 		self.interior.push({x: x, y: y});
-	});
-}
-Heroic.RegionX.prototype.calcInterior = function() {
-	// run this after calcEdge. everything that isn't an edge must be interior. (right?)
-	var self = this;
-
-	this.each(function(x, y) {
-
 	});
 }
 
@@ -304,6 +311,11 @@ Heroic.RegionX.prototype.sumPoints = function(pointOne, pointTwo) {
 	return {x: pointOne.x + pointTwo.x, y: pointOne.y + pointTwo.y};
 }
 
+/*
+ * Applies a function to each point in the region.
+ * 
+ * @param	{Object}	callback
+ */
 Heroic.RegionX.prototype.each = function(callback) {
 	for(var y in this.points) {
 		var row = this.points[y];
@@ -351,7 +363,6 @@ Heroic.RegionX.prototype.getOffset = function() {
 	return this.origin;
 }
 */
-//Heroic.RegionX.prototype.init = function(shape, size, origin, parent) {}
 
 
 function initializeEngine() {
@@ -372,23 +383,8 @@ function initializeEngine() {
 	Heroic.Entities.map			= new Heroic.TestStructures();
 	Heroic.Entities.map.init();
 
-	var test = new Heroic.RegionX({shape: 'circle', origin: {x: 0, y: 0}, radius: 14});
-	//var test = new Heroic.RegionX({shape: 'line', origin: {x: 2, y: 2}, terminus: {x: 55, y: 15}});
-
-	/*
-	for(var y in test.points) {
-		var row = test.points[y];
-
-		for(var x in row) {
-			var args = {};
-			args.tile = {x: x, y: y, size: 5};
-			args.color = 'black';
-			args.background = 'white';
-			args.character = 'X';
-			Heroic.Layers.terrain.draw(args);
-		}
-	}
-	*/
+	var test = new Heroic.RegionX({shape: 'circle', origin: {x: 0, y: 0}, radius: 44});
+	//var test = new Heroic.RegionX({shape: 'rectangle', origin: {x: 2, y: 2}, terminus: {x: 55, y: 15}});
 
 	for(var index in test.edge) {
 		var point = test.edge[index];
@@ -411,6 +407,7 @@ function initializeEngine() {
 		args.character = '';
 		Heroic.Layers.terrain.draw(args);		
 	}
+	console.log(test);
 
 	//Heroic.Entities.terrain.toEach('draw');
 
