@@ -159,6 +159,7 @@ Heroic.TestStructures.prototype.testShapes = function() {
 	*/
 
 	// Recursion 2
+	/*
 	args2 = [Heroic.Palette.wall];
 	args3 = [Heroic.Palette.test1];
 
@@ -174,6 +175,7 @@ Heroic.TestStructures.prototype.testShapes = function() {
 	blobs.edge.toEach('set', args2, 'terrain');
 	Heroic.Entities.map.regions.load(blobs);
 	blobs.interior.toEach('set', args3, 'terrain');
+	*/
 
 }
 
