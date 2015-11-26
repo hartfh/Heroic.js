@@ -1,13 +1,10 @@
 var Heroic = Heroic || {};
 
-/*
-1.) Action Queue
+Heroic.Constants = {
+	tileSize:		5
+}
 
-2.) Character movement
-
-3.) SFX Layer
-*/
-
+// consider removing
 Heroic.TileX = function(x, y) {
 	this.size = 5;
 	this.x = x;
@@ -74,6 +71,8 @@ Heroic.RegionX.prototype.calcShape = function(args) {
 
 		if( !this.parent ) {
 			this.master(); // create/store tiles
+		} else {
+			this.calcOffset();
 		}
 	}
 }
@@ -178,7 +177,6 @@ Heroic.RegionX.prototype.circle = function(args) {
 		this.addPoint(offsetPoint.x, offsetPoint.y);
 		points.push(offsetPoint);
 	}
-
 	
 	// mirror the points into a 90 degree arc
 	for(var index in points) {
@@ -251,7 +249,20 @@ Heroic.RegionX.prototype.calcTerminus = function() {
 }
 
 Heroic.RegionX.prototype.calcOffset = function() {
-	// sum all offsets up through to master region
+	this.offset = this.sumPoints( this.origin, this.getCompositeOffset() );
+}
+
+// recursively sum all offsets up through to master region
+Heroic.RegionX.prototype.getCompositeOffset = function() {
+	var parentOffset;
+
+	if( this.parent ) {
+		parentOffset = this.parent.getCompositeOffset();
+	} else {
+		parentOffset = {x: 0, y: 0};
+	}
+
+	return this.sumPoints(this.offset, parentOffset);
 }
 
 /*
@@ -311,21 +322,6 @@ Heroic.RegionX.prototype.sumPoints = function(pointOne, pointTwo) {
 	return {x: pointOne.x + pointTwo.x, y: pointOne.y + pointTwo.y};
 }
 
-/*
- * Applies a function to each point in the region.
- * 
- * @param	{Object}	callback
- */
-Heroic.RegionX.prototype.each = function(callback) {
-	for(var y in this.points) {
-		var row = this.points[y];
-
-		for(var x in row) {
-			callback(parseInt(x), parseInt(y));
-		}
-	}
-}
-
 Heroic.RegionX.prototype.overlaps = function() {
 	// check sub regions or no?
 }
@@ -346,8 +342,96 @@ Heroic.RegionX.prototype.removePoint = function(tile) {
 	// recalculate edge and interior?
 }
 
+/*
+ * Shift the region by a given amount
+ * 
+ * @param	{integer}	x	Amount to shift on the X-axis
+ * @param	{integer}	y	Amount to shift on the Y-axis
+ */
+Heroic.RegionX.prototype.translate = function(x, y) {
+	if( this.parent ) {
+		this.origin.x += x;
+		this.origin.y += y;
+
+		this.offset.x += x;
+		this.offset.y += y;
+	}
+}
+
+// rotate about origin?
+Heroic.RegionX.prototype.rotate = function(degrees) {}
+
 Heroic.RegionX.prototype.addChild = function(args) {
-	// new Region(args, this);
+	var child = new this.constructor(args, this);
+	this.children.push(child);
+}
+
+/*
+ * Applies a function to each point in the region.
+ * 
+ * @param	{Object}	callback
+ */
+Heroic.RegionX.prototype.each = function(callback) {
+	for(var y in this.points) {
+		var row = this.points[y];
+
+		for(var x in row) {
+			callback(parseInt(x), parseInt(y));
+		}
+	}
+}
+
+Heroic.RegionX.prototype.eachEdge = function(callback) {
+	for(var index in this.edge) {
+		var point = this.edge[index];
+		var x = parseInt(point.x);
+		var y = parseInt(point.y);
+
+		callback(x, y);
+	}
+}
+
+Heroic.RegionX.prototype.eachInterior = function(callback) {
+	for(var index in this.interior) {
+		var point = this.interior[index];
+		var x = parseInt(point.x);
+		var y = parseInt(point.y);
+
+		callback(x, y);
+	}
+}
+
+Heroic.RegionX.prototype.draw = function(styles, layer) {
+	var self = this;
+
+	this.each(function(x, y) {
+		styles.x = x + self.offset.x;
+		styles.y = y + self.offset.y;
+		styles.size = Heroic.Constants.tileSize;
+		layer.draw(styles);
+	});
+}
+
+Heroic.RegionX.prototype.drawEdge = function(styles, layer) {
+	var self = this;
+
+	this.eachEdge(function(x, y) {
+		styles.x = x + self.offset.x;
+		styles.y = y + self.offset.y;
+		styles.size = Heroic.Constants.tileSize;
+		layer.draw(styles);
+	});
+}
+
+Heroic.RegionX.prototype.drawInterior = function(styles, layer) {
+	var self = this;
+
+	this.eachInterior(function(x, y) {
+		styles.x = x + self.offset.x;
+		styles.y = y + self.offset.y;
+		styles.size = Heroic.Constants.tileSize;
+		layer.draw(styles);
+	});
 }
 
 //Heroic.RegionX.prototype.findEdges = function() { // can look at [y] arrays for lowest/highest set index }
@@ -383,14 +467,21 @@ function initializeEngine() {
 	Heroic.Entities.map			= new Heroic.TestStructures();
 	Heroic.Entities.map.init();
 
-	var test = new Heroic.RegionX({shape: 'circle', origin: {x: 0, y: 0}, radius: 44});
+	Heroic.Entities.regions = new Heroic.Inventory();
+	Heroic.Entities.regions.init();
+
+	var test = new Heroic.RegionX({shape: 'circle', origin: {x: 0, y: 0}, radius: 45});
+	Heroic.Entities.regions.load(test);
 	//var test = new Heroic.RegionX({shape: 'rectangle', origin: {x: 2, y: 2}, terminus: {x: 55, y: 15}});
 
 	for(var index in test.edge) {
 		var point = test.edge[index];
 
 		var args = {};
-		args.tile = {x: point.x, y: point.y, size: 5};
+		//args.tile = {x: point.x, y: point.y, size: 5};
+		args.x = point.x;
+		args.y = point.y;
+		args.size = Heroic.Constants.tileSize;
 		args.color = 'black';
 		args.background = 'white';
 		args.character = '';
@@ -401,23 +492,61 @@ function initializeEngine() {
 		var point = test.interior[index];
 
 		var args = {};
-		args.tile = {x: point.x, y: point.y, size: 5};
+		//args.tile = {x: point.x, y: point.y, size: 5};
+		args.x = point.x;
+		args.y = point.y;
+		args.size = Heroic.Constants.tileSize;
 		args.color = 'black';
 		args.background = 'green';
 		args.character = '';
-		Heroic.Layers.terrain.draw(args);		
+		Heroic.Layers.terrain.draw(args);
 	}
 	console.log(test);
 
-	//Heroic.Entities.terrain.toEach('draw');
+	var args = {shape: 'rectangle', origin: {x: 2, y: 2}, terminus: {x: 30, y: 35}};
+	test.addChild(args);
 
-	/*
-	var test = new Heroic.Character();
-	test.init();
-	test.setLocation(4,4);
-	test.move(20, 20);
-	test.move(10, 10);
-	*/
+
+	for(var index1 in test.children) {
+		var childRegion = test.children[index1];
+
+		var layer = Heroic.Layers.terrain;
+		var styles = {color: 'black', background: 'lightblue', character: ''};
+
+		childRegion.drawEdge(styles, layer);
+
+		styles = {color: 'black', background: 'darkblue', character: ''};
+		childRegion.drawInterior(styles, layer);
+	}
+
+	var args = {shape: 'circle', origin: {x: 6, y: 6}, radius: 7};
+	var child = test.children[0];
+	child.addChild(args);
+	var grandChild = child.children[0];
+	console.log(grandChild);
+
+	var layer = Heroic.Layers.terrain;
+	var styles = {color: 'black', background: 'white', character: ''};
+
+	grandChild.drawEdge(styles, layer);
+
+	styles = {color: 'black', background: 'darkblue', character: ''};
+	grandChild.drawInterior(styles, layer);
+
+	grandChild.eachEdge(function(x, y) {
+		var args = {shape: 'circle', origin: {x: x - 3, y: y - 3}, radius: 2};
+		grandChild.addChild(args);
+	});
+
+	for( var index in grandChild.children ) {
+		var gg = grandChild.children[index];
+
+		styles.color = 'white';
+		styles.background = 'black';
+		gg.drawEdge(styles, layer);
+	}
+
+	//Heroic.Entities.terrain.toEach('draw');
 }
 
 /*

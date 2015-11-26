@@ -12,19 +12,21 @@ Heroic.Layer = function() {}
  * 
  * @param	{Object}	args				Object containing tile and draw data
  * @param	{Object}	args.tile			Tile object to draw to
+ * @param	{Object}	args.x				
+ * @param	{Object}	args.y				
+ * @param	{Object}	args.size			
  * @param	{string}	args.color			Color for the character
  * @param	{string}	args.background		Color for the background
  * @param	{string}	args.character		ASCII character
- * @return	void
  */
 Heroic.Layer.prototype.draw = function(args) {
 	var ctx = this.context;
 
 	ctx.fillStyle = Heroic.Colors[args.background];
-	ctx.fillRect(args.tile.x * args.tile.size, args.tile.y * args.tile.size, args.tile.size, args.tile.size);
+	ctx.fillRect(args.x * args.size, args.y * args.size, args.size, args.size);
 
 	ctx.fillStyle = Heroic.Colors[args.color];
-	ctx.fillText(args.character, args.tile.x * args.tile.size + 3, args.tile.y * args.tile.size + 11);
+	ctx.fillText(args.character, args.x * args.size + 3, args.y * args.size + 11);
 }
 
 /*
@@ -42,7 +44,6 @@ Heroic.Layer.prototype.clear = function(tile) {
  * Sets up the layer's properties.
  *
  * @param	{string}	ID		HTML element ID
- * @return	void
  */
 Heroic.Layer.prototype.init = function(ID) {
 	this.elem = document.getElementById(ID);
