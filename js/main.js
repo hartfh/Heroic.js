@@ -228,10 +228,21 @@ Heroic.RegionX.prototype.circle = function(args) {
 		
 		this.addPoint(mirrorPoint.x, mirrorPoint.y);
 	}
+
+	if( this.parent ) {
+		this.origin.x += radius * -1;
+		this.origin.y += radius * -1;
+
+		//this.translatePoints(-1 * radius, -1 * radius);
+		//this.translatePoints(1, 1);
+		//this.parent.normalize(this);
+	}
 }
 
 Heroic.RegionX.prototype.blob = function(args) { /* might need to expand region somehow since it will exceed its initial size */ }
 Heroic.RegionX.prototype.grid = function(args) {}
+
+// Heroic.RegionX.prototype.calcOrigin = function() {}
 
 Heroic.RegionX.prototype.calcTerminus = function() {
 	var height = this.points.length;
@@ -249,20 +260,8 @@ Heroic.RegionX.prototype.calcTerminus = function() {
 }
 
 Heroic.RegionX.prototype.calcOffset = function() {
-	this.offset = this.sumPoints( this.origin, this.getCompositeOffset() );
-}
-
-// recursively sum all offsets up through to master region
-Heroic.RegionX.prototype.getCompositeOffset = function() {
-	var parentOffset;
-
-	if( this.parent ) {
-		parentOffset = this.parent.getCompositeOffset();
-	} else {
-		parentOffset = {x: 0, y: 0};
-	}
-
-	return this.sumPoints(this.offset, parentOffset);
+	this.offset = this.sumPoints(this.origin, this.parent.offset);
+	//this.offset = this.sumPoints( this.origin, this.getCompositeOffset() );
 }
 
 /*
@@ -270,6 +269,9 @@ Heroic.RegionX.prototype.getCompositeOffset = function() {
  */
 Heroic.RegionX.prototype.calcEdge = function() {
 	var self = this;
+
+	this.edge		= [];
+	this.interior	= [];
 
 	this.each(function(x, y) {
 		if(x == 0 || y == 0 || x == self.terminus.x || y == self.terminus.y) {
@@ -322,12 +324,51 @@ Heroic.RegionX.prototype.sumPoints = function(pointOne, pointTwo) {
 	return {x: pointOne.x + pointTwo.x, y: pointOne.y + pointTwo.y};
 }
 
-Heroic.RegionX.prototype.overlaps = function() {
-	// check sub regions or no?
+// merge this region with all children, sub-childre, etc.
+Heroic.RegionX.prototype.flatten = function() {
+	// what sub-routines do we need
+	// mergeWith()
+	// merge all siblings
+	// recursively merge through children
 }
 
-Heroic.RegionX.prototype.merge = function(region) {
-	// need to merge sub regions? maybe not
+Heroic.RegionX.prototype.mergeWith = function(region) {
+	var self = this;
+	
+	// Problem: need to deal with offset. otherwise points don't get added
+	// Have to deal with negative coordinates
+
+	var newOrigin = {x: 0, y: 0};
+
+	if( this.origin.x > region.origin.x ) {
+		newOrigin.x = region.origin.x;
+	} else {
+		newOrigin.x = this.origin.x;
+	}
+
+	if( this.origin.y > region.origin.y ) {
+		newOrigin.y = region.origin.y;
+	} else {
+		newOrigin.y = this.origin.y;
+	}
+
+	console.log('-------');
+	console.log(this.origin);
+	console.log(region.origin);
+	console.log(newOrigin);
+
+	region.each(function(x, y) {
+		self.addPoint(x, y);
+	});
+
+	this.children = this.children.concat(region.children);
+
+	// unset one region from parent. How???
+
+	//this.calcOrigin();
+	this.calcTerminus();
+	this.calcEdge();
+	this.calcOffset();
 }
 
 Heroic.RegionX.prototype.getTile = function(x, y) {
@@ -358,12 +399,123 @@ Heroic.RegionX.prototype.translate = function(x, y) {
 	}
 }
 
+Heroic.RegionX.prototype.translatePoints = function(xShift, yShift) {
+	var newPoints = [];
+
+	this.each(function(x, y) {
+		var yNew = y + yShift;
+		var xNew = x + xShift;
+
+		if( !newPoints[yNew] ) {
+			newPoints[yNew] = [];
+		}
+		newPoints[yNew][xNew] = true;
+	});
+
+	this.points = newPoints;
+
+	// this.normalize();
+
+	//this.calcOrigin();
+	this.calcTerminus();
+	this.calcEdge();
+}
+
+// recursively sum all offsets up through to master region
+/*
+Heroic.RegionX.prototype.getCompositeOffset = function() {
+	var parentOffset;
+
+	if( this.parent ) {
+		parentOffset = this.parent.getCompositeOffset();
+	} else {
+		parentOffset = {x: 0, y: 0};
+	}
+
+	return this.sumPoints(this.offset, parentOffset);
+}
+*/
+
 // rotate about origin?
 Heroic.RegionX.prototype.rotate = function(degrees) {}
 
 Heroic.RegionX.prototype.addChild = function(args) {
 	var child = new this.constructor(args, this);
 	this.children.push(child);
+
+	// check if child exceeds boundaries of parent
+	//this.normalize(child);
+	//console.log(this.origin);
+}
+
+// expand a region's boundaries by X and Y amounts (can be negative to go backwards and up)
+Heroic.RegionX.prototype.expand = function(xNeg, xPos, yNeg, yPos) {
+	console.log('expanding');
+	
+	console.log(xNeg);
+	console.log(xPos);
+	console.log(yNeg);
+	console.log(yPos);
+	
+
+	// update origin and terminus
+	this.origin.x += xNeg;
+	this.origin.y += yNeg;
+	this.terminus.x += xPos;
+	this.terminus.y += yPos;
+
+	// shift all points
+	var tempPoints = [];
+
+	this.each(function(x, y) {
+		var newX = x + xNeg;
+		var newY = y + yNeg;
+
+		if( !tempPoints[newY] ) {
+			tempPoints[newY] = [];
+		}
+		tempPoints[newY][newX] = true;
+	});
+	this.points = tempPoints;
+}
+
+// re-aligns this region to have no "negative" points
+Heroic.RegionX.prototype.normalize = function(subRegion) {
+	// check if origin goes beyond origin, or terminus goes beyond terminus
+
+	var xNeg = 0;
+	var xPos = 0;
+	var yNeg = 0;
+	var yPos = 0;
+	var expand = false;
+
+	if(subRegion.origin.x < 0) {
+		xNeg = subRegion.origin.x;
+		expand = true;
+	}
+	if( subRegion.terminus.x > this.terminus.x ) {
+		xPos = subRegion.terminus.x - this.terminus.x;
+		expand = true;
+	}
+	if(subRegion.origin.y < 0) {
+		xNeg = subRegion.origin.y;
+		expand = true;
+	}
+	if( subRegion.terminus.y > this.terminus.y ) {
+		xPos = subRegion.terminus.y - this.terminus.y;
+		expand = true;
+	}
+	if(expand) {
+		this.expand(xNeg, xPos, yNeg, yPos);
+	}
+}
+
+Heroic.RegionX.prototype.comparePoints = function(pointOne, pointTwo) {
+	var result = {x: '', y: ''};
+
+
+
+	return result;
 }
 
 /*
@@ -501,7 +653,6 @@ function initializeEngine() {
 		args.character = '';
 		Heroic.Layers.terrain.draw(args);
 	}
-	console.log(test);
 
 	var args = {shape: 'rectangle', origin: {x: 2, y: 2}, terminus: {x: 30, y: 35}};
 	test.addChild(args);
@@ -519,11 +670,10 @@ function initializeEngine() {
 		childRegion.drawInterior(styles, layer);
 	}
 
-	var args = {shape: 'circle', origin: {x: 6, y: 6}, radius: 7};
+	var args = {shape: 'circle', origin: {x: 9, y: 9}, radius: 7};
 	var child = test.children[0];
 	child.addChild(args);
 	var grandChild = child.children[0];
-	console.log(grandChild);
 
 	var layer = Heroic.Layers.terrain;
 	var styles = {color: 'black', background: 'white', character: ''};
@@ -533,11 +683,45 @@ function initializeEngine() {
 	styles = {color: 'black', background: 'darkblue', character: ''};
 	grandChild.drawInterior(styles, layer);
 
+	/*
 	grandChild.eachEdge(function(x, y) {
 		var args = {shape: 'circle', origin: {x: x - 3, y: y - 3}, radius: 2};
 		grandChild.addChild(args);
 	});
+	*/
+	//var args = {shape: 'circle', origin: {x: 0, y: 0}, radius: 3};
+	var args = {shape: 'rectangle', origin: {x: 1, y: 1}, terminus: {x: 6, y: 6}};
+	grandChild.addChild(args);
 
+	styles = {color: 'black', background: 'black', character: ''};
+	var gg = grandChild.children[0];
+	console.log(grandChild);
+	console.log('translate test');
+	console.log(gg);
+	//gg.translatePoints(3, 0);
+	//console.log(gg);
+	//gg.parent.normalize(gg);
+	gg.drawEdge(styles, layer);
+
+	// merging test
+	/*
+	for( var index in grandChild.children ) {
+		var gg = grandChild.children[index];
+
+		if(index != 0) {
+			grandChild.children[0].mergeWith(gg);
+		}
+	}
+
+
+		var gg = grandChild.children[0];
+
+		styles.color = 'white';
+		styles.background = 'black';
+		gg.drawEdge(styles, layer);
+		//gg.drawInterior(styles, layer);
+	*/
+	/*
 	for( var index in grandChild.children ) {
 		var gg = grandChild.children[index];
 
@@ -545,6 +729,7 @@ function initializeEngine() {
 		styles.background = 'black';
 		gg.drawEdge(styles, layer);
 	}
+	*/
 
 	//Heroic.Entities.terrain.toEach('draw');
 }
