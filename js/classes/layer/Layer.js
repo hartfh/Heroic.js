@@ -26,7 +26,7 @@ Heroic.Layer.prototype.draw = function(args) {
 	ctx.fillRect(args.x * args.size, args.y * args.size, args.size, args.size);
 
 	ctx.fillStyle = Heroic.Colors[args.color];
-	ctx.fillText(args.character, args.x * args.size + 3, args.y * args.size + 11);
+	ctx.fillText(args.character, args.x * args.size, args.y * args.size + 4);
 }
 
 /*
@@ -48,5 +48,5 @@ Heroic.Layer.prototype.clear = function(tile) {
 Heroic.Layer.prototype.init = function(ID) {
 	this.elem = document.getElementById(ID);
 	this.context = this.elem.getContext('2d');
-	this.context.font = "12px Source Code Pro";
+	this.context.font = "7px Source Code Pro";
 }

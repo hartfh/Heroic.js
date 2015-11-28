@@ -235,7 +235,10 @@ Heroic.RegionX.prototype.circle = function(args) {
 	}
 }
 
-Heroic.RegionX.prototype.blob = function(args) { /* might need to expand region somehow since it will exceed its initial size */ }
+Heroic.RegionX.prototype.blob = function(args) {
+	// create one larger circle and bunch of smaller ones, then translate the small ones
+/* might need to expand region somehow since it will exceed its initial size */
+}
 Heroic.RegionX.prototype.grid = function(args) {}
 
 // Heroic.RegionX.prototype.calcOrigin = function() {}
@@ -393,6 +396,47 @@ Heroic.RegionX.prototype.removePoint = function(tile) {
 	// recalculate edge and interior?
 }
 
+// check if this region exceeds the boundaries of its direct parent
+Heroic.RegionX.prototype.isOutOfBounds = function() {
+	var out		= {n: 0, e: 0, s: 0, w: 0};
+	var parent	= this.parent;
+
+	if( this.offset.x < parent.offset.x ) {
+		out.w = this.offset.x - parent.offset.x;
+	}
+	if( this.offset.y < parent.offset.y ) {
+		out.n = this.offset.y - parent.offset.y;
+	}
+	if( (this.terminus.x + this.origin.x) > parent.terminus.x ) {
+		//out.e = this.terminus.x - parent.terminus.x;
+		out.e = (this.terminus.x + this.origin.x) - parent.terminus.x;
+	}
+	if( (this.terminus.y + this.origin.y) > parent.terminus.y ) {
+		//out.s = this.terminus.y - parent.terminus.y;
+		out.s = (this.terminus.y + this.origin.y) - parent.terminus.y;
+	}
+
+	if( out.n || out.e || out.s || out.w ) {
+		return out;
+	}
+
+	return false;
+}
+
+Heroic.RegionX.prototype.fixBoundaries = function() {
+	var current = this;
+	
+	while( current.isOutOfBounds() ) {
+		var out = current.isOutOfBounds();
+
+		current = current.parent;
+		current.expand(out.w, out.e, out.n, out.s);
+
+		// this.offset
+		// PROBLEM: offset is still incorrect
+	}
+}
+
 /*
  * Shift the region by a given amount
  * 
@@ -412,37 +456,8 @@ Heroic.RegionX.prototype.translate = function(x, y) {
 		if( this.origin.y < 0 ) {
 			this.origin.y = 0;
 		}
-
-		var parent = this.parent;
-
-		while( parent ) {
-			var xNeg = 0;
-			var yNeg = 0;
-			var xPos = 0;
-			var yPos = 0;
-
-			if( this.offset.x < parent.offset.x ) {
-				xNeg = this.offset.x - parent.offset.x;
-			}
-			if( this.offset.y < parent.offset.y ) {
-				yNeg = this.offset.y - parent.offset.y;
-			}
-			if( (this.terminus.x + this.origin.x) > parent.terminus.x ) {
-				xPos = this.terminus.x - parent.terminus.x;
-			}
-			if( (this.terminus.y + this.origin.y) > parent.terminus.y ) {
-				yPos = this.terminus.y - parent.terminus.y;
-			}
-
-			if( xNeg || yNeg || xPos || yPos ) {
-				parent.expand(xNeg, xPos, yNeg, yPos);
-			}
-
-			// this.offset
-
-			// PROBLEM: offset is incorrect
-
-			parent = parent.parent;
+		if( this.isOutOfBounds() ) {
+			this.fixBoundaries();
 		}
 	}
 }
@@ -459,8 +474,11 @@ Heroic.RegionX.prototype.expand = function(xNeg, xPos, yNeg, yPos) {
 		this.origin.y = 0;
 	}
 
+	this.terminus.x += xPos;
+	this.terminus.y += yPos;
+
 	this.translatePoints( Math.abs(xNeg), Math.abs(yNeg) );
-	this.calcTerminus();
+	//this.calcTerminus();
 }
 
 Heroic.RegionX.prototype.translatePoints = function(xShift, yShift) {
@@ -479,18 +497,18 @@ Heroic.RegionX.prototype.translatePoints = function(xShift, yShift) {
 	this.points = newPoints;
 }
 
-// rotate about origin?
 Heroic.RegionX.prototype.rotate = function(degrees) {}
 
 Heroic.RegionX.prototype.addChild = function(args) {
 	var child = new this.constructor(args, this);
 	this.children.push(child);
 
-	// check if child exceeds boundaries of parent
-	//this.normalize(child);
-	//console.log(this.origin);
+	if( child.isOutOfBounds() ) {
+		child.fixBoundaries();
+	}
 }
 
+/*
 // adjusts parent's dimensions to incorporate this(??)
 Heroic.RegionX.prototype.normalizeX = function() {
 	var xNeg = 0;
@@ -522,7 +540,9 @@ Heroic.RegionX.prototype.normalizeX = function() {
 		//this.origin.y -= yNeg;
 	}
 }
+*/
 
+/*
 Heroic.RegionX.prototype.normalize = function(subRegion) {
 	// check if origin goes beyond origin, or terminus goes beyond terminus
 
@@ -552,14 +572,16 @@ Heroic.RegionX.prototype.normalize = function(subRegion) {
 		this.expand(xNeg, xPos, yNeg, yPos);
 	}
 }
+*/
 
+/*
 Heroic.RegionX.prototype.comparePoints = function(pointOne, pointTwo) {
 	var result = {x: '', y: ''};
 
 
-
 	return result;
 }
+*/
 
 /*
  * Applies a function to each point in the region.
@@ -631,18 +653,6 @@ Heroic.RegionX.prototype.drawInterior = function(styles, layer) {
 
 //Heroic.RegionX.prototype.findEdges = function() { // can look at [y] arrays for lowest/highest set index }
 //Heroic.RegionX.prototype.findInteriors = function() {}
-
-/*
-Heroic.RegionX.prototype.getOffset = function() {
-	// recursive function that gets parents' offsets
-	if( this.parent ) {
-		return this.addPoints( this.origin, this.parent.getOffset() );
-	}
-
-	return this.origin;
-}
-*/
-
 
 function initializeEngine() {
 	Heroic.Entities	= {};
@@ -735,18 +745,19 @@ function initializeEngine() {
 	//var args = {shape: 'circle', origin: {x: 0, y: 0}, radius: 3};
 	var args = {shape: 'rectangle', origin: {x: 1, y: 1}, terminus: {x: 6, y: 6}};
 	grandChild.addChild(args);
+	grandChild.addChild(args);
 
-	styles = {color: 'black', background: 'green', character: ''};
+	styles = {color: 'black', background: 'pink', character: ''};
 	var gg = grandChild.children[0];
+	var gg2 = grandChild.children[1];
 	
 	console.log('translate test');
-	gg.translate(0, 14);
+	gg.translate(2, 29);
 	console.log(grandChild.parent);
 	console.log(grandChild);
 	console.log(gg);
-	//console.log(gg);
-	//gg.parent.normalize(gg);
 	gg.drawEdge(styles, layer);
+	gg2.drawEdge(styles, layer);
 
 	// merging test
 	/*
