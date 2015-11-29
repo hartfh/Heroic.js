@@ -519,7 +519,6 @@ Heroic.RegionX.prototype.mergeWith = function(region) {
 
 	this.calcTerminus();
 	this.calcEdge();
-	
 
 	region.destroy();
 }
@@ -708,11 +707,8 @@ function initializeEngine() {
 	//gg2.drawEdge(styles, layer);
 	gg.mergeWith(gg2);
 	gg.drawEdge(styles, layer);
-	//gg2.drawEdge(styles, layer);
 
-	//gg.mergeWith(gg2);
-
-	// merging test
+	// old merging test
 	/*
 	for( var index in grandChild.children ) {
 		var gg = grandChild.children[index];
