@@ -337,53 +337,6 @@ Heroic.RegionX.prototype.sumPoints = function(pointOne, pointTwo) {
 	return {x: pointOne.x + pointTwo.x, y: pointOne.y + pointTwo.y};
 }
 
-// merge this region with all children, sub-childre, etc.
-Heroic.RegionX.prototype.flatten = function() {
-	// what sub-routines do we need
-	// mergeWith()
-	// merge all siblings
-	// recursively merge through children
-}
-
-Heroic.RegionX.prototype.mergeWith = function(region) {
-	var self = this;
-	
-	// Problem: need to deal with offset. otherwise points don't get added
-	// Have to deal with negative coordinates
-
-	var newOrigin = {x: 0, y: 0};
-
-	if( this.origin.x > region.origin.x ) {
-		newOrigin.x = region.origin.x;
-	} else {
-		newOrigin.x = this.origin.x;
-	}
-
-	if( this.origin.y > region.origin.y ) {
-		newOrigin.y = region.origin.y;
-	} else {
-		newOrigin.y = this.origin.y;
-	}
-
-	console.log('-------');
-	console.log(this.origin);
-	console.log(region.origin);
-	console.log(newOrigin);
-
-	region.each(function(x, y) {
-		self.addPoint(x, y);
-	});
-
-	this.children = this.children.concat(region.children);
-
-	// unset one region from parent. How???
-
-	//this.calcOrigin();
-	this.calcTerminus();
-	this.calcEdge();
-	this.calcOffset();
-}
-
 Heroic.RegionX.prototype.getTile = function(x, y) {
 	// first check if hasPoint?
 	// apply offset when getting tile (first calculate combined offset)
@@ -423,6 +376,7 @@ Heroic.RegionX.prototype.isOutOfBounds = function() {
 	return false;
 }
 
+// fixes this region's boundaries and all ancestors
 Heroic.RegionX.prototype.fixBoundaries = function() {
 	var current = this;
 	
@@ -431,9 +385,6 @@ Heroic.RegionX.prototype.fixBoundaries = function() {
 
 		current = current.parent;
 		current.expand(out.w, out.e, out.n, out.s);
-
-		// this.offset
-		// PROBLEM: offset is still incorrect
 	}
 }
 
@@ -477,8 +428,10 @@ Heroic.RegionX.prototype.expand = function(xNeg, xPos, yNeg, yPos) {
 	this.terminus.x += xPos;
 	this.terminus.y += yPos;
 
+	this.offset.x += xNeg;
+	this.offset.y += yNeg;
+
 	this.translatePoints( Math.abs(xNeg), Math.abs(yNeg) );
-	//this.calcTerminus();
 }
 
 Heroic.RegionX.prototype.translatePoints = function(xShift, yShift) {
@@ -509,75 +462,71 @@ Heroic.RegionX.prototype.addChild = function(args) {
 }
 
 /*
-// adjusts parent's dimensions to incorporate this(??)
-Heroic.RegionX.prototype.normalizeX = function() {
-	var xNeg = 0;
-	var xPos = 0;
-	var yNeg = 0;
-	var yPos = 0;
-	var expand = false;
-	var parent = this.parent;
+ * Remove the reference to this region from its parent's list of children.
+ */
+Heroic.RegionX.prototype.destroy = function() {
+	var children	= this.parent.children;
+	var index		= children.indexOf(this);
 
-	if( this.origin.x < 0 ) {
-		xNeg = this.origin.x;
-		expand = true;
-	}
-	if( this.terminus.x > parent.terminus.x ) {
-		xPos = this.terminus.x - this.terminus.x;
-		expand = true;
-	}
-	if( this.origin.y < 0 ) {
-		yNeg = this.origin.y;
-		expand = true;
-	}
-	if( this.terminus.y > parent.terminus.y ) {
-		yPos = this.terminus.y - this.terminus.y;
-		expand = true;
-	}
-	if( expand ) {
-		parent.expand(xNeg, xPos, yNeg, yPos);
-		//this.origin.x -= xNeg;
-		//this.origin.y -= yNeg;
+	if( index != -1 ) {
+		children.splice(index, 1);
 	}
 }
-*/
 
-/*
-Heroic.RegionX.prototype.normalize = function(subRegion) {
-	// check if origin goes beyond origin, or terminus goes beyond terminus
-
-	var xNeg = 0;
-	var xPos = 0;
-	var yNeg = 0;
-	var yPos = 0;
-	var expand = false;
-
-	if(subRegion.origin.x < 0) {
-		xNeg = subRegion.origin.x;
-		expand = true;
-	}
-	if( subRegion.terminus.x > this.terminus.x ) {
-		xPos = subRegion.terminus.x - this.terminus.x;
-		expand = true;
-	}
-	if(subRegion.origin.y < 0) {
-		xNeg = subRegion.origin.y;
-		expand = true;
-	}
-	if( subRegion.terminus.y > this.terminus.y ) {
-		xPos = subRegion.terminus.y - this.terminus.y;
-		expand = true;
-	}
-	if(expand) {
-		this.expand(xNeg, xPos, yNeg, yPos);
-	}
+// merge this region with all children, sub-childre, etc.
+Heroic.RegionX.prototype.flatten = function() {
+	// what sub-routines do we need
+	// mergeWith()
+	// merge all siblings
+	// recursively merge through children
 }
-*/
+
+Heroic.RegionX.prototype.mergeWith = function(region) {
+	var self = this;
+	var newOrigin = {x: 0, y: 0};
+
+	if( this.origin.x > region.origin.x ) {
+		newOrigin.x = region.origin.x;
+	} else {
+		newOrigin.x = this.origin.x;
+	}
+
+	if( this.origin.y > region.origin.y ) {
+		newOrigin.y = region.origin.y;
+	} else {
+		newOrigin.y = this.origin.y;
+	}
+
+	var regions = [this, region];
+
+	for(var index in regions) {
+		var testRegion = regions[index];
+		var diff = {x: 0, y: 0};
+
+		diff.x = testRegion.origin.x - newOrigin.x;
+		diff.y = testRegion.origin.y - newOrigin.y;
+
+		if( diff.x || diff.y ) {
+			testRegion.expand(-1 * diff.x, 0, -1 * diff.y, 0);
+		}
+	}
+
+	region.each(function(x, y) {
+		self.addPoint(x, y);
+	});
+
+	this.children = this.children.concat(region.children);
+
+	this.calcTerminus();
+	this.calcEdge();
+	
+
+	region.destroy();
+}
 
 /*
 Heroic.RegionX.prototype.comparePoints = function(pointOne, pointTwo) {
 	var result = {x: '', y: ''};
-
 
 	return result;
 }
@@ -745,19 +694,23 @@ function initializeEngine() {
 	//var args = {shape: 'circle', origin: {x: 0, y: 0}, radius: 3};
 	var args = {shape: 'rectangle', origin: {x: 1, y: 1}, terminus: {x: 6, y: 6}};
 	grandChild.addChild(args);
+	var args = {shape: 'rectangle', origin: {x: 1, y: 1}, terminus: {x: 6, y: 6}};
 	grandChild.addChild(args);
 
 	styles = {color: 'black', background: 'pink', character: ''};
 	var gg = grandChild.children[0];
 	var gg2 = grandChild.children[1];
 	
-	console.log('translate test');
-	gg.translate(2, 29);
+	gg.translate(2, 2);
 	console.log(grandChild.parent);
 	console.log(grandChild);
 	console.log(gg);
+	//gg2.drawEdge(styles, layer);
+	gg.mergeWith(gg2);
 	gg.drawEdge(styles, layer);
-	gg2.drawEdge(styles, layer);
+	//gg2.drawEdge(styles, layer);
+
+	//gg.mergeWith(gg2);
 
 	// merging test
 	/*
