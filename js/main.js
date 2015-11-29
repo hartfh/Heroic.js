@@ -33,6 +33,8 @@ Heroic.RegionX = function(args, parent) {
 	this.offset		= {x: 0, y: 0};	// keeps track of offset from parent. gets updated whenever region moves or changes size
 	this.parent		= parent;
 
+	this.correction	= {x: 0, y: 0};
+
 	this.calcShape(args);
 }
 
@@ -384,6 +386,11 @@ Heroic.RegionX.prototype.fixBoundaries = function() {
 		var out = current.isOutOfBounds();
 
 		current = current.parent;
+
+		if( !current.parent ) {
+			break;
+		}
+
 		current.expand(out.w, out.e, out.n, out.s);
 	}
 }
@@ -448,6 +455,9 @@ Heroic.RegionX.prototype.translatePoints = function(xShift, yShift) {
 	});
 
 	this.points = newPoints;
+	
+	this.correction.x += xShift;
+	this.correction.y += yShift;
 }
 
 Heroic.RegionX.prototype.rotate = function(degrees) {}
@@ -510,7 +520,9 @@ Heroic.RegionX.prototype.mergeWith = function(region) {
 			testRegion.expand(-1 * diff.x, 0, -1 * diff.y, 0);
 		}
 	}
-
+	this.correction		= {x: 0, y: 0};
+	region.correction	= {x: 0, y: 0};
+	
 	region.each(function(x, y) {
 		self.addPoint(x, y);
 	});
@@ -537,33 +549,43 @@ Heroic.RegionX.prototype.comparePoints = function(pointOne, pointTwo) {
  * @param	{Object}	callback
  */
 Heroic.RegionX.prototype.each = function(callback) {
-	for(var y in this.points) {
-		var row = this.points[y];
+	var points = this.points;
+
+	for(var y in points) {
+		var row = points[y];
 
 		for(var x in row) {
-			callback(parseInt(x), parseInt(y));
+			callback(parseInt(x) + this.correction.x, parseInt(y) + this.correction.y);
 		}
 	}
 }
 
 Heroic.RegionX.prototype.eachEdge = function(callback) {
-	for(var index in this.edge) {
-		var point = this.edge[index];
-		var x = parseInt(point.x);
-		var y = parseInt(point.y);
+	var edgePoints = this.edge;
+
+	for(var index in edgePoints) {
+		var point = edgePoints[index];
+		var x = parseInt(point.x) + this.correction.x;
+		var y = parseInt(point.y) + this.correction.y;
 
 		callback(x, y);
 	}
+
+	this.correction = {x: 0, y: 0};
 }
 
 Heroic.RegionX.prototype.eachInterior = function(callback) {
-	for(var index in this.interior) {
-		var point = this.interior[index];
-		var x = parseInt(point.x);
-		var y = parseInt(point.y);
+	var interiorPoints = this.interior;
+
+	for(var index in interiorPoints) {
+		var point = interiorPoints[index];
+		var x = parseInt(point.x) + this.correction.x;
+		var y = parseInt(point.y) + this.correction.y;
 
 		callback(x, y);
 	}
+
+	this.correction = {x: 0, y: 0};
 }
 
 Heroic.RegionX.prototype.draw = function(styles, layer) {
@@ -685,47 +707,61 @@ function initializeEngine() {
 	grandChild.drawInterior(styles, layer);
 
 	/*
-	grandChild.eachEdge(function(x, y) {
-		var args = {shape: 'circle', origin: {x: x - 3, y: y - 3}, radius: 2};
-		grandChild.addChild(args);
-	});
-	*/
-	//var args = {shape: 'circle', origin: {x: 0, y: 0}, radius: 3};
 	var args = {shape: 'rectangle', origin: {x: 1, y: 1}, terminus: {x: 6, y: 6}};
 	grandChild.addChild(args);
 	var args = {shape: 'rectangle', origin: {x: 1, y: 1}, terminus: {x: 6, y: 6}};
+	grandChild.addChild(args);
+	var args = {shape: 'circle', origin: {x: 13, y: 5}, radius: 7};
 	grandChild.addChild(args);
 
-	styles = {color: 'black', background: 'pink', character: ''};
 	var gg = grandChild.children[0];
 	var gg2 = grandChild.children[1];
+	var gg3 = grandChild.children[2];
 	
 	gg.translate(2, 2);
 	console.log(grandChild.parent);
 	console.log(grandChild);
 	console.log(gg);
-	//gg2.drawEdge(styles, layer);
 	gg.mergeWith(gg2);
+	gg.mergeWith(gg3);
+	styles = {color: 'black', background: 'pink', character: ''};
 	gg.drawEdge(styles, layer);
+	styles = {color: 'black', background: 'black', character: ''};
+	gg.drawInterior(styles, layer);
+	*/
 
-	// old merging test
+	console.log('----------');
+	console.log(grandChild);
+	grandChild.eachEdge(function(x, y) {
+		//var args = {shape: 'circle', origin: {x: x, y: y}, radius: 3};
+		var args = {shape: 'rectangle', origin: {x: x, y: y}, terminus: {x: x+5, y: y+4}};
+		//var args = {shape: 'line', origin: {x: x, y: y}, terminus: {x: x+1, y: y+1}};
+		grandChild.addChild(args);
+	});
 	/*
-	for( var index in grandChild.children ) {
+	for(var index in grandChild.children) {
 		var gg = grandChild.children[index];
 
-		if(index != 0) {
-			grandChild.children[0].mergeWith(gg);
-		}
+		styles.color = 'white';
+		styles.background = 'pink';
+		gg.drawEdge(styles, layer);
+	}
+	*/
+
+	// old merging test
+	var gg = grandChild.children[0];
+	for(var i = grandChild.children.length - 1; i > 0; i--) {
+		var ggx = grandChild.children[i];
+
+		gg.mergeWith(ggx);
 	}
 
+	styles.color = 'white';
+	styles.background = 'black';
+	gg.drawEdge(styles, layer);
 
-		var gg = grandChild.children[0];
+	//gg.drawInterior(styles, layer);
 
-		styles.color = 'white';
-		styles.background = 'black';
-		gg.drawEdge(styles, layer);
-		//gg.drawInterior(styles, layer);
-	*/
 	/*
 	for( var index in grandChild.children ) {
 		var gg = grandChild.children[index];
