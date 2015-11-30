@@ -415,9 +415,19 @@ Heroic.RegionX.prototype.translate = function(x, y) {
 			this.origin.y = 0;
 		}
 		if( this.isOutOfBounds() ) {
+			var out = this.isOutOfBounds();
+
 			this.fixBoundaries();
-			// PROBLEM: when translating a region in negative direction and it pushes parent's boundaries, all sibling's
-			// origins are now incorrect
+
+			// have to adjust origins of siblings in the event that parent region has been expanded in -x or -y directions
+			this.eachSibling(function(child) {
+				if( out.w ) {
+					child.origin.x -= out.w;
+				}
+				if( out.n ) {
+					child.origin.y -= out.n;
+				}
+			});
 		}
 	}
 }
@@ -753,7 +763,7 @@ function initializeEngine() {
 		//var args = {shape: 'circle', origin: {x: x+4, y: y+4}, radius: 4};
 		var args = {shape: 'rectangle', origin: {x: x, y: y}, terminus: {x: x + 4, y: y + 4}};
 		//var args = {shape: 'line', origin: {x: x, y: y}, terminus: {x: x+1, y: y+1}};
-		//grandChild.addChild(args);
+		grandChild.addChild(args);
 	});
 
 	/*
@@ -784,14 +794,12 @@ function initializeEngine() {
 	}
 	*/
 
-
-	/*
 	// merging test
 	var gg = grandChild.children[0];
-	gg.translate(-2, -2);
+	//gg.translate(-2, -2);
 	for(var i = grandChild.children.length - 1; i > 0; i--) {
 		var ggx = grandChild.children[i];
-		ggx.translate(-2, 3);
+		ggx.translate(-1, 0);
 		gg.mergeWith(ggx);
 		//styles.color = 'white';
 		//styles.background = 'pink';
@@ -804,8 +812,14 @@ function initializeEngine() {
 	styles.color = 'white';
 	styles.background = 'green';
 	gg.drawInterior(styles, layer);
-	*/
 
+
+
+
+
+
+	/*
+	// simple rectangles
 	var args = {shape: 'rectangle', origin: {x: 2, y: 0}, terminus: {x: 5, y: 9}};
 	grandChild.addChild(args);
 	var gg1 = grandChild.children[0];
@@ -814,7 +828,7 @@ function initializeEngine() {
 	var args = {shape: 'rectangle', origin: {x: 2, y: 10}, terminus: {x: 8, y: 5}};
 	grandChild.addChild(args);
 	var gg2 = grandChild.children[1];
-	gg2.translate(11, 0);
+	gg2.translate(-3, 0);
 	gg1.mergeWith(gg2);
 
 	styles.background = 'pink';
@@ -823,7 +837,7 @@ function initializeEngine() {
 	//gg2.drawEdge(styles, layer);
 	console.log(gg1);
 	console.log(gg2);
-	console.log('siblings');
+	*/
 }
 
 /*
