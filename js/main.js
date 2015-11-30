@@ -416,6 +416,8 @@ Heroic.RegionX.prototype.translate = function(x, y) {
 		}
 		if( this.isOutOfBounds() ) {
 			this.fixBoundaries();
+			// PROBLEM: when translating a region in negative direction and it pushes parent's boundaries, all sibling's
+			// origins are now incorrect
 		}
 	}
 }
@@ -520,6 +522,7 @@ Heroic.RegionX.prototype.mergeWith = function(region) {
 			testRegion.expand(-1 * diff.x, 0, -1 * diff.y, 0);
 		}
 	}
+
 	this.correction		= {x: 0, y: 0};
 	region.correction	= {x: 0, y: 0};
 	
@@ -536,14 +539,6 @@ Heroic.RegionX.prototype.mergeWith = function(region) {
 }
 
 /*
-Heroic.RegionX.prototype.comparePoints = function(pointOne, pointTwo) {
-	var result = {x: '', y: ''};
-
-	return result;
-}
-*/
-
-/*
  * Applies a function to each point in the region.
  * 
  * @param	{Object}	callback
@@ -556,6 +551,28 @@ Heroic.RegionX.prototype.each = function(callback) {
 
 		for(var x in row) {
 			callback(parseInt(x) + this.correction.x, parseInt(y) + this.correction.y);
+		}
+	}
+}
+
+Heroic.RegionX.prototype.eachChild = function(callback) {
+	var children = this.parent.children;
+
+	for( var index in children) {
+		var child = children[index];
+
+		callback(child);
+	}
+}
+
+Heroic.RegionX.prototype.eachSibling = function(callback) {
+	var children = this.parent.children;
+
+	for( var index in children) {
+		var child = children[index];
+
+		if( this != child ) {
+			callback(child);
 		}
 	}
 }
@@ -733,11 +750,30 @@ function initializeEngine() {
 	console.log('----------');
 	console.log(grandChild);
 	grandChild.eachEdge(function(x, y) {
-		//var args = {shape: 'circle', origin: {x: x, y: y}, radius: 3};
-		var args = {shape: 'rectangle', origin: {x: x, y: y}, terminus: {x: x+5, y: y+4}};
+		//var args = {shape: 'circle', origin: {x: x+4, y: y+4}, radius: 4};
+		var args = {shape: 'rectangle', origin: {x: x, y: y}, terminus: {x: x + 4, y: y + 4}};
 		//var args = {shape: 'line', origin: {x: x, y: y}, terminus: {x: x+1, y: y+1}};
-		grandChild.addChild(args);
+		//grandChild.addChild(args);
 	});
+
+	/*
+	var args = {shape: 'rectangle', origin: {x: 0, y: 0}, terminus: {x: 4, y: 4}};
+	grandChild.addChild(args);
+	var gg = grandChild.children[0];
+	gg.translate(-2, -2);
+	styles.color = 'white';
+	styles.background = 'black';
+	gg.drawEdge(styles, layer);
+	styles.color = 'white';
+	styles.background = 'green';
+	gg.drawInterior(styles, layer);
+	console.log(gg);
+	*/
+
+	//var gg = grandChild.children[0];
+	//var gg1 = grandChild.children[1];
+	//console.log(gg1);
+	//gg.mergeWith(gg1);
 	/*
 	for(var index in grandChild.children) {
 		var gg = grandChild.children[index];
@@ -748,31 +784,46 @@ function initializeEngine() {
 	}
 	*/
 
-	// old merging test
+
+	/*
+	// merging test
 	var gg = grandChild.children[0];
+	gg.translate(-2, -2);
 	for(var i = grandChild.children.length - 1; i > 0; i--) {
 		var ggx = grandChild.children[i];
-
+		ggx.translate(-2, 3);
 		gg.mergeWith(ggx);
+		//styles.color = 'white';
+		//styles.background = 'pink';
+		//ggx.drawEdge(styles, layer);
 	}
 
 	styles.color = 'white';
 	styles.background = 'black';
 	gg.drawEdge(styles, layer);
-
-	//gg.drawInterior(styles, layer);
-
-	/*
-	for( var index in grandChild.children ) {
-		var gg = grandChild.children[index];
-
-		styles.color = 'white';
-		styles.background = 'black';
-		gg.drawEdge(styles, layer);
-	}
+	styles.color = 'white';
+	styles.background = 'green';
+	gg.drawInterior(styles, layer);
 	*/
 
-	//Heroic.Entities.terrain.toEach('draw');
+	var args = {shape: 'rectangle', origin: {x: 2, y: 0}, terminus: {x: 5, y: 9}};
+	grandChild.addChild(args);
+	var gg1 = grandChild.children[0];
+
+
+	var args = {shape: 'rectangle', origin: {x: 2, y: 10}, terminus: {x: 8, y: 5}};
+	grandChild.addChild(args);
+	var gg2 = grandChild.children[1];
+	gg2.translate(11, 0);
+	gg1.mergeWith(gg2);
+
+	styles.background = 'pink';
+	gg1.drawEdge(styles, layer);
+	styles.background = 'green';
+	//gg2.drawEdge(styles, layer);
+	console.log(gg1);
+	console.log(gg2);
+	console.log('siblings');
 }
 
 /*
