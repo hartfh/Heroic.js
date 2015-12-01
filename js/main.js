@@ -61,13 +61,6 @@ Heroic.RegionX.prototype.calcShape = function(args) {
 	if( shapes.indexOf(args.shape) != -1 ) {
 		this[args.shape].apply(this, [args]);
 
-		// recalibrate to eliminate "negative" points. how do we temporarily deal with negative points?
-		// idea: temporarily increase the size of the region and recalibrate it if a negative point would be added.
-		// but also have to consider that the running script might be thrown off if the points shift
-		// Every time the grid shifts, keep track of it in a Shift variable? Like a temporary offset
-		// maybe we can utilize translate()?
-
-		// this.minimize();   // winnow out empty rows and columns
 		this.calcTerminus();
 		this.calcEdge();
 
@@ -237,9 +230,39 @@ Heroic.RegionX.prototype.circle = function(args) {
 	}
 }
 
+Heroic.RegionX.prototype.blank = function(args) {
+	return;
+}
+
 Heroic.RegionX.prototype.blob = function(args) {
-	// create one larger circle and bunch of smaller ones, then translate the small ones
-/* might need to expand region somehow since it will exceed its initial size */
+	var x = args.origin.x;
+	var y = args.origin.x;
+	var args = {shape: 'circle', origin: args.origin, radius: args.radius};
+	var primaryRegion = new this.constructor(args, this);
+
+	this.mergeWith(primaryRegion);
+
+	// Between 4 and 7 extra circles
+	var addons = Math.random() * (9 - 5) + 5;
+	addons = Math.round(addons);
+
+	for(var i = 0; i < addons; i++) {
+		var xOffset = Math.random() * (args.radius + args.radius + 2) - args.radius;
+		var yOffset = Math.random() * (args.radius + args.radius + 2) - args.radius;
+		// ***Adjust random tile to pull randomly from this.interior. or possibly this.edge
+		// need to some up with random sampling from Edge and Interior
+		xOffset = Math.round(xOffset);
+		yOffset = Math.round(yOffset);
+
+		// circle min radius should be tied to max. don't want overly small or large circles
+		var randRadius = Math.round( Math.random() * ( (args.radius - 2) - 4 ) + 4);
+		var addonArgs = {shape: 'circle', origin: {x: x + xOffset, y: y + yOffset}, radius: randRadius};
+		var addonRegion = new this.constructor(addonArgs, this);
+
+		this.mergeWith(addonRegion);
+	}
+
+	this.calcTerminus();
 }
 Heroic.RegionX.prototype.grid = function(args) {}
 
@@ -394,6 +417,9 @@ Heroic.RegionX.prototype.fixBoundaries = function() {
 		current.expand(out.w, out.e, out.n, out.s);
 	}
 }
+
+// winnow out empty rows and columns
+//Heroic.RegionX.prototype.minimize = function() {}
 
 /*
  * Shift the region by a given amount
@@ -707,6 +733,10 @@ function initializeEngine() {
 	var args = {shape: 'rectangle', origin: {x: 2, y: 2}, terminus: {x: 30, y: 35}};
 	test.addChild(args);
 
+	var args = {shape: 'blob', origin: {x: 40, y: 40}, radius: 10};
+	test.addChild(args);
+	console.log(test.children);
+
 
 	for(var index1 in test.children) {
 		var childRegion = test.children[index1];
@@ -757,8 +787,6 @@ function initializeEngine() {
 	gg.drawInterior(styles, layer);
 	*/
 
-	console.log('----------');
-	console.log(grandChild);
 	grandChild.eachEdge(function(x, y) {
 		//var args = {shape: 'circle', origin: {x: x+4, y: y+4}, radius: 4};
 		var args = {shape: 'rectangle', origin: {x: x, y: y}, terminus: {x: x + 4, y: y + 4}};
