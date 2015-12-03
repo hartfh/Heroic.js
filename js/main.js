@@ -242,22 +242,33 @@ Heroic.RegionX.prototype.blob = function(args) {
 
 	this.mergeWith(primaryRegion);
 
-	// Between 4 and 7 extra circles
-	var addons = Math.random() * (9 - 5) + 5;
+	// Between 6 and 10 extra circles
+	var addons = Math.random() * (10 - 6) + 6;
 	addons = Math.round(addons);
 
+	// assemble random edge points for the addon regions
+	var randPoints = [];
 	for(var i = 0; i < addons; i++) {
+		var randEdgeIndex = Math.round( Math.random() * (primaryRegion.edge.length - 1) );
+		var randEdge = primaryRegion.edge[randEdgeIndex];
+		var randPoint = {x: primaryRegion.origin.x + randEdge.x, y: primaryRegion.origin.y + randEdge.y};
+		randPoints.push(randPoint);
+	}
+
+	for(var i = 0; i < addons; i++) {
+		/*
 		var xOffset = Math.random() * (args.radius + args.radius + 2) - args.radius;
 		var yOffset = Math.random() * (args.radius + args.radius + 2) - args.radius;
-		// ***Adjust random tile to pull randomly from this.interior. or possibly this.edge
-		// need to some up with random sampling from Edge and Interior
 		xOffset = Math.round(xOffset);
 		yOffset = Math.round(yOffset);
+		*/
 
-		// circle min radius should be tied to max. don't want overly small or large circles
-		var randRadius = Math.round( Math.random() * ( (args.radius - 2) - 4 ) + 4);
-		var addonArgs = {shape: 'circle', origin: {x: x + xOffset, y: y + yOffset}, radius: randRadius};
-		var addonRegion = new this.constructor(addonArgs, this);
+		var min = Math.round(args.radius * 0.35);
+		var max = args.radius - 1;
+		var randRadius	= Math.round( Math.random() * (max - min) + min );
+		//var addonArgs	= {shape: 'circle', origin: {x: x + xOffset, y: y + yOffset}, radius: randRadius};
+		var addonArgs	= {shape: 'circle', origin: randPoints[i], radius: randRadius};
+		var addonRegion	= new this.constructor(addonArgs, this);
 
 		this.mergeWith(addonRegion);
 	}
@@ -303,7 +314,7 @@ Heroic.RegionX.prototype.calcOffset = function() {
 }
 
 /*
- * Determine which tiles lie on the edge of the region's shape and which lie on the interior.
+ * Determine which tiles lie on the edge of the region's shape and which lie on its interior.
  */
 Heroic.RegionX.prototype.calcEdge = function() {
 	var self = this;
@@ -317,23 +328,21 @@ Heroic.RegionX.prototype.calcEdge = function() {
 			return;
 		} else {
 			// check the eight surrounding points for empties
+			var edges = 0;
 			for(var j = -1; j < 2; j++) {
 				for(var i = -1; i < 2; i++) {
-					if( j != 0 && i != 0 ) {
+					if( j != 0 || i != 0 ) {
 						var testX = x + j;
 						var testY = y + i;
 
-						if(testX > -1 && testY > -1) {
-							if( !self.hasPoint(testX, testY) ) {
-								self.edge.push({x: x, y: y});
-								return;
-							}
+						if( !self.hasPoint(testX, testY) ) {
+							self.edge.push({x: x, y: y});
+							return;
 						}
 					}
 				}
 			}
 		}
-
 		// everything which is not an edge point makes up the interior
 		self.interior.push({x: x, y: y});
 	});
@@ -385,7 +394,7 @@ Heroic.RegionX.prototype.isOutOfBounds = function() {
 	if( this.offset.y < parent.offset.y ) {
 		out.n = this.offset.y - parent.offset.y;
 	}
-	if( (this.terminus.x + this.origin.x) > parent.terminus.x ) {
+	if( (this.terminus.x + this.origin.x) > parent.terminus.x ) {	
 		//out.e = this.terminus.x - parent.terminus.x;
 		out.e = (this.terminus.x + this.origin.x) - parent.terminus.x;
 	}
@@ -674,8 +683,6 @@ Heroic.RegionX.prototype.drawInterior = function(styles, layer) {
 	});
 }
 
-//Heroic.RegionX.prototype.findEdges = function() { // can look at [y] arrays for lowest/highest set index }
-//Heroic.RegionX.prototype.findInteriors = function() {}
 
 function initializeEngine() {
 	Heroic.Entities	= {};
@@ -735,7 +742,7 @@ function initializeEngine() {
 
 	var args = {shape: 'blob', origin: {x: 40, y: 40}, radius: 10};
 	test.addChild(args);
-	console.log(test.children);
+	console.log(test.children[1]);
 
 
 	for(var index1 in test.children) {
@@ -822,7 +829,8 @@ function initializeEngine() {
 	}
 	*/
 
-	// merging test
+	/*
+	// circular merging test
 	var gg = grandChild.children[0];
 	//gg.translate(-2, -2);
 	for(var i = grandChild.children.length - 1; i > 0; i--) {
@@ -840,10 +848,7 @@ function initializeEngine() {
 	styles.color = 'white';
 	styles.background = 'green';
 	gg.drawInterior(styles, layer);
-
-
-
-
+	*/
 
 
 	/*
