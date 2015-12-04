@@ -650,6 +650,32 @@ Heroic.RegionX.prototype.eachInterior = function(callback) {
 	this.correction = {x: 0, y: 0};
 }
 
+/*
+ * Returns a random point in the region.
+ */
+Heroic.RegionX.prototype.random = function() {
+	var lengthY	= this.points.length;
+	var randY	= Math.floor( Math.random() * lengthY );
+	var lengthX	= this.points[randY].length;
+	var randX	= Math.floor( Math.random() * lengthX );
+
+	return {x: randX, y: randY};
+}
+
+Heroic.RegionX.prototype.randomEdge = function() {
+	var length = this.edge.length;
+	var rand = Math.floor( Math.random() * length );
+
+	return this.edge[rand];
+}
+
+Heroic.RegionX.prototype.randomInterior = function() {
+	var length = this.interior.length;
+	var rand = Math.floor( Math.random() * length );
+
+	return this.interior[rand];
+}
+
 Heroic.RegionX.prototype.draw = function(styles, layer) {
 	var self = this;
 
@@ -757,6 +783,14 @@ function initializeEngine() {
 		childRegion.drawInterior(styles, layer);
 	}
 
+	var randPoint = test.children[1].random();
+
+	// rand Rectangle
+	var args = {shape: 'rectangle', origin: randPoint, terminus: {x: randPoint.x + 5, y: randPoint.y + 5}};
+	test.children[1].addChild(args);
+	var layer = Heroic.Layers.terrain;
+	test.children[1].children[0].draw({color: 'black', background: 'black', character: ''}, layer);
+
 	var args = {shape: 'circle', origin: {x: 9, y: 9}, radius: 7};
 	var child = test.children[0];
 	child.addChild(args);
@@ -800,6 +834,7 @@ function initializeEngine() {
 		//var args = {shape: 'line', origin: {x: x, y: y}, terminus: {x: x+1, y: y+1}};
 		grandChild.addChild(args);
 	});
+
 
 	/*
 	var args = {shape: 'rectangle', origin: {x: 0, y: 0}, terminus: {x: 4, y: 4}};
