@@ -22,7 +22,7 @@ Object.defineProperty(
 	Array.prototype, 'shuffle', {enumerable: false}
 );
 
-
+/*
 function getDirections() {
 	var directions = [];
 
@@ -89,7 +89,9 @@ function getDirectionKey() {
 
 	return key;
 }
+*/
 
+/*
 function rotateDirection(dir, degrees) {
 	var increment	= Math.floor(degrees / 45);
 	var rotated		= dir + increment;
@@ -102,7 +104,9 @@ function rotateDirection(dir, degrees) {
 
 	return rotated;
 }
+*/
 
+/*
 function randomDir(directions, exclude) {
 	if(directions != 4 && directions != 8) {
 		return false;
@@ -131,7 +135,9 @@ function randomDir(directions, exclude) {
 
 	return coordsFromDir(rand);
 }
+*/
 
+/*
 function coordsFromDir(direction) {
 	var directions = [];
 
@@ -177,7 +183,9 @@ function coordsFromDir(direction) {
 
 	return directions;
 }
+*/
 
+/*
 function dirFromCoords(x, y) {
 	var direction;
 
@@ -214,3 +222,4 @@ function dirFromCoords(x, y) {
 
 	return direction;
 }
+*/

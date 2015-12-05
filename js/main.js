@@ -4,7 +4,7 @@ Heroic.Constants = {
 	tileSize:		5
 }
 
-// consider removing
+// consider removing entirely, since it's covered in Constants
 Heroic.TileX = function(x, y) {
 	this.size = 5;
 	this.x = x;
@@ -29,11 +29,10 @@ Heroic.RegionX = function(args, parent) {
 	this.points		= [];
 	this.edge		= [];
 	this.interior	= [];
-	this.children	= [];		// child regions
+	this.children	= [];
 	this.offset		= {x: 0, y: 0};	// keeps track of offset from parent. gets updated whenever region moves or changes size
-	this.parent		= parent;
-
 	this.correction	= {x: 0, y: 0};
+	this.parent		= parent;
 
 	this.calcShape(args);
 }
@@ -42,21 +41,11 @@ Heroic.RegionX = function(args, parent) {
  * 
  */
 Heroic.RegionX.prototype.master = function() {
-	// create tiles and store references to them
-	// intended for use only once in the master Region
-	this.key = []; // link between points and tiles
-
-	this.each(function() {
-		//var tile = new Heroic.TileX(x, y);
-	});
-
-	// foreach this.points: set link between this.key and new Tile()
+	// ?????
 }
 
 Heroic.RegionX.prototype.calcShape = function(args) {
 	var shapes = ['circle', 'rectangle', 'grid', 'line', 'blob'];
-	// cross: tiles n,s,e,w of point
-	// ring: tiles surrounding point
 
 	if( shapes.indexOf(args.shape) != -1 ) {
 		this[args.shape].apply(this, [args]);
@@ -65,7 +54,7 @@ Heroic.RegionX.prototype.calcShape = function(args) {
 		this.calcEdge();
 
 		if( !this.parent ) {
-			this.master(); // create/store tiles
+			this.master();
 		} else {
 			this.calcOffset();
 		}
@@ -588,19 +577,19 @@ Heroic.RegionX.prototype.mergeWith = function(region) {
  * 
  * @param	{Object}	callback
  */
-Heroic.RegionX.prototype.each = function(callback) {
+Heroic.RegionX.prototype.each = function(callback, args) {
 	var points = this.points;
 
 	for(var y in points) {
 		var row = points[y];
 
 		for(var x in row) {
-			callback(parseInt(x) + this.correction.x, parseInt(y) + this.correction.y);
+			callback(parseInt(x) + this.correction.x, parseInt(y) + this.correction.y, args);
 		}
 	}
 }
 
-Heroic.RegionX.prototype.eachChild = function(callback) {
+Heroic.RegionX.prototype.eachChild = function(callback, args) {
 	var children = this.parent.children;
 
 	for( var index in children) {
@@ -610,7 +599,7 @@ Heroic.RegionX.prototype.eachChild = function(callback) {
 	}
 }
 
-Heroic.RegionX.prototype.eachSibling = function(callback) {
+Heroic.RegionX.prototype.eachSibling = function(callback, args) {
 	var children = this.parent.children;
 
 	for( var index in children) {
@@ -622,7 +611,7 @@ Heroic.RegionX.prototype.eachSibling = function(callback) {
 	}
 }
 
-Heroic.RegionX.prototype.eachEdge = function(callback) {
+Heroic.RegionX.prototype.eachEdge = function(callback, args) {
 	var edgePoints = this.edge;
 
 	for(var index in edgePoints) {
@@ -630,13 +619,13 @@ Heroic.RegionX.prototype.eachEdge = function(callback) {
 		var x = parseInt(point.x) + this.correction.x;
 		var y = parseInt(point.y) + this.correction.y;
 
-		callback(x, y);
+		callback(x, y, args);
 	}
 
 	this.correction = {x: 0, y: 0};
 }
 
-Heroic.RegionX.prototype.eachInterior = function(callback) {
+Heroic.RegionX.prototype.eachInterior = function(callback, args) {
 	var interiorPoints = this.interior;
 
 	for(var index in interiorPoints) {
@@ -644,7 +633,7 @@ Heroic.RegionX.prototype.eachInterior = function(callback) {
 		var x = parseInt(point.x) + this.correction.x;
 		var y = parseInt(point.y) + this.correction.y;
 
-		callback(x, y);
+		callback(x, y, args);
 	}
 
 	this.correction = {x: 0, y: 0};
@@ -676,37 +665,16 @@ Heroic.RegionX.prototype.randomInterior = function() {
 	return this.interior[rand];
 }
 
-Heroic.RegionX.prototype.draw = function(styles, layer) {
-	var self = this;
+Heroic.RegionX.prototype.drawPoint = function(x, y, args) {
+	var self	= this;
+	var styles	= args.styles;
+	var layer	= args.layer;
 
-	this.each(function(x, y) {
-		styles.x = x + self.offset.x;
-		styles.y = y + self.offset.y;
-		styles.size = Heroic.Constants.tileSize;
-		layer.draw(styles);
-	});
-}
+	styles.x = x + self.offset.x;
+	styles.y = y + self.offset.y;
+	styles.size = Heroic.Constants.tileSize;
 
-Heroic.RegionX.prototype.drawEdge = function(styles, layer) {
-	var self = this;
-
-	this.eachEdge(function(x, y) {
-		styles.x = x + self.offset.x;
-		styles.y = y + self.offset.y;
-		styles.size = Heroic.Constants.tileSize;
-		layer.draw(styles);
-	});
-}
-
-Heroic.RegionX.prototype.drawInterior = function(styles, layer) {
-	var self = this;
-
-	this.eachInterior(function(x, y) {
-		styles.x = x + self.offset.x;
-		styles.y = y + self.offset.y;
-		styles.size = Heroic.Constants.tileSize;
-		layer.draw(styles);
-	});
+	layer.draw(styles);
 }
 
 
@@ -735,6 +703,7 @@ function initializeEngine() {
 	Heroic.Entities.regions.load(test);
 	//var test = new Heroic.RegionX({shape: 'rectangle', origin: {x: 2, y: 2}, terminus: {x: 55, y: 15}});
 
+	/*
 	for(var index in test.edge) {
 		var point = test.edge[index];
 
@@ -748,20 +717,18 @@ function initializeEngine() {
 		args.character = '';
 		Heroic.Layers.terrain.draw(args);		
 	}
+	*/
 
-	for(var index in test.interior) {
-		var point = test.interior[index];
-
-		var args = {};
-		//args.tile = {x: point.x, y: point.y, size: 5};
-		args.x = point.x;
-		args.y = point.y;
-		args.size = Heroic.Constants.tileSize;
-		args.color = 'black';
-		args.background = 'green';
-		args.character = '';
-		Heroic.Layers.terrain.draw(args);
-	}
+	var layer = Heroic.Layers.terrain;
+	var styles = {color: 'black', background: 'green', character: ''};
+	var drawArgs = {styles: styles, layer: layer};
+	test.eachInterior(function(x, y, args) {
+		test.drawPoint(x, y, args);
+	}, drawArgs);
+	styles.background = 'white';
+	test.eachEdge(function(x, y, args) {
+		test.drawPoint(x, y, args);
+	}, drawArgs);
 
 	var args = {shape: 'rectangle', origin: {x: 2, y: 2}, terminus: {x: 30, y: 35}};
 	test.addChild(args);
@@ -776,11 +743,16 @@ function initializeEngine() {
 
 		var layer = Heroic.Layers.terrain;
 		var styles = {color: 'black', background: 'lightblue', character: ''};
+		var drawArgs = {styles: styles, layer: layer};
+		//childRegion.drawEdge(styles, layer);
+		childRegion.eachEdge(function(x, y, args) {
+			childRegion.drawPoint(x, y, args);
+		}, drawArgs);
 
-		childRegion.drawEdge(styles, layer);
-
-		styles = {color: 'black', background: 'darkblue', character: ''};
-		childRegion.drawInterior(styles, layer);
+		drawArgs.styles = {color: 'black', background: 'darkblue', character: ''};
+		childRegion.eachInterior(function(x, y, args) {
+			childRegion.drawPoint(x, y, args);
+		}, drawArgs);
 	}
 
 	var randPoint = test.children[1].random();
@@ -789,7 +761,19 @@ function initializeEngine() {
 	var args = {shape: 'rectangle', origin: randPoint, terminus: {x: randPoint.x + 5, y: randPoint.y + 5}};
 	test.children[1].addChild(args);
 	var layer = Heroic.Layers.terrain;
-	test.children[1].children[0].draw({color: 'black', background: 'black', character: ''}, layer);
+	//test.children[1].children[0].draw({color: 'black', background: 'black', character: ''}, layer);
+	var args2 = {};
+	args2.styles = {color: 'black', background: 'black', character: ''};
+	args2.layer = layer;
+	test.children[1].children[0].each(function(x, y, args) {
+		test.children[1].children[0].drawPoint(x, y, args);
+	}, args2);
+
+	/*
+	child.each(function(x, y) {
+		this.drawPoint(x, y, args.styles, args.layer);
+	}, args);
+	*/
 
 	var args = {shape: 'circle', origin: {x: 9, y: 9}, radius: 7};
 	var child = test.children[0];
@@ -798,11 +782,15 @@ function initializeEngine() {
 
 	var layer = Heroic.Layers.terrain;
 	var styles = {color: 'black', background: 'white', character: ''};
+	var drawArgs = {styles: styles, layer: layer};
+	grandChild.eachEdge(function(x, y, args) {
+		grandChild.drawPoint(x, y, args);
+	}, drawArgs);
 
-	grandChild.drawEdge(styles, layer);
-
-	styles = {color: 'black', background: 'darkblue', character: ''};
-	grandChild.drawInterior(styles, layer);
+	drawArgs.styles = {color: 'black', background: 'darkblue', character: ''};
+	grandChild.eachInterior(function(x, y, args) {
+		grandChild.drawPoint(x, y, args);
+	}, drawArgs);
 
 	/*
 	var args = {shape: 'rectangle', origin: {x: 1, y: 1}, terminus: {x: 6, y: 6}};
