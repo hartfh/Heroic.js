@@ -29,6 +29,7 @@ Heroic.RegionX = function(args, parent) {
 	this.points		= [];
 	this.edge		= [];
 	this.interior	= [];
+	this.quadrants	= [];
 	this.children	= [];
 	this.offset		= {x: 0, y: 0};	// keeps track of offset from parent. gets updated whenever region moves or changes size
 	this.correction	= {x: 0, y: 0};
@@ -46,6 +47,7 @@ Heroic.RegionX.prototype.master = function() {
 
 Heroic.RegionX.prototype.calcShape = function(args) {
 	var shapes = ['circle', 'rectangle', 'grid', 'line', 'blob'];
+	var self = this;
 
 	if( shapes.indexOf(args.shape) != -1 ) {
 		this[args.shape].apply(this, [args]);
@@ -57,6 +59,94 @@ Heroic.RegionX.prototype.calcShape = function(args) {
 			this.master();
 		} else {
 			this.calcOffset();
+		}
+	}
+
+	for(var index in Heroic.Direction.key) {
+		this.quadrants.push([]);
+	}
+
+	this.each(function(x, y) {
+		var quadrant = self.calcQuadrant(x, y);
+		self.quadrants[quadrant].push({x: x, y: y});
+	});
+}
+
+Heroic.RegionX.prototype.calcQuadrant = function(x, y) {
+	var slope, horz, vert;
+
+	// find approximate center
+	var width	= this.terminus.x - this.origin.x;
+	var height	= this.terminus.y - this.origin.y;
+
+	var centerX = this.origin.x + width * 0.5;
+	var centerY = this.origin.y + height * 0.5;
+
+	var rise	= y - centerY;
+	var run		= x - centerX;
+
+	// avoid Divide by Zero error
+	if( run != 0) {
+		slope = rise / run;
+		slope = Math.abs(slope);
+	} else {
+		slope = 999;
+	}
+
+	// cases where tile is aligned with center point
+	if( x == centerX ) {
+		if( x < centerY ) {
+			return 0;
+		} else {
+			return 4;
+		}
+	}
+	if( y == centerY ) {
+		if( x < centerX ) {
+			return 6;
+		} else {
+			return 2;
+		}
+	}
+
+	if( y < centerY ) {
+		// North
+		vert = 0;
+	}
+	if( y > centerY ) {
+		// South
+		vert = 4;
+	}
+	if( x < centerX ) {
+		// West
+		horz = 6;
+	}
+	if( x > centerX ) {
+		// East
+		horz = 2;
+	}
+
+	if( slope > 2.41 ) {
+		return vert;
+	} else if( slope < 0.41 ) {
+		return horz;
+	} else {
+		if( vert === 0 ) {
+			if( horz == 6 ) {
+				// North-West
+				return 7;
+			} else {
+				// North-East
+				return 1;
+			}
+		} else {
+			if( horz == 6 ) {
+				// South-West
+				return 5;
+			} else {
+				// South-East
+				return 3;
+			}
 		}
 	}
 }
@@ -590,10 +680,11 @@ Heroic.RegionX.prototype.each = function(callback, args) {
 }
 
 Heroic.RegionX.prototype.eachChild = function(callback, args) {
-	var children = this.parent.children;
+	var children	= this.children;
+	var length		= children.length;
 
-	for( var index in children) {
-		var child = children[index];
+	for(var i = length - 1; i > -1; i--) {
+		var child = children[i];
 
 		callback(child);
 	}
@@ -642,7 +733,7 @@ Heroic.RegionX.prototype.eachInterior = function(callback, args) {
 /*
  * Returns a random point in the region.
  */
-Heroic.RegionX.prototype.random = function() {
+Heroic.RegionX.prototype.randomPoint = function() {
 	var lengthY	= this.points.length;
 	var randY	= Math.floor( Math.random() * lengthY );
 	var lengthX	= this.points[randY].length;
@@ -735,7 +826,6 @@ function initializeEngine() {
 
 	var args = {shape: 'blob', origin: {x: 40, y: 40}, radius: 10};
 	test.addChild(args);
-	console.log(test.children[1]);
 
 
 	for(var index1 in test.children) {
@@ -755,8 +845,76 @@ function initializeEngine() {
 		}, drawArgs);
 	}
 
-	var randPoint = test.children[1].random();
+	var args = {shape: 'rectangle', origin: {x: 2, y: 2}, terminus: {x: 70, y: 70}};
+	test.addChild(args);
+	var randRegion = test.children[2];
 
+	var styles = {background: 'black', color: 'white', character: ''};
+	drawArgs.styles = styles;
+	randRegion.each(function(x, y, args) {
+		randRegion.drawPoint(x, y, args);
+	}, drawArgs);
+
+	var ne = [].concat(randRegion.quadrants[1], randRegion.quadrants[3], randRegion.quadrants[5], randRegion.quadrants[7]);
+	for(var index in ne) {
+		var point = ne[index];
+		var draw = {styles: {background: 'white', color: 'white', character: ''}, layer: layer};
+		randRegion.drawPoint(point.x, point.y, draw);
+	}
+	/*
+	var randPoint = randRegion.randomPoint();
+	var off = {x: 0, y: 0};
+	for(var i = 0; i < 44; i++) {
+		//var args = {shape: 'circle', origin: randRegion.sumPoints(off, randPoint), radius: i + 2};
+		
+		var randDims = Math.random();
+		if( randDims > 0.5 ) {
+			var randX = 4;
+			var randY = 0;
+		} else {
+			var randX = 0;
+			var randY = 4;
+		}
+		if( !lastChild ) {
+			var lastChild = {};
+			lastChild.terminus = randPoint;
+		}
+		var newPoint = randRegion.sumPoints(off, lastChild.terminus);
+		var args = {shape: 'rectangle', origin: newPoint, terminus: randRegion.sumPoints(newPoint, {x: randX, y: randY})};
+		randRegion.addChild(args);
+
+		var firstChild = randRegion.children[0];
+		var lastChild = randRegion.children[ randRegion.children.length - 1 ];
+
+		off = lastChild.origin;
+		var randTranslate = Math.random();
+		if( randTranslate > 0.66 && randDims > 0.5 ) {
+			lastChild.translate(-4, 0);
+			off.x -= 4;
+		} else if( randTranslate > 0.33 && randDims < 0.5 ) {
+			lastChild.translate(0, -4);
+			off.y -= 4;
+		}
+		
+	}
+	for(var i = 6; i > 0; i--) {
+		var firstChild = randRegion.children[0];
+		var lastChild = randRegion.children[i];
+
+		firstChild.mergeWith(lastChild);
+	}
+	*/
+
+	drawArgs.styles = {background: 'white', color: 'white', character: ''};
+	
+	randRegion.eachChild(function(child) {
+		child.eachEdge(function(x, y, args) {
+			child.drawPoint(x, y, args);
+		}, drawArgs);
+	});
+
+	/*
+	var randPoint = test.children[1].random();
 	// rand Rectangle
 	var args = {shape: 'rectangle', origin: randPoint, terminus: {x: randPoint.x + 5, y: randPoint.y + 5}};
 	test.children[1].addChild(args);
@@ -768,13 +926,14 @@ function initializeEngine() {
 	test.children[1].children[0].each(function(x, y, args) {
 		test.children[1].children[0].drawPoint(x, y, args);
 	}, args2);
+	*/
 
 	/*
 	child.each(function(x, y) {
 		this.drawPoint(x, y, args.styles, args.layer);
 	}, args);
 	*/
-
+	/*
 	var args = {shape: 'circle', origin: {x: 9, y: 9}, radius: 7};
 	var child = test.children[0];
 	child.addChild(args);
@@ -791,6 +950,7 @@ function initializeEngine() {
 	grandChild.eachInterior(function(x, y, args) {
 		grandChild.drawPoint(x, y, args);
 	}, drawArgs);
+	*/
 
 	/*
 	var args = {shape: 'rectangle', origin: {x: 1, y: 1}, terminus: {x: 6, y: 6}};
@@ -805,9 +965,6 @@ function initializeEngine() {
 	var gg3 = grandChild.children[2];
 	
 	gg.translate(2, 2);
-	console.log(grandChild.parent);
-	console.log(grandChild);
-	console.log(gg);
 	gg.mergeWith(gg2);
 	gg.mergeWith(gg3);
 	styles = {color: 'black', background: 'pink', character: ''};
@@ -816,12 +973,14 @@ function initializeEngine() {
 	gg.drawInterior(styles, layer);
 	*/
 
+	/*
 	grandChild.eachEdge(function(x, y) {
 		//var args = {shape: 'circle', origin: {x: x+4, y: y+4}, radius: 4};
 		var args = {shape: 'rectangle', origin: {x: x, y: y}, terminus: {x: x + 4, y: y + 4}};
 		//var args = {shape: 'line', origin: {x: x, y: y}, terminus: {x: x+1, y: y+1}};
 		grandChild.addChild(args);
 	});
+	*/
 
 
 	/*
@@ -835,12 +994,10 @@ function initializeEngine() {
 	styles.color = 'white';
 	styles.background = 'green';
 	gg.drawInterior(styles, layer);
-	console.log(gg);
 	*/
 
 	//var gg = grandChild.children[0];
 	//var gg1 = grandChild.children[1];
-	//console.log(gg1);
 	//gg.mergeWith(gg1);
 	/*
 	for(var index in grandChild.children) {
@@ -891,8 +1048,6 @@ function initializeEngine() {
 	gg1.drawEdge(styles, layer);
 	styles.background = 'green';
 	//gg2.drawEdge(styles, layer);
-	console.log(gg1);
-	console.log(gg2);
 	*/
 }
 
