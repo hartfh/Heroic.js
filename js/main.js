@@ -60,27 +60,27 @@ Heroic.RegionX.prototype.calcShape = function(args) {
 		} else {
 			this.calcOffset();
 		}
-	}
 
-	for(var index in Heroic.Direction.key) {
-		this.quadrants.push([]);
-	}
+		for(var index in Heroic.Direction.key) {
+			this.quadrants.push([]);
+		}
 
-	this.each(function(x, y) {
-		var quadrant = self.calcQuadrant(x, y);
-		self.quadrants[quadrant].push({x: x, y: y});
-	});
+		this.each(function(x, y) {
+			var quadrant = self.calcQuadrant(x, y);
+			self.quadrants[quadrant].push({x: x, y: y});
+		});
+	}
 }
 
 Heroic.RegionX.prototype.calcQuadrant = function(x, y) {
 	var slope, horz, vert;
 
 	// find approximate center
-	var width	= this.terminus.x - this.origin.x;
-	var height	= this.terminus.y - this.origin.y;
+	var width	= this.terminus.x;
+	var height	= this.terminus.y;
 
-	var centerX = this.origin.x + width * 0.5;
-	var centerY = this.origin.y + height * 0.5;
+	var centerX = width * 0.5;
+	var centerY = height * 0.5;
 
 	var rise	= y - centerY;
 	var run		= x - centerX;
@@ -95,7 +95,7 @@ Heroic.RegionX.prototype.calcQuadrant = function(x, y) {
 
 	// cases where tile is aligned with center point
 	if( x == centerX ) {
-		if( x < centerY ) {
+		if( y < centerY ) {
 			return 0;
 		} else {
 			return 4;
@@ -595,6 +595,8 @@ Heroic.RegionX.prototype.addChild = function(args) {
 	if( child.isOutOfBounds() ) {
 		child.fixBoundaries();
 	}
+
+	return child;
 }
 
 /*
@@ -792,23 +794,7 @@ function initializeEngine() {
 
 	var test = new Heroic.RegionX({shape: 'circle', origin: {x: 0, y: 0}, radius: 45});
 	Heroic.Entities.regions.load(test);
-	//var test = new Heroic.RegionX({shape: 'rectangle', origin: {x: 2, y: 2}, terminus: {x: 55, y: 15}});
 
-	/*
-	for(var index in test.edge) {
-		var point = test.edge[index];
-
-		var args = {};
-		//args.tile = {x: point.x, y: point.y, size: 5};
-		args.x = point.x;
-		args.y = point.y;
-		args.size = Heroic.Constants.tileSize;
-		args.color = 'black';
-		args.background = 'white';
-		args.character = '';
-		Heroic.Layers.terrain.draw(args);		
-	}
-	*/
 
 	var layer = Heroic.Layers.terrain;
 	var styles = {color: 'black', background: 'green', character: ''};
@@ -821,6 +807,7 @@ function initializeEngine() {
 		test.drawPoint(x, y, args);
 	}, drawArgs);
 
+	/*
 	var args = {shape: 'rectangle', origin: {x: 2, y: 2}, terminus: {x: 30, y: 35}};
 	test.addChild(args);
 
@@ -854,201 +841,46 @@ function initializeEngine() {
 	randRegion.each(function(x, y, args) {
 		randRegion.drawPoint(x, y, args);
 	}, drawArgs);
+	*/
 
-	var ne = [].concat(randRegion.quadrants[1], randRegion.quadrants[3], randRegion.quadrants[5], randRegion.quadrants[7]);
-	for(var index in ne) {
-		var point = ne[index];
-		var draw = {styles: {background: 'white', color: 'white', character: ''}, layer: layer};
-		randRegion.drawPoint(point.x, point.y, draw);
-	}
+	//quadrants test
 	/*
-	var randPoint = randRegion.randomPoint();
-	var off = {x: 0, y: 0};
-	for(var i = 0; i < 44; i++) {
-		//var args = {shape: 'circle', origin: randRegion.sumPoints(off, randPoint), radius: i + 2};
-		
-		var randDims = Math.random();
-		if( randDims > 0.5 ) {
-			var randX = 4;
-			var randY = 0;
-		} else {
-			var randX = 0;
-			var randY = 4;
-		}
-		if( !lastChild ) {
-			var lastChild = {};
-			lastChild.terminus = randPoint;
-		}
-		var newPoint = randRegion.sumPoints(off, lastChild.terminus);
-		var args = {shape: 'rectangle', origin: newPoint, terminus: randRegion.sumPoints(newPoint, {x: randX, y: randY})};
-		randRegion.addChild(args);
-
-		var firstChild = randRegion.children[0];
-		var lastChild = randRegion.children[ randRegion.children.length - 1 ];
-
-		off = lastChild.origin;
-		var randTranslate = Math.random();
-		if( randTranslate > 0.66 && randDims > 0.5 ) {
-			lastChild.translate(-4, 0);
-			off.x -= 4;
-		} else if( randTranslate > 0.33 && randDims < 0.5 ) {
-			lastChild.translate(0, -4);
-			off.y -= 4;
-		}
-		
-	}
-	for(var i = 6; i > 0; i--) {
-		var firstChild = randRegion.children[0];
-		var lastChild = randRegion.children[i];
-
-		firstChild.mergeWith(lastChild);
+	var quad = test.quadrants[4];
+	for(var index in quad) {
+		var point = quad[index];
+		var styles = {background: 'black', color: 'white', character: ''};
+		drawArgs.styles = styles;
+		test.drawPoint(point.x, point.y, drawArgs);
 	}
 	*/
 
-	drawArgs.styles = {background: 'white', color: 'white', character: ''};
-	
-	randRegion.eachChild(function(child) {
+
+	var dir = new Heroic.Direction();
+	var start = {x: 25, y: 25};
+
+	for(var i = 0; i < 7; i++) {
+		var shapeArgs = {shape: 'circle', origin: start, radius: 5};
+		//var shapeArgs = {shape: 'rectangle', origin: start, terminus: {x: 6, y: 6}};
+
+		var child = test.addChild(shapeArgs);
+		//child.quadrants[4].shuffle();
+		var randPoint = child.quadrants[4][2];
+		console.log(randPoint);
+		start = child.sumPoints(randPoint, child.offset);
+
+		var drawArgs = {};
+		drawArgs.styles = {background: 'darkblue', color: 'darkblue', character: ''};
+		drawArgs.layer = layer;
+		if( i < 3 ) {
+			console.log(start);
 		child.eachEdge(function(x, y, args) {
 			child.drawPoint(x, y, args);
 		}, drawArgs);
-	});
-
-	/*
-	var randPoint = test.children[1].random();
-	// rand Rectangle
-	var args = {shape: 'rectangle', origin: randPoint, terminus: {x: randPoint.x + 5, y: randPoint.y + 5}};
-	test.children[1].addChild(args);
-	var layer = Heroic.Layers.terrain;
-	//test.children[1].children[0].draw({color: 'black', background: 'black', character: ''}, layer);
-	var args2 = {};
-	args2.styles = {color: 'black', background: 'black', character: ''};
-	args2.layer = layer;
-	test.children[1].children[0].each(function(x, y, args) {
-		test.children[1].children[0].drawPoint(x, y, args);
-	}, args2);
-	*/
-
-	/*
-	child.each(function(x, y) {
-		this.drawPoint(x, y, args.styles, args.layer);
-	}, args);
-	*/
-	/*
-	var args = {shape: 'circle', origin: {x: 9, y: 9}, radius: 7};
-	var child = test.children[0];
-	child.addChild(args);
-	var grandChild = child.children[0];
-
-	var layer = Heroic.Layers.terrain;
-	var styles = {color: 'black', background: 'white', character: ''};
-	var drawArgs = {styles: styles, layer: layer};
-	grandChild.eachEdge(function(x, y, args) {
-		grandChild.drawPoint(x, y, args);
-	}, drawArgs);
-
-	drawArgs.styles = {color: 'black', background: 'darkblue', character: ''};
-	grandChild.eachInterior(function(x, y, args) {
-		grandChild.drawPoint(x, y, args);
-	}, drawArgs);
-	*/
-
-	/*
-	var args = {shape: 'rectangle', origin: {x: 1, y: 1}, terminus: {x: 6, y: 6}};
-	grandChild.addChild(args);
-	var args = {shape: 'rectangle', origin: {x: 1, y: 1}, terminus: {x: 6, y: 6}};
-	grandChild.addChild(args);
-	var args = {shape: 'circle', origin: {x: 13, y: 5}, radius: 7};
-	grandChild.addChild(args);
-
-	var gg = grandChild.children[0];
-	var gg2 = grandChild.children[1];
-	var gg3 = grandChild.children[2];
-	
-	gg.translate(2, 2);
-	gg.mergeWith(gg2);
-	gg.mergeWith(gg3);
-	styles = {color: 'black', background: 'pink', character: ''};
-	gg.drawEdge(styles, layer);
-	styles = {color: 'black', background: 'black', character: ''};
-	gg.drawInterior(styles, layer);
-	*/
-
-	/*
-	grandChild.eachEdge(function(x, y) {
-		//var args = {shape: 'circle', origin: {x: x+4, y: y+4}, radius: 4};
-		var args = {shape: 'rectangle', origin: {x: x, y: y}, terminus: {x: x + 4, y: y + 4}};
-		//var args = {shape: 'line', origin: {x: x, y: y}, terminus: {x: x+1, y: y+1}};
-		grandChild.addChild(args);
-	});
-	*/
-
-
-	/*
-	var args = {shape: 'rectangle', origin: {x: 0, y: 0}, terminus: {x: 4, y: 4}};
-	grandChild.addChild(args);
-	var gg = grandChild.children[0];
-	gg.translate(-2, -2);
-	styles.color = 'white';
-	styles.background = 'black';
-	gg.drawEdge(styles, layer);
-	styles.color = 'white';
-	styles.background = 'green';
-	gg.drawInterior(styles, layer);
-	*/
-
-	//var gg = grandChild.children[0];
-	//var gg1 = grandChild.children[1];
-	//gg.mergeWith(gg1);
-	/*
-	for(var index in grandChild.children) {
-		var gg = grandChild.children[index];
-
-		styles.color = 'white';
-		styles.background = 'pink';
-		gg.drawEdge(styles, layer);
-	}
-	*/
-
-	/*
-	// circular merging test
-	var gg = grandChild.children[0];
-	//gg.translate(-2, -2);
-	for(var i = grandChild.children.length - 1; i > 0; i--) {
-		var ggx = grandChild.children[i];
-		ggx.translate(-1, 0);
-		gg.mergeWith(ggx);
-		//styles.color = 'white';
-		//styles.background = 'pink';
-		//ggx.drawEdge(styles, layer);
+		}
+		console.log(child);
 	}
 
-	styles.color = 'white';
-	styles.background = 'black';
-	gg.drawEdge(styles, layer);
-	styles.color = 'white';
-	styles.background = 'green';
-	gg.drawInterior(styles, layer);
-	*/
 
-
-	/*
-	// simple rectangles
-	var args = {shape: 'rectangle', origin: {x: 2, y: 0}, terminus: {x: 5, y: 9}};
-	grandChild.addChild(args);
-	var gg1 = grandChild.children[0];
-
-
-	var args = {shape: 'rectangle', origin: {x: 2, y: 10}, terminus: {x: 8, y: 5}};
-	grandChild.addChild(args);
-	var gg2 = grandChild.children[1];
-	gg2.translate(-3, 0);
-	gg1.mergeWith(gg2);
-
-	styles.background = 'pink';
-	gg1.drawEdge(styles, layer);
-	styles.background = 'green';
-	//gg2.drawEdge(styles, layer);
-	*/
 }
 
 /*
