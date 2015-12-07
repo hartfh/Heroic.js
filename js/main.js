@@ -4,12 +4,142 @@ Heroic.Constants = {
 	tileSize:		5
 }
 
+Heroic.RegionPattern = function(args) {
+	this.initialize(args);
+};
+
+Heroic.RegionPattern.prototype.initialize = function(args) {
+	if( typeof(args.recursive) == 'undefined'  ) {
+		args.recursive = false;
+	}
+	if( typeof(args.direction) == 'undefined' ) {
+		args.direction = new Heroic.Direction();
+	}
+	this.parent		= args.parent;
+	this.shape		= args.shape;
+	this.direction	= args.direction;
+	this.lastChild	= false;
+	this.continue	= true;
+	this.regions	= [];
+	this.recursive	= args.recursive;
+
+	this.setExtras();
+
+	// % chance to continue
+	// % chance to reduce
+
+	while( this.continue ) {
+		var region = this.parent.addChild(this.shape);
+		this.lastChild = region;
+		this.regions.push(region);
+		this.realign();
+		this.reduce();
+		this.turn();
+
+		/*
+		// each time this recurses, should decrease chance for that branch to recurse further
+		// also possible build in an "extension" to each branch's lifespan
+		if( this.maybeRecurse() ) {
+			// setup arguments
+
+			var recurseRegion = new this.constructor(recurseArgs);
+			this.regions = this.regions.concat(recurseRegion.regions);
+		}
+		*/
+		if( Math.random() > 0.75 && this.recursive ) {
+			var recurseArgs = {};
+			recurseArgs.direction = new Heroic.Direction( args.direction.index );
+			recurseArgs.shape = {shape: 'circle', origin: {x: this.shape.origin.x, y: this.shape.origin.y}, radius: this.shape.radius};
+			recurseArgs.parent = this.parent;
+			recurseArgs.recursive = this.recursive;
+			var sign = Math.round( Math.random() * 2 - 1 );
+			recurseArgs.direction.rotate(45 * sign);
+
+			var recurseRegion = new this.constructor(recurseArgs);
+			this.regions = this.regions.concat(recurseRegion.regions);
+		}
+	}
+
+	// merge all regions
+	var length		= this.regions.length;
+	var firstRegion	= this.regions[0];
+
+	for(var i = length - 1; i > 0; i--) {
+		var region = this.regions[i];
+
+		firstRegion.mergeWith(region);
+	}
+}
+
+Heroic.RegionPattern.prototype.terminate = function() {
+	this.continue = false;
+}
+
+// abstract methods
+Heroic.RegionPattern.prototype.realign		= function() {}
+Heroic.RegionPattern.prototype.reduce		= function() {}
+Heroic.RegionPattern.prototype.turn			= function() {}
+Heroic.RegionPattern.prototype.setExtras	= function() {}
+
+Heroic.RectangularPattern = function(args) {
+	this.initialize(args);
+}
+
+Heroic.RectangularPattern.extend(Heroic.RegionPattern);
+
+Heroic.RectangularPattern.prototype.setExtras = function() {}
+
+Heroic.RectangularPattern.prototype.realign = function() {
+	
+}
+
+Heroic.RectangularPattern.prototype.reduce = function() {
+	// shorten or narrow
+}
+
+Heroic.RectangularPattern.prototype.turn = function() {
+	// 90 degree turn
+}
+
+
+
+Heroic.OrganicPattern = function(args) {
+	this.initialize(args);
+}
+
+Heroic.OrganicPattern.extend(Heroic.RegionPattern);
+
+Heroic.OrganicPattern.prototype.setExtras = function() {}
+
+Heroic.OrganicPattern.prototype.realign = function() {
+	var last = this.lastChild;
+	var newPoint = last.edge[this.direction.index][0];
+	this.shape.origin = last.sumPoints(newPoint, last.offset);
+}
+
+Heroic.OrganicPattern.prototype.reduce = function() {
+	if( this.shape.radius > 2 ) {
+		if( Math.random() > 0.5 ) {
+			this.shape.radius--;
+		}
+	} else {
+		this.terminate();
+	}
+}
+
+Heroic.OrganicPattern.prototype.turn = function() {
+	var sign = Math.round( Math.random() * 2 - 1 );
+	this.direction.rotate( 45 * sign );
+}
+
+/*
 // consider removing entirely, since it's covered in Constants
 Heroic.TileX = function(x, y) {
 	this.size = 5;
 	this.x = x;
 	this.y = y;
 }
+*/
 
 /*
  * 
@@ -401,9 +531,16 @@ Heroic.RegionX.prototype.calcEdge = function() {
 	this.edge		= [];
 	this.interior	= [];
 
+	for(var index in Heroic.Direction.key) {
+		this.edge.push([]);
+		this.interior.push([]);
+	}
+
 	this.each(function(x, y) {
+		var quadrant = self.calcQuadrant(x, y);
+
 		if(x == 0 || y == 0 || x == self.terminus.x || y == self.terminus.y) {
-			self.edge.push({x: x, y: y});
+			self.edge[quadrant].push({x: x, y: y});
 			return;
 		} else {
 			// check the eight surrounding points for empties
@@ -415,7 +552,8 @@ Heroic.RegionX.prototype.calcEdge = function() {
 						var testY = y + i;
 
 						if( !self.hasPoint(testX, testY) ) {
-							self.edge.push({x: x, y: y});
+							self.edge[quadrant].push({x: x, y: y});
+							//self.edge.push({x: x, y: y});
 							return;
 						}
 					}
@@ -423,7 +561,8 @@ Heroic.RegionX.prototype.calcEdge = function() {
 			}
 		}
 		// everything which is not an edge point makes up the interior
-		self.interior.push({x: x, y: y});
+		self.interior[quadrant].push({x: x, y: y});
+		//self.interior.push({x: x, y: y});
 	});
 }
 
@@ -611,7 +750,7 @@ Heroic.RegionX.prototype.destroy = function() {
 	}
 }
 
-// merge this region with all children, sub-childre, etc.
+// merge this region with all children, sub-children, etc.
 Heroic.RegionX.prototype.flatten = function() {
 	// what sub-routines do we need
 	// mergeWith()
@@ -705,28 +844,36 @@ Heroic.RegionX.prototype.eachSibling = function(callback, args) {
 }
 
 Heroic.RegionX.prototype.eachEdge = function(callback, args) {
-	var edgePoints = this.edge;
+	var edgeQuadrants = this.edge;
 
-	for(var index in edgePoints) {
-		var point = edgePoints[index];
-		var x = parseInt(point.x) + this.correction.x;
-		var y = parseInt(point.y) + this.correction.y;
+	for(var index1 in edgeQuadrants) {
+		var quadrant = edgeQuadrants[index1];
 
-		callback(x, y, args);
+		for(var index2 in quadrant) {
+			var point = quadrant[index2];
+			var x = parseInt(point.x) + this.correction.x;
+			var y = parseInt(point.y) + this.correction.y;
+
+			callback(x, y, args);
+		}
 	}
 
 	this.correction = {x: 0, y: 0};
 }
 
 Heroic.RegionX.prototype.eachInterior = function(callback, args) {
-	var interiorPoints = this.interior;
+	var interiorQuadrants = this.interior;
 
-	for(var index in interiorPoints) {
-		var point = interiorPoints[index];
-		var x = parseInt(point.x) + this.correction.x;
-		var y = parseInt(point.y) + this.correction.y;
+	for(var index1 in interiorQuadrants) {
+		var quadrant = interiorQuadrants[index1];
 
-		callback(x, y, args);
+		for(var index2 in quadrant) {
+			var point = quadrant[index2];
+			var x = parseInt(point.x) + this.correction.x;
+			var y = parseInt(point.y) + this.correction.y;
+
+			callback(x, y, args);
+		}
 	}
 
 	this.correction = {x: 0, y: 0};
@@ -745,17 +892,21 @@ Heroic.RegionX.prototype.randomPoint = function() {
 }
 
 Heroic.RegionX.prototype.randomEdge = function() {
-	var length = this.edge.length;
-	var rand = Math.floor( Math.random() * length );
+	var quadrants		= Heroic.Direction.key.length;
+	var randQuadrant	= Math.floor( Math.random() * quadrants );
+	var length			= this.edge[randQuadrant].length;
+	var rand			= Math.floor( Math.random() * length );
 
-	return this.edge[rand];
+	return this.edge[randQuadrant][rand];
 }
 
 Heroic.RegionX.prototype.randomInterior = function() {
-	var length = this.interior.length;
-	var rand = Math.floor( Math.random() * length );
+	var quadrants		= Heroic.Direction.key.length;
+	var randQuadrant	= Math.floor( Math.random() * quadrants );
+	var length			= this.interior[randQuadrant].length;
+	var rand			= Math.floor( Math.random() * length );
 
-	return this.interior[rand];
+	return this.interior[randQuadrant][rand];
 }
 
 Heroic.RegionX.prototype.drawPoint = function(x, y, args) {
@@ -792,7 +943,7 @@ function initializeEngine() {
 	Heroic.Entities.regions = new Heroic.Inventory();
 	Heroic.Entities.regions.init();
 
-	var test = new Heroic.RegionX({shape: 'circle', origin: {x: 0, y: 0}, radius: 45});
+	var test = new Heroic.RegionX({shape: 'circle', origin: {x: 0, y: 0}, radius: 65});
 	Heroic.Entities.regions.load(test);
 
 
@@ -800,12 +951,13 @@ function initializeEngine() {
 	var styles = {color: 'black', background: 'green', character: ''};
 	var drawArgs = {styles: styles, layer: layer};
 	test.eachInterior(function(x, y, args) {
-		test.drawPoint(x, y, args);
+		//test.drawPoint(x, y, args);
 	}, drawArgs);
 	styles.background = 'white';
 	test.eachEdge(function(x, y, args) {
-		test.drawPoint(x, y, args);
+		//test.drawPoint(x, y, args);
 	}, drawArgs);
+
 
 	/*
 	var args = {shape: 'rectangle', origin: {x: 2, y: 2}, terminus: {x: 30, y: 35}};
@@ -854,32 +1006,78 @@ function initializeEngine() {
 	}
 	*/
 
-
+	// Continuing circles
+	/*
 	var dir = new Heroic.Direction();
 	var start = {x: 25, y: 25};
 
-	for(var i = 0; i < 7; i++) {
+	for(var i = 0; i < 8; i++) {
 		var shapeArgs = {shape: 'circle', origin: start, radius: 5};
 		//var shapeArgs = {shape: 'rectangle', origin: start, terminus: {x: 6, y: 6}};
 
 		var child = test.addChild(shapeArgs);
-		//child.quadrants[4].shuffle();
-		var randPoint = child.quadrants[4][2];
-		console.log(randPoint);
+		child.quadrants[dir.index].shuffle();
+		var randPoint = child.quadrants[dir.index][1];
 		start = child.sumPoints(randPoint, child.offset);
 
 		var drawArgs = {};
 		drawArgs.styles = {background: 'darkblue', color: 'darkblue', character: ''};
 		drawArgs.layer = layer;
-		if( i < 3 ) {
-			console.log(start);
+
 		child.eachEdge(function(x, y, args) {
 			child.drawPoint(x, y, args);
 		}, drawArgs);
-		}
-		console.log(child);
-	}
 
+		dir.rotate( 45 * Math.round(Math.random() * 2 - 1) );
+	}
+	*/
+
+	// Continuing rectangles
+	/*
+	var dir = new Heroic.Direction();
+	var start = {x: 40, y: 40};
+	var end = {x: 8, y: 2};
+	for(var i = 0; i < 5; i++) {
+		var shapeArgs = {shape: 'rectangle', origin: start, terminus: test.sumPoints(start, end)};
+		var child = test.addChild(shapeArgs);
+
+		// realign
+		start = test.sumPoints(child.quadrants[2][0], child.offset);
+
+		// draw
+		var drawArgs = {};
+		drawArgs.styles = {background: 'darkblue', color: 'darkblue', character: ''};
+		drawArgs.layer = layer;
+		child.eachEdge(function(x, y, args) {
+			child.drawPoint(x, y, args);
+		}, drawArgs);
+	}
+	*/
+
+	var recurArgs = {parent: test, recursive: true, shape: {shape: 'circle', origin: {x: 115, y: 90}, radius: 8}};
+	var recur = new Heroic.OrganicPattern(recurArgs);
+
+	var drawArgs = {};
+	drawArgs.layer = layer;
+
+	test.eachChild(function(child) {
+		drawArgs.styles = {background: 'white', color: 'darkblue', character: ''};
+		child.eachEdge(function(x, y, args) {
+			child.drawPoint(x, y, args);
+		}, drawArgs);
+
+		drawArgs.styles = {background: 'darkblue', color: 'darkblue', character: ''};
+		child.eachInterior(function(x, y, args) {
+			child.drawPoint(x, y, args);
+		}, drawArgs);
+	});
+
+	var args = {shape: 'circle', origin: {x: 115, y: 90}, radius: 1}
+	var center = test.addChild(args);
+	drawArgs.styles = {background: 'green', color: 'darkblue', character: ''};
+	center.eachEdge(function(x, y, args) {
+		center.drawPoint(x, y, args);
+	}, drawArgs);
 
 }
 
