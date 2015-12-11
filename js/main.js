@@ -15,6 +15,9 @@ Heroic.RegionPattern.prototype.initialize = function(args) {
 	if( typeof(args.direction) == 'undefined' ) {
 		args.direction = new Heroic.Direction();
 	}
+	if( typeof(args.depth) == 'undefined' ) {
+		args.depth = 1;
+	}
 	this.parent		= args.parent;
 	this.shape		= args.shape;
 	this.direction	= args.direction;
@@ -22,41 +25,29 @@ Heroic.RegionPattern.prototype.initialize = function(args) {
 	this.continue	= true;
 	this.regions	= [];
 	this.recursive	= args.recursive;
+	this.depth		= args.depth; // limit to max depth = 3?
+	this.branches	= 0; // limit to 2 or 3 branches?
+	this.length		= 0;
 
-	this.setExtras();
-
-	// % chance to continue
-	// % chance to reduce
+	//this.setExtras();
 
 	while( this.continue ) {
 		var region = this.parent.addChild(this.shape);
+
 		this.lastChild = region;
 		this.regions.push(region);
 		this.realign();
-		this.reduce();
-		this.turn();
 
-		/*
-		// each time this recurses, should decrease chance for that branch to recurse further
-		// also possible build in an "extension" to each branch's lifespan
-		if( this.maybeRecurse() ) {
-			// setup arguments
-
-			var recurseRegion = new this.constructor(recurseArgs);
-			this.regions = this.regions.concat(recurseRegion.regions);
+		if( this.recursive ) {
+			if( this.maybeRecurse() ) {
+				this.recurse(args);
+			}
 		}
-		*/
-		if( Math.random() > 0.75 && this.recursive ) {
-			var recurseArgs = {};
-			recurseArgs.direction = new Heroic.Direction( args.direction.index );
-			recurseArgs.shape = {shape: 'circle', origin: {x: this.shape.origin.x, y: this.shape.origin.y}, radius: this.shape.radius};
-			recurseArgs.parent = this.parent;
-			recurseArgs.recursive = this.recursive;
-			var sign = Math.round( Math.random() * 2 - 1 );
-			recurseArgs.direction.rotate(45 * sign);
-
-			var recurseRegion = new this.constructor(recurseArgs);
-			this.regions = this.regions.concat(recurseRegion.regions);
+		if( this.maybeTerminate() ) {
+			this.terminate();
+		} else {
+			this.reduce();
+			this.turn();
 		}
 	}
 
@@ -76,10 +67,14 @@ Heroic.RegionPattern.prototype.terminate = function() {
 }
 
 // abstract methods
-Heroic.RegionPattern.prototype.realign		= function() {}
-Heroic.RegionPattern.prototype.reduce		= function() {}
-Heroic.RegionPattern.prototype.turn			= function() {}
-Heroic.RegionPattern.prototype.setExtras	= function() {}
+Heroic.RegionPattern.prototype.realign			= function() {}
+Heroic.RegionPattern.prototype.reduce			= function() {}
+Heroic.RegionPattern.prototype.turn				= function() {}
+Heroic.RegionPattern.prototype.maybeRecurse		= function() {}
+Heroic.RegionPattern.prototype.maybeTerminate	= function() {}
+Heroic.RegionPattern.prototype.recurse			= function() {}
+//Heroic.RegionPattern.prototype.setExtras	= function() {}
+
 
 Heroic.RectangularPattern = function(args) {
 	this.initialize(args);
@@ -92,6 +87,9 @@ Heroic.RectangularPattern.prototype.setExtras = function() {}
 Heroic.RectangularPattern.prototype.realign = function() {
 	
 }
+
+Heroic.RectangularPattern.prototype.maybeRecurse = function() {}
+Heroic.RectangularPattern.prototype.maybeTerminate = function() {}
 
 Heroic.RectangularPattern.prototype.reduce = function() {
 	// shorten or narrow
@@ -122,14 +120,51 @@ Heroic.OrganicPattern.prototype.reduce = function() {
 		if( Math.random() > 0.5 ) {
 			this.shape.radius--;
 		}
-	} else {
-		this.terminate();
 	}
 }
 
 Heroic.OrganicPattern.prototype.turn = function() {
 	var sign = Math.round( Math.random() * 2 - 1 );
 	this.direction.rotate( 45 * sign );
+}
+
+Heroic.OrganicPattern.prototype.maybeRecurse = function() {
+	if( Math.random() > 0.83 ) {
+		return true;
+	}
+
+	return false;
+}
+
+Heroic.OrganicPattern.prototype.recurse = function(args) {
+	// copy args by value
+	var recurseArgs = {};
+	var sign = Math.round( Math.random() * 2 - 1 );
+
+	recurseArgs.direction	= new Heroic.Direction( args.direction.index );
+	recurseArgs.depth		= args.depth++;
+	recurseArgs.shape		= {
+		shape:		this.shape.shape,
+		origin:		{x: this.shape.origin.x, y: this.shape.origin.y},
+		radius:		this.shape.radius
+	};
+	recurseArgs.parent		= this.parent;
+	recurseArgs.recursive	= this.recursive;
+
+	recurseArgs.direction.rotate(45 * sign);
+
+	var recurseRegion = new this.constructor(recurseArgs);
+	this.regions = this.regions.concat(recurseRegion.regions);
+}
+
+Heroic.OrganicPattern.prototype.maybeTerminate = function() {
+	if( this.shape.radius == 2 ) {
+		if( Math.random() > 0.2 ) {
+			return true;
+		}
+	}
+
+	return false;
 }
 
 /*
