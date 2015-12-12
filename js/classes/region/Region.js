@@ -584,7 +584,42 @@ Heroic.Region.prototype.translatePoints = function(xShift, yShift) {
 	this.correction.y += yShift;
 }
 
-Heroic.Region.prototype.rotate = function(degrees) {}
+Heroic.Region.prototype.rotate = function(degrees) {
+	console.log('rotating...');
+
+	// rotate about its origin
+
+	/*
+	if( typeof(degrees) != 'number' ) {
+		degrees = 0;
+	}
+
+	foreach(point) {
+		// do point rotation calculation
+		// addPoint?? (need to factor in translation after adding point)
+
+		newAddPoint:
+			if( x < 0 ) {
+				translate by x
+			}
+			if( y < 0 ) {
+				translate by y
+			}
+			then add
+	}
+
+	// old calculations
+	var radians	= degrees * Math.PI / 180;
+
+	var rotatedX = Math.cos(radians) * x - ( y * Math.sin(radians) );
+	var rotatedY = y + Math.sin(radians) * x;
+
+	var offsetX = Math.round(rotatedX) + origin.x;
+	var offsetY = Math.round(rotatedY) + origin.y;
+
+	var tile = this.getTile(offsetX, offsetY);
+	*/
+}
 
 /*
  * Create a new child Region.

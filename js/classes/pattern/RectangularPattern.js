@@ -6,24 +6,28 @@ Heroic.RectangularPattern = function(args) {
 
 Heroic.RectangularPattern.extend(Heroic.RegionPattern);
 
-Heroic.RectangularPattern.prototype.realign = function() {
-	// move to terminus but adjust?
-}
-
-Heroic.RectangularPattern.prototype.reduce = function() {
-	// shorten or narrow?
-}
-
-Heroic.RectangularPattern.prototype.turn = function() {
-	var sign = Math.round( Math.random() * 2 - 1 );
-	this.parent.direction.rotate( 90 * sign );
-}
-
 Heroic.RectangularPattern.prototype.maybeRecurse = function() {
-	
+	if( Math.random() > 1.8 ) {
+		return true;
+	}
+
+	return false;
 }
 
-Heroic.RectangularPattern.prototype.recurse = function() {
+Heroic.RectangularPattern.prototype.maybeTerminate = function() {
+	if( Math.random() > 0.4 ) {
+		return true;
+	}
+
+	return false;
+}
+
+Heroic.RectangularPattern.prototype.realign = function() {
+	this.shape.origin = {x: this.shape.terminus.x, y: this.shape.terminus.y};
+	this.shape.terminus = {x: this.shape.origin.x + this.lastChild.terminus.x, y: this.shape.origin.y + this.lastChild.terminus.y};
+}
+
+Heroic.RectangularPattern.prototype.recurse = function(args) {
 	var recurseArgs = {};
 	var sign = Math.round( Math.random() * 2 - 1 );
 
@@ -42,10 +46,19 @@ Heroic.RectangularPattern.prototype.recurse = function() {
 	this.regions = this.regions.concat(recurseRegion.regions);
 }
 
-Heroic.RectangularPattern.prototype.maybeTerminate = function() {
-	if( true ) {
-		return true;
+Heroic.RectangularPattern.prototype.reduce = function() {
+	// shorten or narrow?
+}
+
+Heroic.RectangularPattern.prototype.turn = function() {
+	//var sign = Math.round( Math.random() * 2 - 1 );
+	//this.parent.direction.rotate( 90 * sign );
+
+	if( this.length > 0 ) {
+		this.lastChild.rotate(90);
 	}
 
-	return false;
+	//var lastOrigin = this.shape.origin;
+	//var lastTerminus = this.shape.terminus;
+	//this.shape.terminus = {x: lastTerminus.y, y: lastTerminus.x};
 }

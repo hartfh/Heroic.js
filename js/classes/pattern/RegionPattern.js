@@ -15,7 +15,7 @@ Heroic.RegionPattern.prototype.initialize = function(args) {
 		args.recursive = false;
 	}
 	if( typeof(args.direction) == 'undefined' ) {
-		args.parent.direction = new Heroic.Direction();
+		args.direction = new Heroic.Direction();
 	}
 	if( typeof(args.depth) == 'undefined' ) {
 		args.depth = 1;
@@ -23,7 +23,7 @@ Heroic.RegionPattern.prototype.initialize = function(args) {
 
 	this.parent		= args.parent;
 	this.shape		= args.shape;
-	this.direction	= args.parent.direction;
+	this.direction	= args.direction;
 	this.lastChild	= false;
 	this.continue	= true;
 	this.regions	= [];
@@ -31,7 +31,7 @@ Heroic.RegionPattern.prototype.initialize = function(args) {
 
 	//this.depth		= args.depth; // limit to max depth = 3?
 	//this.branches	= 0; // limit to 2 or 3 branches?
-	//this.length		= 0;
+	this.length		= 0;
 	//this.maxLength	= 0;
 
 	//this.setExtras(); ????
@@ -40,6 +40,7 @@ Heroic.RegionPattern.prototype.initialize = function(args) {
 	while( this.continue ) {
 		var region = this.parent.addChild(this.shape);
 
+		this.length++;
 		this.lastChild = region;
 		this.regions.push(region);
 		this.realign();
@@ -76,7 +77,7 @@ Heroic.RegionPattern.prototype.terminate = function() {
 Heroic.RegionPattern.prototype.maybeRecurse		= function() {}
 Heroic.RegionPattern.prototype.maybeTerminate	= function() {}
 Heroic.RegionPattern.prototype.realign			= function() {}
-Heroic.RegionPattern.prototype.recurse			= function() {}
+Heroic.RegionPattern.prototype.recurse			= function(args) {}
 Heroic.RegionPattern.prototype.reduce			= function() {}
 Heroic.RegionPattern.prototype.turn				= function() {}
 //Heroic.RegionPattern.prototype.setExtras	= function() {}
