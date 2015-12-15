@@ -55,7 +55,7 @@ Heroic.RectangularPattern.prototype.turn = function() {
 	//this.parent.direction.rotate( 90 * sign );
 
 	if( this.length > 0 ) {
-		this.lastChild.rotate(90);
+		this.lastChild.rotate(45);
 	}
 
 	//var lastOrigin = this.shape.origin;

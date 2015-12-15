@@ -587,38 +587,42 @@ Heroic.Region.prototype.translatePoints = function(xShift, yShift) {
 Heroic.Region.prototype.rotate = function(degrees) {
 	console.log('rotating...');
 
-	// rotate about its origin
-
-	/*
 	if( typeof(degrees) != 'number' ) {
 		degrees = 0;
 	}
 
-	foreach(point) {
-		// do point rotation calculation
-		// addPoint?? (need to factor in translation after adding point)
+	var newPoints	= [];
+	var radians		= degrees * Math.PI / 180;
+	var minX = 0;
+	var minY = 0;
 
-		newAddPoint:
-			if( x < 0 ) {
-				translate by x
-			}
-			if( y < 0 ) {
-				translate by y
-			}
-			then add
+	this.each(function(x, y) {
+		var rotatedX = Math.cos(radians) * x - ( y * Math.sin(radians) );
+		var rotatedY = y * Math.cos(radians) + Math.sin(radians) * x;
+		var newPoint = {x: Math.round(rotatedX), y: Math.round(rotatedY)};
+
+		if( newPoint.x < minX ) {
+			minX = newPoint.x;
+		}
+		if( newPoint.y < minY ) {
+			minY = newPoint.y;
+		}
+
+		newPoints.push(newPoint);
+	}, degrees);
+
+	if( minX < 0 || minY < 0 ) {
+		this.expand(minX, 0, minY, 0);
 	}
 
-	// old calculations
-	var radians	= degrees * Math.PI / 180;
+	// clear old points
+	this.points = [];
 
-	var rotatedX = Math.cos(radians) * x - ( y * Math.sin(radians) );
-	var rotatedY = y + Math.sin(radians) * x;
-
-	var offsetX = Math.round(rotatedX) + origin.x;
-	var offsetY = Math.round(rotatedY) + origin.y;
-
-	var tile = this.getTile(offsetX, offsetY);
-	*/
+	// add new points
+	for(var index in newPoints) {
+		newPoint = newPoints[index];
+		this.addPoint(newPoint.x, newPoint.y);
+	}
 }
 
 /*
