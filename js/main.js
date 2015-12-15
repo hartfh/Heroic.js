@@ -45,7 +45,7 @@ function initializeEngine() {
 	//var recurArgs = {parent: test, recursive: true, shape: {shape: 'circle', origin: {x: 115, y: 90}, radius: 8}};
 	//var recur = new Heroic.OrganicPattern(recurArgs);
 
-	var recurArgs = {parent: test, recursive: true, shape: {shape: 'rectangle', origin: {x: 115, y: 90}, terminus: {x: 125, y: 94}}};
+	var recurArgs = {parent: test, recursive: true, shape: {shape: 'rectangle', origin: {x: 115, y: 90}, terminus: {x: 128, y: 97}}};
 	var recur = new Heroic.RectangularPattern(recurArgs);
 
 	var drawArgs = {};
