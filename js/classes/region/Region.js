@@ -412,7 +412,6 @@ Heroic.Region.prototype.calcEdge = function() {
 
 						if( !self.hasPoint(testX, testY) ) {
 							self.edge[quadrant].push({x: x, y: y});
-							//self.edge.push({x: x, y: y});
 							return;
 						}
 					}
@@ -421,7 +420,6 @@ Heroic.Region.prototype.calcEdge = function() {
 		}
 		// everything which is not an edge point makes up the interior
 		self.interior[quadrant].push({x: x, y: y});
-		//self.interior.push({x: x, y: y});
 	});
 }
 
@@ -472,11 +470,9 @@ Heroic.Region.prototype.isOutOfBounds = function() {
 		out.n = this.offset.y - parent.offset.y;
 	}
 	if( (this.terminus.x + this.origin.x) > parent.terminus.x ) {	
-		//out.e = this.terminus.x - parent.terminus.x;
 		out.e = (this.terminus.x + this.origin.x) - parent.terminus.x;
 	}
 	if( (this.terminus.y + this.origin.y) > parent.terminus.y ) {
-		//out.s = this.terminus.y - parent.terminus.y;
 		out.s = (this.terminus.y + this.origin.y) - parent.terminus.y;
 	}
 
@@ -565,6 +561,7 @@ Heroic.Region.prototype.expand = function(xNeg, xPos, yNeg, yPos) {
 	this.translatePoints( Math.abs(xNeg), Math.abs(yNeg) );
 }
 
+// needs documentation
 Heroic.Region.prototype.translatePoints = function(xShift, yShift) {
 	var newPoints = [];
 
@@ -585,8 +582,6 @@ Heroic.Region.prototype.translatePoints = function(xShift, yShift) {
 }
 
 Heroic.Region.prototype.rotate = function(degrees) {
-	console.log('rotating...');
-
 	if( typeof(degrees) != 'number' ) {
 		degrees = 0;
 	}
@@ -597,8 +592,8 @@ Heroic.Region.prototype.rotate = function(degrees) {
 	var minY = 0;
 
 	this.each(function(x, y) {
-		var rotatedX = Math.cos(radians) * x - ( y * Math.sin(radians) );
-		var rotatedY = y * Math.cos(radians) + Math.sin(radians) * x;
+		var rotatedX = x * Math.cos(radians) - y * Math.sin(radians);
+		var rotatedY = y * Math.cos(radians) + x * Math.sin(radians);
 		var newPoint = {x: Math.round(rotatedX), y: Math.round(rotatedY)};
 
 		if( newPoint.x < minX ) {
@@ -611,8 +606,10 @@ Heroic.Region.prototype.rotate = function(degrees) {
 		newPoints.push(newPoint);
 	}, degrees);
 
+
 	if( minX < 0 || minY < 0 ) {
-		this.expand(minX, 0, minY, 0);
+		//this.translatePoints(-1 * minX, -1 * minY);
+		//this.expand(minX, 0, minY, 0);
 	}
 
 	// clear old points
@@ -621,7 +618,56 @@ Heroic.Region.prototype.rotate = function(degrees) {
 	// add new points
 	for(var index in newPoints) {
 		newPoint = newPoints[index];
+		
+		if( minX < 0 || minY < 0 ) {
+			newPoint.x -= minX;
+			newPoint.y -= minY;
+		}
+
 		this.addPoint(newPoint.x, newPoint.y);
+	}
+}
+
+// patches 1x1 holes in a region
+Heroic.Region.prototype.patch = function() {
+	var height	= this.terminus.y;
+	var width	= this.terminus.x;
+
+	console.log(this.origin)
+	console.log('terminus')
+	console.log(this.terminus)
+
+	for(var y = 0; y < height; y++) {
+		for(var x = 0; x < width; x++) {
+			if( !this.points[y][x] ) {
+				var filled = 0;
+
+				for(var i = -1; i < 2; i++) {
+					for(var j = -1; j < 2; j++) {
+						if( i == 0 && j == 0 ) {
+							continue;
+						}
+
+						var testX = x + j;
+						var testY = y + i;
+
+						if( testX < 0 || testX >= width || testY < 0 || testY >= height ) {
+							continue;
+						}
+
+						var testPoint = this.points[testY][testX];
+
+						if( testPoint ) {
+							filled++;
+						}
+					}
+				}
+				
+				if( filled >= 7 ) {
+					this.points[y][x] = true;
+				}
+			}
+		}
 	}
 }
 

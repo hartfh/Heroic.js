@@ -66,7 +66,12 @@ Heroic.RegionPattern.prototype.initialize = function(args) {
 		var region = this.regions[i];
 
 		firstRegion.mergeWith(region);
+		this.regions.pop();
 	}
+
+	firstRegion.calcTerminus();
+	firstRegion.patch();
+	firstRegion.calcEdge();
 }
 
 Heroic.RegionPattern.prototype.terminate = function() {
