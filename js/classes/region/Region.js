@@ -36,7 +36,7 @@ Heroic.Region.prototype.master = function() {
 }
 
 Heroic.Region.prototype.calcShape = function(args) {
-	var shapes = ['circle', 'rectangle', 'grid', 'line', 'blob'];
+	var shapes = ['circle', 'rectangle', 'grid', 'line', 'blob', 'polygon'];
 	var self = this;
 
 	if( shapes.indexOf(args.shape) != -1 ) {
@@ -87,34 +87,35 @@ Heroic.Region.prototype.calcQuadrant = function(x, y) {
 	// cases where tile is aligned with center point
 	if( x == centerX ) {
 		if( y < centerY ) {
-			return 0;
-		} else {
-			return 4;
-		}
-	}
-	if( y == centerY ) {
-		if( x < centerX ) {
 			return 6;
 		} else {
 			return 2;
 		}
 	}
+	if( y == centerY ) {
+		if( x < centerX ) {
+			return 4;
+		} else {
+			//return 2;
+			return 0;
+		}
+	}
 
 	if( y < centerY ) {
 		// North
-		vert = 0;
+		vert = 6;
 	}
 	if( y > centerY ) {
 		// South
-		vert = 4;
+		vert = 2;
 	}
 	if( x < centerX ) {
 		// West
-		horz = 6;
+		horz = 4;
 	}
 	if( x > centerX ) {
 		// East
-		horz = 2;
+		horz = 0;
 	}
 
 	if( slope > 2.41 ) {
@@ -125,18 +126,18 @@ Heroic.Region.prototype.calcQuadrant = function(x, y) {
 		if( vert === 0 ) {
 			if( horz == 6 ) {
 				// North-West
-				return 7;
+				return 5;
 			} else {
 				// North-East
-				return 1;
+				return 7;
 			}
 		} else {
 			if( horz == 6 ) {
 				// South-West
-				return 5;
+				return 3;
 			} else {
 				// South-East
-				return 3;
+				return 1;
 			}
 		}
 	}
@@ -176,7 +177,49 @@ Heroic.Region.prototype.rectangle = function(args) {
 		}
 	}
 
+	//this.special['endpoint'] = {x: width, y: Math.round( height / 2 )};
 	this.special['endpoint'] = {x: width, y: 0};
+}
+
+Heroic.Region.prototype.polygon = function(args) {
+	// draw lines between points
+	var self		= this;
+	var vertices	= args.vertices;
+
+	for(var index in vertices) {
+		if(index == 0) {
+			var length		= vertices.length;
+			var point		= vertices[index];
+			var prevPoint	= vertices[length - 1];
+		} else {
+			var point		= vertices[index];
+			var prevPoint	= vertices[index - 1];
+		}
+
+		// create a line
+		var line = self.addChild({shape: 'line', origin: prevPoint, terminus: point});
+
+		line.each(function(x, y) {
+			self.addPoint(x, y);
+		});
+
+		line.destroy();
+	}
+
+	// fill
+	var prevY = false;
+	var prevX = false;
+	self.each(function(x, y) {
+		if( y == prevY ) {
+			for(var i = prevX; i < x; i++) {
+				self.points[y][i] = true;
+			}
+			
+		}
+
+		prevY = y;
+		prevX = x;
+	});
 }
 
 Heroic.Region.prototype.line = function(args) {

@@ -41,13 +41,17 @@ function initializeEngine() {
 		//test.drawPoint(x, y, args);
 	}, drawArgs);
 
+	var polygon = test.addChild({shape: 'polygon', origin: {x: 44, y: 44}, vertices: [{x: 50, y: 50}, {x: 55, y: 65}, {x: 60, y: 45}]});
+	polygon.each(function(x, y, args) {
+		polygon.drawPoint(x, y, args);
+	}, drawArgs);
+
 
 	//var recurArgs = {parent: test, recursive: true, shape: {shape: 'circle', origin: {x: 115, y: 90}, radius: 8}};
 	//var recur = new Heroic.OrganicPattern(recurArgs);
 
-	var recurArgs = {region: test, direction: new Heroic.Direction(0), recursive: true, shape: {shape: 'rectangle', origin: {x: 65, y: 65}, terminus: {x: 81, y: 69}}};
+	var recurArgs = {region: test, direction: new Heroic.Direction(0), recursive: true, shape: {shape: 'rectangle', origin: {x: 85, y: 85}, terminus: {x: 98, y: 89}}};
 	var recur = new Heroic.RectangularPattern(recurArgs);
-	console.log(recur.regions[0])
 
 	var drawArgs = {};
 	drawArgs.layer = layer;

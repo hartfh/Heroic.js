@@ -7,7 +7,7 @@ Heroic.RectangularPattern = function(args) {
 Heroic.RectangularPattern.extend(Heroic.RegionPattern);
 
 Heroic.RectangularPattern.prototype.maybeRecurse = function() {
-	if( Math.random() > 1.8 ) {
+	if( Math.random() > 0.72 ) {
 		return true;
 	}
 
@@ -15,7 +15,7 @@ Heroic.RectangularPattern.prototype.maybeRecurse = function() {
 }
 
 Heroic.RectangularPattern.prototype.maybeTerminate = function() {
-	if( Math.random() > 0.65 ) {
+	if( Math.random() > 0.70 ) {
 		return true;
 	}
 
@@ -25,16 +25,7 @@ Heroic.RectangularPattern.prototype.maybeTerminate = function() {
 Heroic.RectangularPattern.prototype.realign = function() {
 	var lastRegion = this.lastChild;
 
-	//this.shape.origin = {x: this.shape.origin.x + this.width, y: this.shape.origin.y + this.height};
-	//var lastPoint = lastRegion.randomPoint(2);
-
-
-
-	//this.shape.origin = {x: this.shape.origin.x + this.width, y: this.shape.origin.y + this.height};
-	//this.shape.terminus = {x: this.shape.origin.x + this.width, y: this.shape.origin.y + this.height};
-	console.log(lastRegion.correction);
 	this.shape.origin = {x: lastRegion.special['endpoint'].x + this.shape.origin.x, y: lastRegion.special['endpoint'].y + this.shape.origin.y};
-	//console.log(this.shape.origin);
 	this.shape.terminus = {x: this.shape.origin.x + this.width, y: this.shape.origin.y + this.height};
 }
 
@@ -52,7 +43,7 @@ Heroic.RectangularPattern.prototype.recurse = function(args) {
 	recurseArgs.region		= this.region;
 	recurseArgs.recursive	= this.recursive;
 
-	recurseArgs.direction.rotate( 90 * sign );
+	recurseArgs.direction.rotate(sign * 45);
 
 	var recurseRegion = new this.constructor(recurseArgs);
 	this.regions = this.regions.concat(recurseRegion.regions);
@@ -64,11 +55,19 @@ Heroic.RectangularPattern.prototype.reduce = function() {
 
 Heroic.RectangularPattern.prototype.turn = function() {
 	if( this.length > 0 ) {
-		if( Math.random() > 0.00 ) {
-			this.direction.rotate(45);
-			this.lastChild.rotate(45 * this.direction.index);
-		}
+		var sign = Math.round( Math.random() * 2 - 1 );
+		this.direction.rotate(sign * 45);
 	}
+
+	this.lastChild.rotate(45 * this.direction.index);
+	//var coords = this.direction.getCoordinates();
+
+	// translate based on difference between this and last rotation amounts?
+	/*
+	45: 
+	90: full height, full width
+
+	*/
 }
 
 Heroic.RectangularPattern.prototype.setExtras = function() {

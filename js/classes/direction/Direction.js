@@ -52,14 +52,6 @@ Heroic.Direction.prototype.rotate = function(degrees) {
 
 Heroic.Direction.key = [
 	{
-		letter:			'n',
-		coordinates:	{x: 0, y: -1}
-	},
-	{
-		letter:			'ne',
-		coordinates:	{x: 1, y: -1}
-	},
-	{
 		letter:			'e',
 		coordinates:	{x: 1, y: 0}
 	},
@@ -83,4 +75,12 @@ Heroic.Direction.key = [
 		letter:			'nw',
 		coordinates:	{x: -1, y: -1}
 	},
+	{
+		letter:			'n',
+		coordinates:	{x: 0, y: -1}
+	},
+	{
+		letter:			'ne',
+		coordinates:	{x: 1, y: -1}
+	}
 ];
