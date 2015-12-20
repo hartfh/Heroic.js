@@ -45,7 +45,7 @@ function initializeEngine() {
 	//var recurArgs = {parent: test, recursive: true, shape: {shape: 'circle', origin: {x: 115, y: 90}, radius: 8}};
 	//var recur = new Heroic.OrganicPattern(recurArgs);
 
-	var recurArgs = {parent: test, recursive: true, shape: {shape: 'rectangle', origin: {x: 85, y: 60}, terminus: {x: 105, y: 75}}};
+	var recurArgs = {region: test, direction: new Heroic.Direction(0), recursive: true, shape: {shape: 'rectangle', origin: {x: 65, y: 65}, terminus: {x: 81, y: 69}}};
 	var recur = new Heroic.RectangularPattern(recurArgs);
 	console.log(recur.regions[0])
 
@@ -64,7 +64,7 @@ function initializeEngine() {
 		}, drawArgs);
 	});
 
-	var args = {shape: 'circle', origin: {x: 85, y: 60}, radius: 1}
+	var args = {shape: 'circle', origin: {x: 77, y: 77}, radius: 1}
 	var center = test.addChild(args);
 	drawArgs.styles = {background: 'green', color: 'darkblue', character: ''};
 	center.eachEdge(function(x, y, args) {

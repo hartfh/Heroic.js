@@ -8,7 +8,7 @@ Heroic.RegionPattern = function(args) {
  * 
  * 
  * 
- * @param	{Object}	args.parent		Region object
+ * @param	{Object}	args.region		Region object
  */
 Heroic.RegionPattern.prototype.initialize = function(args) {
 	if( typeof(args.recursive) == 'undefined'  ) {
@@ -18,9 +18,13 @@ Heroic.RegionPattern.prototype.initialize = function(args) {
 		args.direction = new Heroic.Direction();
 	}
 	if( typeof(args.depth) == 'undefined' ) {
-		args.depth = 1;
+		args.depth = 0;
+	}
+	if( typeof(args.parent) == 'undefined' ) {
+		args.parent = false;
 	}
 
+	this.region		= args.region;
 	this.parent		= args.parent;
 	this.shape		= args.shape;
 	this.direction	= args.direction;
@@ -29,32 +33,34 @@ Heroic.RegionPattern.prototype.initialize = function(args) {
 	this.regions	= [];
 	this.recursive	= args.recursive;
 
-	//this.depth		= args.depth; // limit to max depth = 3?
+	this.depth		= args.depth++;
 	//this.branches	= 0; // limit to 2 or 3 branches?
 	this.length		= 0;
 	//this.maxLength	= 0;
 
-	//this.setExtras(); ????
+	this.setExtras();
 
 	// continue and recurse
 	while( this.continue ) {
-		var region = this.parent.addChild(this.shape);
+		var region = this.region.addChild(this.shape);
 
 		this.length++;
 		this.lastChild = region;
 		this.regions.push(region);
-		this.realign();
+		this.turn();
 
-		if( this.recursive ) {
-			if( this.maybeRecurse() ) {
-				this.recurse(args);
-			}
-		}
 		if( this.maybeTerminate() ) {
 			this.terminate();
 		} else {
 			this.reduce();
-			this.turn();
+			//this.turn();
+			this.realign();
+
+			if( this.recursive ) {
+				if( this.maybeRecurse() ) {
+					this.recurse(args);
+				}
+			}
 		}
 	}
 
@@ -72,6 +78,7 @@ Heroic.RegionPattern.prototype.initialize = function(args) {
 	firstRegion.calcTerminus();
 	firstRegion.patch();
 	firstRegion.calcEdge();
+
 }
 
 Heroic.RegionPattern.prototype.terminate = function() {
@@ -85,4 +92,4 @@ Heroic.RegionPattern.prototype.realign			= function() {}
 Heroic.RegionPattern.prototype.recurse			= function(args) {}
 Heroic.RegionPattern.prototype.reduce			= function() {}
 Heroic.RegionPattern.prototype.turn				= function() {}
-//Heroic.RegionPattern.prototype.setExtras	= function() {}
+Heroic.RegionPattern.prototype.setExtras		= function() {}

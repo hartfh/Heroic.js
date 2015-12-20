@@ -48,7 +48,8 @@ Heroic.OrganicPattern.prototype.recurse = function(args) {
 		origin:		{x: this.shape.origin.x, y: this.shape.origin.y},
 		radius:		this.shape.radius
 	};
-	recurseArgs.parent		= this.parent;
+	recurseArgs.parent		= this;
+	recurseArgs.region		= this.region;
 	recurseArgs.recursive	= this.recursive;
 
 	recurseArgs.direction.rotate(45 * sign);

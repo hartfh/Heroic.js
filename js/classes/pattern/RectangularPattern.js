@@ -15,7 +15,7 @@ Heroic.RectangularPattern.prototype.maybeRecurse = function() {
 }
 
 Heroic.RectangularPattern.prototype.maybeTerminate = function() {
-	if( Math.random() > 0.4 ) {
+	if( Math.random() > 0.65 ) {
 		return true;
 	}
 
@@ -23,8 +23,19 @@ Heroic.RectangularPattern.prototype.maybeTerminate = function() {
 }
 
 Heroic.RectangularPattern.prototype.realign = function() {
-	this.shape.origin = {x: this.shape.terminus.x, y: this.shape.terminus.y};
-	this.shape.terminus = {x: this.shape.origin.x + this.lastChild.terminus.x, y: this.shape.origin.y + this.lastChild.terminus.y};
+	var lastRegion = this.lastChild;
+
+	//this.shape.origin = {x: this.shape.origin.x + this.width, y: this.shape.origin.y + this.height};
+	//var lastPoint = lastRegion.randomPoint(2);
+
+
+
+	//this.shape.origin = {x: this.shape.origin.x + this.width, y: this.shape.origin.y + this.height};
+	//this.shape.terminus = {x: this.shape.origin.x + this.width, y: this.shape.origin.y + this.height};
+	console.log(lastRegion.correction);
+	this.shape.origin = {x: lastRegion.special['endpoint'].x + this.shape.origin.x, y: lastRegion.special['endpoint'].y + this.shape.origin.y};
+	//console.log(this.shape.origin);
+	this.shape.terminus = {x: this.shape.origin.x + this.width, y: this.shape.origin.y + this.height};
 }
 
 Heroic.RectangularPattern.prototype.recurse = function(args) {
@@ -37,7 +48,8 @@ Heroic.RectangularPattern.prototype.recurse = function(args) {
 		origin:		{x: this.shape.origin.x,	y: this.shape.origin.y},
 		terminus:	{x: this.shape.terminus.x,	y: this.shape.terminus.y},
 	};
-	recurseArgs.parent		= this.parent;
+	recurseArgs.parent		= this;
+	recurseArgs.region		= this.region;
 	recurseArgs.recursive	= this.recursive;
 
 	recurseArgs.direction.rotate( 90 * sign );
@@ -51,14 +63,21 @@ Heroic.RectangularPattern.prototype.reduce = function() {
 }
 
 Heroic.RectangularPattern.prototype.turn = function() {
-	//var sign = Math.round( Math.random() * 2 - 1 );
-	//this.parent.direction.rotate( 90 * sign );
-
 	if( this.length > 0 ) {
-		this.lastChild.rotate(25);
+		if( Math.random() > 0.00 ) {
+			this.direction.rotate(45);
+			this.lastChild.rotate(45 * this.direction.index);
+		}
 	}
+}
 
-	//var lastOrigin = this.shape.origin;
-	//var lastTerminus = this.shape.terminus;
-	//this.shape.terminus = {x: lastTerminus.y, y: lastTerminus.x};
+Heroic.RectangularPattern.prototype.setExtras = function() {
+	
+	if( this.depth == 0 ) {
+		this.height	= this.shape.terminus.y - this.shape.origin.y;
+		this.width	= this.shape.terminus.x - this.shape.origin.x;
+	} else {
+		this.height	= this.parent.height;
+		this.width	= this.parent.width;
+	}
 }
