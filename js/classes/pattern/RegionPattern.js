@@ -40,7 +40,6 @@ Heroic.RegionPattern.prototype.initialize = function(args) {
 
 	this.setExtras();
 
-	// continue and recurse
 	while( this.continue ) {
 		var region = this.region.addChild(this.shape);
 
@@ -75,10 +74,7 @@ Heroic.RegionPattern.prototype.initialize = function(args) {
 		this.regions.pop();
 	}
 
-	firstRegion.calcTerminus();
 	firstRegion.patch();
-	firstRegion.calcEdge();
-
 }
 
 Heroic.RegionPattern.prototype.terminate = function() {

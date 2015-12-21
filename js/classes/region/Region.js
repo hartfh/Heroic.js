@@ -178,7 +178,10 @@ Heroic.Region.prototype.rectangle = function(args) {
 	}
 
 	//this.special['endpoint'] = {x: width, y: Math.round( height / 2 )};
-	this.special['endpoint'] = {x: width, y: 0};
+	this.special['corner1'] = {x: 0, y: 0};
+	this.special['corner2'] = {x: width, y: 0};
+	this.special['corner3'] = {x: width, y: height};
+	this.special['corner4'] = {x: 0, y: height};
 }
 
 Heroic.Region.prototype.polygon = function(args) {
@@ -627,9 +630,12 @@ Heroic.Region.prototype.translatePoints = function(xShift, yShift) {
 	this.correction.y += yShift;
 }
 
-Heroic.Region.prototype.rotate = function(degrees) {
+Heroic.Region.prototype.rotate = function(degrees, about) {
 	if( typeof(degrees) != 'number' ) {
 		degrees = 0;
+	}
+	if( typeof(about) == 'undefined' ) {
+		var about = {x: 0, y: 0};
 	}
 
 	var self		= this;
@@ -639,6 +645,8 @@ Heroic.Region.prototype.rotate = function(degrees) {
 	var minY = 0;
 
 	this.each(function(x, y) {
+		x -= about.x;
+		y -= about.y
 		var rotatedX = x * Math.cos(radians) - y * Math.sin(radians);
 		var rotatedY = y * Math.cos(radians) + x * Math.sin(radians);
 		var newPoint = {x: Math.round(rotatedX), y: Math.round(rotatedY)};
@@ -673,19 +681,30 @@ Heroic.Region.prototype.rotate = function(degrees) {
 			newPoint.y -= minY;
 		}
 
+		newPoint.x += about.x;
+		newPoint.y += about.y;
 		this.addPoint(newPoint.x, newPoint.y);
 	}
 
 	if( minX < 0 || minY < 0 ) {
 		this.translate(minX, minY);
-
 		this.eachSpecial(function(x, y, index) {
 			self.special[index].x -= minX;
 			self.special[index].y -= minY;
+
+			// corection. unknown why y/x are sometimes -1
+			if( self.special[index].y < 0 ) {
+				self.special[index].y += 1;
+			}
+			if( self.special[index].x < 0 ) {
+				self.special[index].x += 1;
+			}
 		});
 	}
 
 	this.calcTerminus();
+	this.patch();
+	this.calcEdge();
 }
 
 // patches 1x1 holes in a region
@@ -695,7 +714,13 @@ Heroic.Region.prototype.patch = function() {
 
 	for(var y = 0; y < height; y++) {
 		for(var x = 0; x < width; x++) {
-			if( !this.points[y][x] ) {
+			var empty = false;
+			if( !this.points[y] ) {
+				empty = true;
+			} else if( !this.points[y][x] ) {
+				empty = true;
+			}
+			if( empty ) {
 				var filled = 0;
 
 				for(var i = -1; i < 2; i++) {
@@ -711,15 +736,20 @@ Heroic.Region.prototype.patch = function() {
 							continue;
 						}
 
+						if( this.hasPoint(testX, testY) ) {
+							filled++;
+						}
+						/*
 						var testPoint = this.points[testY][testX];
 
 						if( testPoint ) {
-							filled++;
+							
 						}
+						*/
 					}
 				}
 				
-				if( filled >= 6 ) {
+				if( filled >= 5 ) {
 					this.points[y][x] = true;
 				}
 			}

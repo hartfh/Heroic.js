@@ -41,7 +41,8 @@ function initializeEngine() {
 		//test.drawPoint(x, y, args);
 	}, drawArgs);
 
-	var polygon = test.addChild({shape: 'polygon', origin: {x: 44, y: 44}, vertices: [{x: 50, y: 50}, {x: 55, y: 65}, {x: 60, y: 45}]});
+	var polygon = test.addChild({shape: 'polygon', origin: {x: 44, y: 44}, vertices: [{x: 0, y: 0}, {x: 5, y: 15}, {x: 10, y: 5}]});
+	polygon.rotate(15, {x: 10, y: 5});
 	polygon.each(function(x, y, args) {
 		polygon.drawPoint(x, y, args);
 	}, drawArgs);
@@ -68,7 +69,7 @@ function initializeEngine() {
 		}, drawArgs);
 	});
 
-	var args = {shape: 'circle', origin: {x: 77, y: 77}, radius: 1}
+	var args = {shape: 'circle', origin: {x: 44, y: 44}, radius: 1}
 	var center = test.addChild(args);
 	drawArgs.styles = {background: 'green', color: 'darkblue', character: ''};
 	center.eachEdge(function(x, y, args) {

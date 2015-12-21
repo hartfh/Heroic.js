@@ -25,8 +25,25 @@ Heroic.RectangularPattern.prototype.maybeTerminate = function() {
 Heroic.RectangularPattern.prototype.realign = function() {
 	var lastRegion = this.lastChild;
 
-	this.shape.origin = {x: lastRegion.special['endpoint'].x + this.shape.origin.x, y: lastRegion.special['endpoint'].y + this.shape.origin.y};
+	this.shape.origin = {x: lastRegion.special['corner2'].x + this.shape.origin.x, y: lastRegion.special['corner2'].y + this.shape.origin.y};
 	this.shape.terminus = {x: this.shape.origin.x + this.width, y: this.shape.origin.y + this.height};
+
+	/*
+	if( this.regions.length > 1 ) {
+		var prevRegion = this.regions[this.regions.length - 2];
+		var vertices = [];
+		vertices.push(this.shape.origin);
+		console.log(lastRegion.special);
+		vertices.push({x: 20, y: 20});
+		//vertices.push( prevRegion.sumPoints(this.shape.origin, lastRegion.special['corner2']) );
+		var cornerRegion = this.region.addChild({shape: 'polygon', origin: {x: 0, y: 0}, vertices: vertices});
+		//console.log(cornerRegion);
+
+		// reconcile coordinates
+		// create child region
+		// merge prevRegion with new one?
+	}
+	*/
 }
 
 Heroic.RectangularPattern.prototype.recurse = function(args) {
@@ -60,14 +77,6 @@ Heroic.RectangularPattern.prototype.turn = function() {
 	}
 
 	this.lastChild.rotate(45 * this.direction.index);
-	//var coords = this.direction.getCoordinates();
-
-	// translate based on difference between this and last rotation amounts?
-	/*
-	45: 
-	90: full height, full width
-
-	*/
 }
 
 Heroic.RectangularPattern.prototype.setExtras = function() {
