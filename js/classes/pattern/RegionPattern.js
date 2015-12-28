@@ -73,7 +73,6 @@ Heroic.RegionPattern.prototype.initialize = function(args) {
 		firstRegion.mergeWith(region);
 		this.regions.pop();
 	}
-
 	firstRegion.patch();
 }
 

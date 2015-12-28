@@ -704,7 +704,6 @@ Heroic.Region.prototype.rotate = function(degrees, about) {
 
 	this.calcTerminus();
 	this.patch();
-	this.calcEdge();
 }
 
 // patches 1x1 holes in a region
@@ -739,13 +738,6 @@ Heroic.Region.prototype.patch = function() {
 						if( this.hasPoint(testX, testY) ) {
 							filled++;
 						}
-						/*
-						var testPoint = this.points[testY][testX];
-
-						if( testPoint ) {
-							
-						}
-						*/
 					}
 				}
 				
@@ -755,6 +747,8 @@ Heroic.Region.prototype.patch = function() {
 			}
 		}
 	}
+
+	this.calcEdge();
 }
 
 /*

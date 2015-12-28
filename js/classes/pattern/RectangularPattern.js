@@ -15,9 +15,19 @@ Heroic.RectangularPattern.prototype.maybeRecurse = function() {
 }
 
 Heroic.RectangularPattern.prototype.maybeTerminate = function() {
+	if( this.length > 6 ) {
+		return true;
+	}
+
+	if( Math.random() > 0.15 ) {
+		this.length++;
+	}
+	
+	/*
 	if( Math.random() > 0.70 ) {
 		return true;
 	}
+	*/
 
 	return false;
 }
@@ -27,23 +37,6 @@ Heroic.RectangularPattern.prototype.realign = function() {
 
 	this.shape.origin = {x: lastRegion.special['corner2'].x + this.shape.origin.x, y: lastRegion.special['corner2'].y + this.shape.origin.y};
 	this.shape.terminus = {x: this.shape.origin.x + this.width, y: this.shape.origin.y + this.height};
-
-	/*
-	if( this.regions.length > 1 ) {
-		var prevRegion = this.regions[this.regions.length - 2];
-		var vertices = [];
-		vertices.push(this.shape.origin);
-		console.log(lastRegion.special);
-		vertices.push({x: 20, y: 20});
-		//vertices.push( prevRegion.sumPoints(this.shape.origin, lastRegion.special['corner2']) );
-		var cornerRegion = this.region.addChild({shape: 'polygon', origin: {x: 0, y: 0}, vertices: vertices});
-		//console.log(cornerRegion);
-
-		// reconcile coordinates
-		// create child region
-		// merge prevRegion with new one?
-	}
-	*/
 }
 
 Heroic.RectangularPattern.prototype.recurse = function(args) {
@@ -76,7 +69,14 @@ Heroic.RectangularPattern.prototype.turn = function() {
 		this.direction.rotate(sign * 45);
 	}
 
-	this.lastChild.rotate(45 * this.direction.index);
+	var about = {x: 0, y: 0};
+
+	if( sign > 0 ) {
+		about = {x: 0, y: 2};
+	}
+	about = {x: 0, y: 2};
+
+	this.lastChild.rotate(45 * this.direction.index, about);
 }
 
 Heroic.RectangularPattern.prototype.setExtras = function() {
